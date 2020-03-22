@@ -1,0 +1,29 @@
+/*
+Template Name: Veltrix - Responsive Bootstrap 4 Admin Dashboard
+Author: Themesbrand
+Version: 1.0.0
+Website: https://themesbrand.com/
+Contact: themesbrand@gmail.com
+File: Main Css File
+*/
+
+//Fonts
+@import "template/fonts/fonts";
+
+
+//Core files
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
+@import "variables";
+@import "icons";
+@import "./node_modules/bootstrap/scss/mixins.scss";
+
+// Structure
+@import "template/structure/general";
+@import "template/structure/topbar";
+@import "template/structure/page-head";
+@import "template/structure/footer";
+@import "template/structure/right-sidebar";
+@import "template/structure/vertical";
+@import "template/structure/horizontal-nav";
+@import "template/structure/layouts";
