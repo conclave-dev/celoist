@@ -14,12 +14,11 @@ const App = () => (
           <Sidebar />
         </div>
       </div>
-    </div>
-    <div className="main-content">
-      <div className="page-content">
-        <Router />
+      <div className="main-content">
+        <div className="page-content">
+          <Router />
+        </div>
       </div>
-      <Footer />
     </div>
   </ErrorBoundary>
 );
