@@ -10,8 +10,6 @@ const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) =>
       const { feed, items } = await (await fetch(`${backend}/medium/${blogId}`)).json();
       const { url, title, description } = feed;
 
-      console.log(items);
-
       return {
         ...blogs,
         [blogId]: {

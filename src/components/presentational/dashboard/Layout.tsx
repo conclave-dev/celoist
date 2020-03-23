@@ -1,14 +1,15 @@
 import React, { memo } from 'react';
-import { Container, Row, Col } from 'reactstrap';
-import Blogs from './Blogs';
+import { Container, Row } from 'reactstrap';
 import Header from './Header';
+import Blogs from './Blogs';
+import Twitter from './Twitter';
 
 const Layout = () => (
   <Container fluid>
     <Header />
     <Row>
       <Blogs />
-      <Col xl={6}></Col>
+      <Twitter />
     </Row>
   </Container>
 );
