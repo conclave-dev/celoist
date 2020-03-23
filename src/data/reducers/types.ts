@@ -12,8 +12,10 @@ export interface Blog {
 
 export interface BlogPost {
   title: string;
+  link: string;
   pubDate: string;
   author: string;
   thumbnail: string;
+  excerpt: string;
   categories: string[];
 }
