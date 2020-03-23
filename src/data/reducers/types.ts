@@ -1,0 +1,19 @@
+export interface Dashboard {
+  blogs: { [key: string]: Blog };
+  blogIds: string[];
+}
+
+export interface Blog {
+  url: string;
+  title: string;
+  description: string;
+  posts: BlogPost[];
+}
+
+export interface BlogPost {
+  title: string;
+  pubDate: string;
+  author: string;
+  thumbnail: string;
+  categories: string[];
+}

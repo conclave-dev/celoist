@@ -15,6 +15,7 @@
     "@types/reactstrap": "^8.4.1",
     "apexcharts": "^3.15.5",
     "bip39": "^3.0.2",
+    "bluebird": "^3.7.2",
     "bootstrap": "^4.4.1",
     "buffer": "^5.4.3",
     "elliptic": "^6.5.2",
