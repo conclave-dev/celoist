@@ -3,8 +3,8 @@ import { Blog } from '../reducers/types';
 import { backend } from './api';
 import { stripHTML } from '../../util/text';
 
-const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) =>
-  Promise.reduce(
+const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) => {
+  return Promise.reduce(
     blogIds,
     async (blogs, blogId) => {
       const { feed, items } = await (await fetch(`${backend}/medium/${blogId}`)).json();
@@ -30,5 +30,6 @@ const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) =>
     },
     {}
   );
+};
 
 export { fetchMediumBlogs };

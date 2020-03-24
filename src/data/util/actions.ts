@@ -1,23 +1,31 @@
-// Cleanly wraps actions
-const actionWrapper = ({ type }: { type: string }) => {
-  return {
-    init: () => ({
-      type,
-      status: 100,
-      message: 'Init'
-    }),
-    packData: data => ({
-      type,
-      status: 200,
-      message: 'Success',
-      ...data
-    }),
-    packError: error => ({
-      type,
-      status: error.status || 400,
-      message: error.message || 'Unspecified error'
-    })
-  };
+import * as Sentry from '@sentry/browser';
+
+const handleInit = (dispatch, type) =>
+  dispatch({
+    type,
+    status: 100,
+    message: 'Init'
+  });
+
+const handleData = (dispatch, type, data) =>
+  dispatch({
+    type,
+    status: 200,
+    message: 'Success',
+    ...data
+  });
+
+const handleError = (dispatch, type, error) => {
+  Sentry.withScope(scope => {
+    scope.setExtras(error);
+    return Sentry.showReportDialog({ eventId: Sentry.captureException(error) });
+  });
+
+  return dispatch({
+    type,
+    status: error.status || 400,
+    message: error.message || 'Unspecified error'
+  });
 };
 
-export { actionWrapper };
+export { handleInit, handleData, handleError };
