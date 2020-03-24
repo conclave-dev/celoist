@@ -1,16 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Layout from '../presentational/dashboard/Layout';
-import { fetchBlogs } from '../../data/actions/dashboard';
+import Layout from '../presentational/home/Layout';
+import { fetchBlogs } from '../../data/actions/home';
 
-const mapState = ({ dashboard }) => ({ dashboard });
+const mapState = ({ home }) => ({ home });
 const mapDispatch = { fetchBlogs };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-class Dashboard extends PureComponent<Props> {
+class Home extends PureComponent<Props> {
   componentDidMount = () => {
     this.props.fetchBlogs();
   };
@@ -24,4 +24,4 @@ class Dashboard extends PureComponent<Props> {
   };
 }
 
-export default connector(Dashboard);
+export default connector(Home);

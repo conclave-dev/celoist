@@ -1,4 +1,4 @@
-export interface Dashboard {
+export interface Home {
   blogs: { [key: string]: Blog };
   blogIds: string[];
 }

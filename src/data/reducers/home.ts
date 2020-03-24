@@ -1,8 +1,8 @@
-import { FETCH_BLOGS } from './../actions/actions';
+import { FETCH_BLOGS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { Dashboard, Blog } from './types';
+import { Home, Blog } from './types';
 
-const initialState: Dashboard = initialStateDecorator({
+const initialState: Home = initialStateDecorator({
   blogs: {},
   blogIds: ['celoorg']
 });
@@ -10,7 +10,7 @@ const initialState: Dashboard = initialStateDecorator({
 export default (state = initialState, action) => {
   const { type } = action;
 
-  const fetchBlogs = (state, { blogs }): { state: Dashboard; blogs: { [key: string]: Blog } } => ({
+  const fetchBlogs = (state, { blogs }): { state: Home; blogs: { [key: string]: Blog } } => ({
     ...state,
     blogs
   });

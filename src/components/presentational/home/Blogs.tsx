@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Row, Col, Card, Badge, CardBody, CardHeader } from 'reactstrap';
 import SimpleBar from 'simplebar-react';
 
-const mapState = ({ dashboard: { blogs, blogIds } }) => ({ blogs, blogIds });
+const mapState = ({ home: { blogs, blogIds } }) => ({ blogs, blogIds });
 const connector = connect(mapState);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
