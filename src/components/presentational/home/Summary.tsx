@@ -1,10 +1,11 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, CardBody } from 'reactstrap';
+import SummarySpinner from '../reusable/SummarySpinner';
 import goldRewards from '../../../assets/png/goldRewards.png';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
 
-const Summary = () => (
+const Summary = ({ votes, networkInProgress }: { votes: string; networkInProgress: boolean }) => (
   <Row>
     <Col xl="4" md="4">
       <Card className="bg-red">
@@ -23,7 +24,7 @@ const Summary = () => (
           <div className="float-right">
             <img src={vote} width={48} />
           </div>
-          <h5 className="font-20 mt-0 pt-1">{`X`}</h5>
+          {networkInProgress ? <SummarySpinner /> : <h5 className="font-20 mt-0 pt-1">{votes}</h5>}
           <p className="text-muted mb-0">Current Election Votes</p>
         </CardBody>
       </Card>

@@ -19,3 +19,16 @@ export interface BlogPost {
   excerpt: string;
   categories: string[];
 }
+
+export interface Election {
+  eligibleGroups: Group[];
+  ineligibleGroups: Group[];
+}
+
+export interface Group {
+  address: string;
+  name: string;
+  votes: string;
+  capacity: string;
+  eligible: boolean;
+}
