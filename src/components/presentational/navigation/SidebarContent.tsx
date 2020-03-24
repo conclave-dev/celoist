@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
+import voteLight from '../../../assets/png/voteLight.png';
+import proposalLight from '../../../assets/png/proposalLight.png';
 
 const SidebarContentGeneral = () => (
   <>
@@ -18,13 +20,17 @@ const SidebarContentNetwork = () => (
     <li className="menu-title">Network</li>
     <li>
       <Link to="" className="waves-effect">
-        <i className="mdi mdi-shield-star"></i>
+        <div className="iconSidebar">
+          <img src={voteLight} height={22} />
+        </div>
         <span>Elections</span>
       </Link>
     </li>
     <li>
       <Link to="" className="waves-effect">
-        <i className="mdi mdi-vote"></i>
+      <div className="iconSidebar">
+      <img src={proposalLight} height={22} />
+    </div>
         <span>Governance</span>
       </Link>
     </li>

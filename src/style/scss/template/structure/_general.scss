@@ -1,0 +1,94 @@
+/* ==============
+  General
+===================*/
+
+body {
+  font-family: $font-family;
+  color: $body-color;
+  // font-size: $font-size-base;
+}
+
+@media (max-width: 991px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
+html {
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 10px 0;
+  font-family: $font-family-secondary;
+}
+
+h6 {
+  font-size: 14px;
+}
+
+p{
+  line-height: 1.7;
+}
+
+svg {
+  max-width: 100%;
+}
+
+a {
+  color: $primary;
+
+  &:hover, &:active, &:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+}
+
+b, strong {
+  font-weight: 500;
+}
+
+.container-alt {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+#wrapper {
+  height: $height;
+  overflow: hidden;
+  width: $width;
+}
+
+// Slimscroll
+.slimScrollDiv {
+  height: auto !important;
+}
+
+/* Social */
+.social-links {
+  li {
+    a {
+      border-radius: 50%;
+      display: inline-block;
+      height: 30px;
+      line-height: 30px;
+      width: 30px;
+      text-align: center;
+    }
+  }
+}
+
+.iconSidebar {
+  display: inline-block;
+  min-width: 1.75rem;
+  padding-bottom: .125em;
+  line-height: 1.40625rem;
+  vertical-align: middle;
+  color: $sidebar-menu-item-icon-color;
+  transition: all .4s;
+  font-size: 14.7px;
+}

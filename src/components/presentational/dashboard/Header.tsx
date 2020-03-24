@@ -7,13 +7,9 @@ const Header = () => (
       <div className="page-title-box">
         <h4 className="font-size-18">Dashboard</h4>
         <ol className="breadcrumb mb-0">
-          <li className="breadcrumb-item active">...</li>
+          <li className="breadcrumb-item active">A macro view of our ecosystem</li>
         </ol>
       </div>
-    </Col>
-
-    <Col sm="6">
-      <div className="float-right d-none d-md-block"></div>
     </Col>
   </Row>
 );
