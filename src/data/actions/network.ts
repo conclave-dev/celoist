@@ -1,6 +1,6 @@
-import { FETCH_GROUPS } from './actions';
+import { FETCH_GROUPS, FETCH_PROPOSALS } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { getValidatorGroupsVotes } from '../fetch/network';
+import { getValidatorGroupsVotes, getGovernanceProposals } from '../fetch/network';
 
 const fetchGroups = () => async dispatch => {
   handleInit(dispatch, FETCH_GROUPS);
@@ -12,4 +12,14 @@ const fetchGroups = () => async dispatch => {
   }
 };
 
-export { fetchGroups };
+const fetchProposals = () => async dispatch => {
+  handleInit(dispatch, FETCH_PROPOSALS);
+
+  try {
+    return handleData(dispatch, FETCH_PROPOSALS, { proposals: await getGovernanceProposals() });
+  } catch (err) {
+    return handleError(dispatch, FETCH_PROPOSALS, { err });
+  }
+};
+
+export { fetchGroups, fetchProposals };

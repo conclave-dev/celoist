@@ -1,11 +1,13 @@
 import BigNumber from 'bignumber.js';
-import { FETCH_GROUPS } from '../actions/actions';
+import { FETCH_GROUPS, FETCH_PROPOSALS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import { Election } from './types';
 
 const network = {
   eligibleGroups: [],
   ineligibleGroups: [],
+  queuedProposals: [],
+  dequeuedProposals: [],
   totalVotes: new BigNumber(0)
 };
 
@@ -42,9 +44,18 @@ export default (state = initialState, action) => {
     };
   };
 
+  const fetchProposals = (state, { proposals }) => {
+    return {
+      ...state,
+      ...proposals
+    };
+  };
+
   switch (type) {
     case FETCH_GROUPS:
       return evalActionPayload(state, action, fetchGroups);
+    case FETCH_PROPOSALS:
+      return evalActionPayload(state, action, fetchProposals);
     default:
       return state;
   }

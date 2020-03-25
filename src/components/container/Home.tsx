@@ -6,11 +6,11 @@ import Summary from '../presentational/home/Summary';
 import Blogs from '../presentational/home/Blogs';
 import Twitter from '../presentational/home/Twitter';
 import { fetchBlogs } from '../../data/actions/home';
-import { fetchGroups } from '../../data/actions/network';
+import { fetchGroups, fetchProposals } from '../../data/actions/network';
 import { formatBigInt } from '../../util/numbers';
 
 const mapState = ({ home, network }) => ({ home, network });
-const mapDispatch = { fetchBlogs, fetchGroups };
+const mapDispatch = { fetchBlogs, fetchGroups, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -20,15 +20,20 @@ class Home extends PureComponent<Props> {
   componentDidMount = () => {
     this.props.fetchGroups();
     this.props.fetchBlogs();
+    this.props.fetchProposals();
   };
 
   render = () => {
-    const { totalVotes, inProgress: networkInProgress } = this.props.network;
+    const { totalVotes, queuedProposals, dequeuedProposals, inProgress: networkInProgress } = this.props.network;
 
     return (
       <Container fluid>
         <Header />
-        <Summary votes={formatBigInt(totalVotes)} networkInProgress={networkInProgress} />
+        <Summary
+          votes={formatBigInt(totalVotes)}
+          proposals={queuedProposals.length + dequeuedProposals.length}
+          networkInProgress={networkInProgress}
+        />
         <Row className="mt-4">
           <Blogs />
           <Twitter />
