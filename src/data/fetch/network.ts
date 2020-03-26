@@ -6,6 +6,8 @@ import { network } from './api';
 const kit = newKit(network);
 
 const getElection = () => kit.contracts.getElection();
+const getValidators = () => kit.contracts.getValidators();
+const getGovernance = () => kit.contracts.getGovernance();
 
 // const test = async () => (await getElection());
 
@@ -37,7 +39,7 @@ const getElectedGroups = async () => {
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {
-  const validators = await kit.contracts.getValidators();
+  const validators = await getValidators();
   const validatorGroup = await validators.getValidatorGroup(groupAddress, true);
 
   return {
@@ -78,7 +80,7 @@ const getElectedGroupMembers = async () => {
 };
 
 const getGovernanceProposals = async () => {
-  const governance = await kit.contracts.getGovernance();
+  const governance = await getGovernance();
   const queuedProposals = await Promise.reduce(
     await governance.getQueue(),
     async (acc, { proposalID }) => ({

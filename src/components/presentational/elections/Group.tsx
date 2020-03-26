@@ -2,9 +2,13 @@ import React, { memo } from 'react';
 import { Progress, ListGroup, ListGroupItem, Button, Collapse, Row, Col, Spinner } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import { fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
+import blueCoin from '../../../assets/png/blueCoin.png';
+import goldCoin from '../../../assets/png/goldCoin.png';
+import greenCoin from '../../../assets/png/greenCoin.png';
+import redCoin from '../../../assets/png/redCoin.png';
+
 // import { isEmpty, map } from 'lodash';
 // import { Group as GroupType, GroupMember } from '../../../data/reducers/types';
-// import BigNumber from 'bignumber.js';
 
 const mapState = ({ network: { groupMembers } }) => ({ groupMembers });
 const mapDispatch = { fetchGroupMembers, fetchGroupDetails };
@@ -13,18 +17,7 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-const Group = ({
-  group,
-  votes,
-  voteCapacityFilled,
-  selectedGroupAddress,
-  handleGroupClick,
-  fetchGroupMembers
-}: any) => {
-  if (selectedGroupAddress === group.address) {
-    console.log('groupAddress', group.address);
-    console.log('group', group);
-  }
+const Group = ({ group, votes, voteCapacityFilled, selectedGroupAddress, handleGroupClick }: any) => {
   return (
     <>
       <ListGroupItem>
@@ -49,7 +42,7 @@ const Group = ({
             </span>
           </Col>
           <Col xl={4}>
-            <Progress animated striped style={{ height: 24 }} max={100} color="warning" value={voteCapacityFilled}>
+            <Progress style={{ height: 36 }} max={100} color="warning" value={voteCapacityFilled}>
               {votes}
             </Progress>
           </Col>
@@ -64,14 +57,28 @@ const Group = ({
                   {group.members && group.members.length ? (
                     <ListGroup flush>
                       <Row className="pb-4">
-                        <Col xl={12} className="d-flex justify-content-center align-items-center">
-                          ...
+                        <Col xl={3} className="d-flex justify-content-center align-items-center">
+                          <img className="mr-1" src={blueCoin} width={24} />{' '}
+                          <small>{group.commission.multipliedBy(100).toFixed(2)}% Commission</small>
+                        </Col>
+                        <Col xl={3} className="d-flex justify-content-center align-items-center">
+                          <img className="mr-1" src={goldCoin} width={24} /> <small>Voter Rewards</small>
+                        </Col>
+                        <Col xl={3} className="d-flex justify-content-center align-items-center">
+                          <img className="mr-1" src={greenCoin} width={24} /> <small>Group Earnings</small>
+                        </Col>
+                        <Col xl={3} className="d-flex justify-content-center align-items-center">
+                          <img className="mr-1" src={redCoin} width={24} /> <small>% Penalty</small>
                         </Col>
                       </Row>
-
-                      <Row className="justify-content-center pt-1 pb-3">
+                      <Row className="justify-content-center pt-1 pb-1">
                         <Col xl={12} className="d-flex justify-content-center align-items-center">
-                          Members
+                          <div className="text-center">
+                            <h5>Members</h5>
+                            <p>
+                              <small>Name, Address, & Score</small>
+                            </p>
+                          </div>
                         </Col>
                       </Row>
                       {group.members.map(member => {

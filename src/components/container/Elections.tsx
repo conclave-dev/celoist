@@ -29,7 +29,6 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
   };
 
   handleGroupClick = ({ currentTarget: { id: groupAddress } }) => {
-    console.log('groupAddress', groupAddress);
     if (this.state.selectedGroupAddress === groupAddress) {
       return this.setState({ selectedGroupAddress: '' });
     }
@@ -51,7 +50,7 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
               map(groups, (group, groupAddress) => {
                 const { votes, capacity } = group;
                 const voteCapacity = capacity.isZero() ? votes : capacity;
-                const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 80;
+                const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 100;
 
                 return (
                   <Group
