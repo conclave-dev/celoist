@@ -42,10 +42,18 @@ const getElectedGroupMembers = async () => {
   const validators = await Promise.reduce(
     signers,
     async (acc, signer) => {
-      return {
-        ...acc,
-        [signer]: await validatorsContract.getValidatorFromSigner(signer)
-      };
+      const { affiliation, ...validator } = await validatorsContract.getValidatorFromSigner(signer);
+      const newAcc = { ...acc };
+
+      if (affiliation) {
+        if (newAcc[affiliation]) {
+          newAcc[affiliation] = [...newAcc[affiliation], validator];
+        } else {
+          newAcc[affiliation] = [validator];
+        }
+      }
+
+      return newAcc;
     },
     {}
   );
