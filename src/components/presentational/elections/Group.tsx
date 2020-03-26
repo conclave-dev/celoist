@@ -1,48 +1,58 @@
-import React, { memo } from 'react';
-import { Progress } from 'reactstrap';
-import BigNumber from 'bignumber.js';
-import { Link } from 'react-router-dom';
-import Anchor from '../reusable/Anchor';
-import Members from './Members';
-import { Group as GroupType } from '../../../data/reducers/types';
-import { formatBigInt } from '../../../util/numbers';
+import React, { memo, useState } from 'react';
+import { Progress, ListGroupItem, Button, Collapse, Row, Col } from 'reactstrap';
+import { Group as GroupType, GroupMember } from '../../../data/reducers/types';
 
-const Group = ({ name, address, votes, capacity }: GroupType) => {
-  const formattedVotes = formatBigInt(votes.toNumber());
-  // console.log('capacity.isZero()', capacity.isZero());
-  if (votes.toNumber() === 0) {
-    console.log('\n IS ZERO');
-    console.log(votes.c);
-    console.log(address);
-    console.log('IS ZERO \n');
-  }
+const Group = ({
+  group,
+  members,
+  index
+}: {
+  group: GroupType;
+  members: { [key: string]: GroupMember };
+  index: number;
+}) => {
+  const [toggledGroupIndex, setToggleGroupIndex] = useState(0);
+  const setGroupIndex = () => {
+    let newIndex = index;
 
-  console.log();
-  // console.log('capacity', capacity);
-  // console.log('capacity.isZero() ? votes.toNumber() : capacity', capacity.isZero() ? votes.toNumber() : capacity);
-  const formattedCapacity = `(${votes
-    .dividedBy(capacity.isZero() ? votes.toNumber() : capacity)
-    .integerValue()
-    .toNumber() * 100}% capacity)`;
+    if (index === toggledGroupIndex) {
+      newIndex = 0;
+    }
+
+    return setToggleGroupIndex(newIndex);
+  };
 
   return (
-    <tr>
-      <td style={{ paddingLeft: 0, verticalAlign: 'middle' }}>
-        <Progress style={{ maxWidth: 200 }} color="warning" value={78} />
-      </td>
-      <td style={{ paddingLeft: 0, verticalAlign: 'middle' }}>
-        <div className="text-truncate" style={{ maxWidth: 300, display: 'inline-block' }}>
-          {name || `${address}`}
-        </div>{' '}
-        <i className="fas fa-caret-down" />
-      </td>
-      <td style={{ paddingLeft: 0, verticalAlign: 'middle' }}>$0</td>
-      <td style={{ paddingLeft: 0, verticalAlign: 'middle' }}>
-        <Progress multi>
-          <Progress bar color="success" value={100} />
-        </Progress>
-      </td>
-    </tr>
+    <ListGroupItem>
+      <Row noGutters className="align-items-center">
+        <Col xl={3}>
+          <Progress style={{ maxWidth: 200 }} color="warning" value={78} />
+        </Col>
+        <Col xl={5} className="d-flex align-items-center">
+          <span className="text-truncate" style={{ maxWidth: 300, display: 'inline-block' }}>
+            {group.name || `${group.address}`}
+          </span>
+          <Button
+            id="members"
+            color="primary"
+            size="sm"
+            className="btn btn-link waves-effect ml-3"
+            onClick={setGroupIndex}
+          >
+            <i className="fas fa-caret-down" style={{ color: 'white' }} />
+          </Button>
+        </Col>
+        <Col xl={2}>$0</Col>
+        <Col xl={2}>
+          <Progress multi>
+            <Progress bar color="success" value={100} />
+          </Progress>
+        </Col>
+        <Collapse key={`hidden-${group.address}`} isOpen={index === toggledGroupIndex}>
+          Hello
+        </Collapse>
+      </Row>
+    </ListGroupItem>
   );
 };
 
