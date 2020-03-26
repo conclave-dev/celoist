@@ -7,11 +7,11 @@ import proposal from '../../../assets/png/proposal.png';
 
 const Summary = ({
   votes,
-  proposals,
+  numProposals,
   networkInProgress
 }: {
   votes: string;
-  proposals: number;
+  numProposals: number;
   networkInProgress: boolean;
 }) => (
   <Row>
@@ -51,10 +51,10 @@ const Summary = ({
           <div className="float-right">
             <img src={proposal} width={48} />
           </div>
-          {!proposals || networkInProgress ? (
+          {!numProposals || networkInProgress ? (
             <SummarySpinner color="primary" />
           ) : (
-            <h5 className="font-20 mt-0 pt-1">{proposals}</h5>
+            <h5 className="font-20 mt-0 pt-1">{numProposals}</h5>
           )}
           <p className="text-muted mb-0">Governance Proposals</p>
         </CardBody>

@@ -22,7 +22,7 @@ const SidebarContentNetwork = () => (
   <>
     <li className="menu-title">Network</li>
     <li>
-      <Link to="" className="waves-effect">
+      <Link to="/elections" className="waves-effect">
         <div className="iconSidebar">
           <img src={voteLight} height={22} />
         </div>
@@ -30,11 +30,11 @@ const SidebarContentNetwork = () => (
       </Link>
     </li>
     <li>
-      <Link to="" className="waves-effect">
+      <Link to="/proposals" className="waves-effect">
         <div className="iconSidebar">
           <img src={proposalLight} height={22} />
         </div>
-        <span>Governance</span>
+        <span>Proposals</span>
       </Link>
     </li>
   </>
