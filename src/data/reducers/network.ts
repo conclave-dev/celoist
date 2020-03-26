@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { FETCH_GROUPS, FETCH_GROUP_MEMBERS, FETCH_PROPOSALS } from '../actions/actions';
+import { FETCH_GROUPS, FETCH_GROUP_MEMBERS, FETCH_PROPOSALS, FETCH_GROUP_DETAILS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import { Election, Proposal } from './types';
 
@@ -30,6 +30,19 @@ export default (state = initialState, action) => {
     groupMembers
   });
 
+  const fetchGroupDetails = (state, { group }) => {
+    return {
+      ...state,
+      groups: {
+        ...state.groups,
+        [group.address]: {
+          ...state.groups[group.address],
+          ...group
+        }
+      }
+    };
+  };
+
   const fetchProposals = (state, { proposals }: { proposals: { [key: number]: Proposal } }) => {
     return {
       ...state,
@@ -42,6 +55,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, fetchGroups);
     case FETCH_GROUP_MEMBERS:
       return evalActionPayload(state, action, fetchGroupMembers);
+    case FETCH_GROUP_DETAILS:
+      return evalActionPayload(state, action, fetchGroupDetails);
     case FETCH_PROPOSALS:
       return evalActionPayload(state, action, fetchProposals);
     default:

@@ -14,7 +14,7 @@ const getElectedGroups = async () => {
   const eligibleGroups = await election.getEligibleValidatorGroupsVotes();
 
   const { groups, totalVotes } = eligibleGroups.reduce(
-    (acc, group) => {
+    (acc, group, index) => {
       if (group.votes.isZero()) {
         return acc;
       }
@@ -36,20 +36,36 @@ const getElectedGroups = async () => {
   return { groups, totalVotes };
 };
 
+const getElectedGroupDetails = async (groupAddress: string) => {
+  const validators = await kit.contracts.getValidators();
+  const validatorGroup = await validators.getValidatorGroup(groupAddress, true);
+
+  return {
+    ...validatorGroup,
+    members: await Promise.map(validatorGroup.members, member => validators.getValidatorFromSigner(member))
+  };
+};
+
 const getElectedGroupMembers = async () => {
   const signers = await (await getElection()).getCurrentValidatorSigners();
   const validatorsContract = await kit.contracts.getValidators();
   const validators = await Promise.reduce(
     signers,
     async (acc, signer) => {
-      const { affiliation, ...validator } = await validatorsContract.getValidatorFromSigner(signer);
+      const { affiliation, score, ...validator } = await validatorsContract.getValidatorFromSigner(signer);
       const newAcc = { ...acc };
 
       if (affiliation) {
         if (newAcc[affiliation]) {
-          newAcc[affiliation] = [...newAcc[affiliation], validator];
+          newAcc[affiliation] = {
+            members: [...newAcc[affiliation].members, validator],
+            memberScores: [...newAcc[affiliation].memberScores, score]
+          };
         } else {
-          newAcc[affiliation] = [validator];
+          newAcc[affiliation] = {
+            members: [validator],
+            memberScores: [score]
+          };
         }
       }
 
@@ -94,4 +110,4 @@ const getGovernanceProposals = async () => {
   };
 };
 
-export { getElectedGroups, getElectedGroupMembers, getGovernanceProposals };
+export { getElectedGroups, getElectedGroupMembers, getElectedGroupDetails, getGovernanceProposals };

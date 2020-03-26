@@ -1,6 +1,11 @@
-import { FETCH_GROUPS, FETCH_PROPOSALS, FETCH_GROUP_MEMBERS } from './actions';
+import { FETCH_GROUPS, FETCH_PROPOSALS, FETCH_GROUP_MEMBERS, FETCH_GROUP_DETAILS } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { getElectedGroups, getElectedGroupMembers, getGovernanceProposals } from '../fetch/network';
+import {
+  getElectedGroups,
+  getElectedGroupMembers,
+  getGovernanceProposals,
+  getElectedGroupDetails
+} from '../fetch/network';
 
 const fetchGroups = () => async dispatch => {
   handleInit(dispatch, FETCH_GROUPS);
@@ -22,6 +27,16 @@ const fetchGroupMembers = () => async dispatch => {
   }
 };
 
+const fetchGroupDetails = (groupAddress: string) => async dispatch => {
+  handleInit(dispatch, FETCH_GROUP_DETAILS);
+
+  try {
+    return handleData(dispatch, FETCH_GROUP_DETAILS, { group: await getElectedGroupDetails(groupAddress) });
+  } catch (err) {
+    return handleError(dispatch, FETCH_GROUP_DETAILS, { err });
+  }
+};
+
 const fetchProposals = () => async dispatch => {
   handleInit(dispatch, FETCH_PROPOSALS);
 
@@ -32,4 +47,4 @@ const fetchProposals = () => async dispatch => {
   }
 };
 
-export { fetchGroups, fetchGroupMembers, fetchProposals };
+export { fetchGroups, fetchGroupMembers, fetchGroupDetails, fetchProposals };
