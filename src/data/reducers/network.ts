@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
-import { FETCH_GROUPS, FETCH_PROPOSALS } from '../actions/actions';
+import { FETCH_GROUPS, FETCH_GROUP_MEMBERS, FETCH_PROPOSALS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { Election } from './types';
+import { Election, Proposal } from './types';
 
-const network = {
-  eligibleGroups: [],
-  ineligibleGroups: [],
-  queuedProposals: [],
-  dequeuedProposals: [],
+const network: Election = {
+  groups: {},
+  groupMembers: {},
+  queuedProposals: {},
+  dequeuedProposals: {},
   totalVotes: new BigNumber(0)
 };
 
@@ -16,35 +16,21 @@ const initialState: Election = initialStateDecorator(network);
 export default (state = initialState, action) => {
   const { type } = action;
 
-  const fetchGroups = (state, { groups }) => {
-    const { eligibleGroups, ineligibleGroups, totalVotes } = groups.reduce(
-      (acc, group) => {
-        if (group.votes.isZero()) {
-          return acc;
-        }
+  const fetchGroups = (
+    state,
+    { groups: { groups, totalVotes } }: { groups: Election['groups']; totalVotes: BigNumber }
+  ) => ({
+    ...state,
+    groups,
+    totalVotes
+  });
 
-        return {
-          eligibleGroups: [...acc.eligibleGroups, ...(group.eligible ? [group] : [])],
-          ineligibleGroups: [...acc.ineligibleGroups, ...(group.eligible ? [] : [group])],
-          totalVotes: BigNumber.sum(acc.totalVotes, group.votes)
-        };
-      },
-      {
-        eligibleGroups: [...network.eligibleGroups],
-        ineligibleGroups: [...network.ineligibleGroups],
-        totalVotes: network.totalVotes
-      }
-    );
+  const fetchGroupMembers = (state, { groupMembers }: { groupMembers: Election['groupMembers'] }) => ({
+    ...state,
+    groupMembers
+  });
 
-    return {
-      ...state,
-      eligibleGroups,
-      ineligibleGroups,
-      totalVotes: totalVotes
-    };
-  };
-
-  const fetchProposals = (state, { proposals }) => {
+  const fetchProposals = (state, { proposals }: { proposals: { [key: number]: Proposal } }) => {
     return {
       ...state,
       ...proposals
@@ -54,6 +40,8 @@ export default (state = initialState, action) => {
   switch (type) {
     case FETCH_GROUPS:
       return evalActionPayload(state, action, fetchGroups);
+    case FETCH_GROUP_MEMBERS:
+      return evalActionPayload(state, action, fetchGroupMembers);
     case FETCH_PROPOSALS:
       return evalActionPayload(state, action, fetchProposals);
     default:

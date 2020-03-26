@@ -1,18 +1,67 @@
 import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
+import BigNumber from 'bignumber.js';
 import { network } from './api';
 
 const kit = newKit(network);
 
-const getValidatorGroupsVotes = async () => {
-  const election = await kit.contracts.getElection();
-  return election.getValidatorGroupsVotes();
+const getElection = () => kit.contracts.getElection();
+
+// const test = async () => (await getElection());
+
+const getElectedGroups = async () => {
+  const election = await getElection();
+  const eligibleGroups = await election.getEligibleValidatorGroupsVotes();
+
+  const { groups, totalVotes } = eligibleGroups.reduce(
+    (acc, group) => {
+      if (group.votes.isZero()) {
+        return acc;
+      }
+
+      return {
+        groups: {
+          ...acc.groups,
+          [group.address]: group
+        },
+        totalVotes: BigNumber.sum(acc.totalVotes, group.votes)
+      };
+    },
+    {
+      groups: {},
+      totalVotes: new BigNumber(0)
+    }
+  );
+
+  return { groups, totalVotes };
+};
+
+const getElectedGroupMembers = async () => {
+  const signers = await (await getElection()).getCurrentValidatorSigners();
+  const validatorsContract = await kit.contracts.getValidators();
+  const validators = await Promise.reduce(
+    signers,
+    async (acc, signer) => {
+      return {
+        ...acc,
+        [signer]: await validatorsContract.getValidatorFromSigner(signer)
+      };
+    },
+    {}
+  );
+
+  return validators;
 };
 
 const getGovernanceProposals = async () => {
   const governance = await kit.contracts.getGovernance();
-  const queuedProposals = await Promise.map(await governance.getQueue(), async ({ proposalID }) =>
-    governance.getProposalRecord(proposalID)
+  const queuedProposals = await Promise.reduce(
+    await governance.getQueue(),
+    async (acc, { proposalID }) => ({
+      ...acc,
+      [proposalID]: await governance.getProposalRecord(proposalID)
+    }),
+    {}
   );
   const dequeuedProposals = await Promise.reduce(
     await governance.getDequeue(),
@@ -23,9 +72,12 @@ const getGovernanceProposals = async () => {
         return acc;
       }
 
-      return [...acc, proposal];
+      return {
+        ...acc,
+        [proposalID]: proposal
+      };
     },
-    []
+    {}
   );
 
   return {
@@ -34,4 +86,4 @@ const getGovernanceProposals = async () => {
   };
 };
 
-export { getValidatorGroupsVotes, getGovernanceProposals };
+export { getElectedGroups, getElectedGroupMembers, getGovernanceProposals };
