@@ -11,16 +11,16 @@ const Groups = ({ children }: { children: any }) => (
     <ListGroup>
       <ListGroupItem>
         <Row noGutters className="align-items-center">
-          <Col xl={3}>
-            <img className="mr-1" src={vote} width={24} />
-            <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
-              Votes
-            </span>
-          </Col>
           <Col xl={5}>
             <img className="mr-1" src={group} width={24} />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Group
+            </span>
+          </Col>
+          <Col xl={3}>
+            <img className="mr-1" src={vote} width={24} />
+            <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
+              Votes
             </span>
           </Col>
           <Col xl={2}>

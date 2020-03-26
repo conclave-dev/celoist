@@ -35,7 +35,6 @@ const Summary = ({
           <div className="float-right">
             <img src={vote} width={48} />
           </div>
-          {console.log('votes', votes)}
           {votes === '0' || networkInProgress ? (
             <SummarySpinner color="success" />
           ) : (
