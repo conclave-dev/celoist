@@ -1,13 +1,18 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
+import homeLight from '../../../assets/png/homeLight.png';
+import voteLight from '../../../assets/png/voteLight.png';
+import proposalLight from '../../../assets/png/proposalLight.png';
 
 const SidebarContentGeneral = () => (
   <>
     <li className="menu-title">General</li>
     <li>
       <Link to="" className="waves-effect">
-        <i className="mdi mdi-view-dashboard"></i>
-        <span>Dashboard</span>
+        <div className="iconSidebar">
+          <img src={homeLight} height={22} />
+        </div>
+        <span>Home</span>
       </Link>
     </li>
   </>
@@ -18,13 +23,17 @@ const SidebarContentNetwork = () => (
     <li className="menu-title">Network</li>
     <li>
       <Link to="" className="waves-effect">
-        <i className="mdi mdi-shield-star"></i>
+        <div className="iconSidebar">
+          <img src={voteLight} height={22} />
+        </div>
         <span>Elections</span>
       </Link>
     </li>
     <li>
       <Link to="" className="waves-effect">
-        <i className="mdi mdi-vote"></i>
+        <div className="iconSidebar">
+          <img src={proposalLight} height={22} />
+        </div>
         <span>Governance</span>
       </Link>
     </li>
