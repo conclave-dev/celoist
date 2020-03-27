@@ -145,6 +145,7 @@ $warning: #fbcc5c;
 $danger: #fb7c6d;
 $dark: #2e3338;
 $muted: #9ca8b3;
+$light: #DDDDDD;
 
 $theme-colors: ();
 // stylelint-disable-next-line scss/dollar-variable-default
@@ -342,8 +343,9 @@ $embed-responsive-aspect-ratios: join(
 // Font, line-height, and color for body text, headings, and more.
 
 // stylelint-disable value-keyword-case
+$font-family-sans-serif:      'Roboto', sans-serif;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-$font-family-base:            $font-family;
+$font-family-base:            $font-family-sans-serif;
 // stylelint-enable value-keyword-case
 
 $font-size-base:              .875rem;
@@ -388,7 +390,7 @@ $lead-font-weight:            300;
 
 $small-font-size:             80%;
 
-$text-muted:                  $gray-400;
+$text-muted:                  $gray-600;
 
 $blockquote-small-color:      $gray-600;
 $blockquote-small-font-size:  $small-font-size;
@@ -1195,8 +1197,5 @@ $positions: static, relative, absolute, fixed, sticky;
 $print-page-size:                   a3;
 $print-body-min-width:              map-get($grid-breakpoints, "lg");
 
-// Width variables
-$width: 100%;
-
-// Height variables
 $height: 100%;
+$width: 100%;
