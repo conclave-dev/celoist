@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
 
-import vote from '../../../assets/png/vote.png';
-import group from '../../../assets/png/group.png';
+import vote from '../../../../assets/png/vote.png';
+import group from '../../../../assets/png/group.png';
 
 const Groups = ({ children }: { children: any }) => (
   <Col xl={12}>

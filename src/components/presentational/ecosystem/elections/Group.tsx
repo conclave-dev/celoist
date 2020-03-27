@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import { Progress, ListGroup, ListGroupItem, Button, Collapse, Row, Col, Spinner } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
-import { fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
-import blueCoin from '../../../assets/png/blueCoin.png';
-import goldCoin from '../../../assets/png/goldCoin.png';
-import greenCoin from '../../../assets/png/greenCoin.png';
-import redCoin from '../../../assets/png/redCoin.png';
+import { fetchGroupMembers, fetchGroupDetails } from '../../../../data/actions/network';
+import blueCoin from '../../../../assets/png/blueCoin.png';
+import goldCoin from '../../../../assets/png/goldCoin.png';
+import greenCoin from '../../../../assets/png/greenCoin.png';
+import redCoin from '../../../../assets/png/redCoin.png';
 
 // import { isEmpty, map } from 'lodash';
 // import { Group as GroupType, GroupMember } from '../../../data/reducers/types';
@@ -54,7 +54,7 @@ const Group = ({ group, votes, voteCapacityFilled, selectedGroupAddress, handleG
             <Collapse key={`hidden-${group.address}`} isOpen={selectedGroupAddress === group.address}>
               <Row className="justify-content-center pt-4 pb-4">
                 <Col xl={11}>
-                  {!!(group.members && group.members.length) ? (
+                  {group.members && !!group.members.length ? (
                     <ListGroup flush>
                       <Row className="pb-4">
                         <Col xl={3} className="d-flex justify-content-center align-items-center">

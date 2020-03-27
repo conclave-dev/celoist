@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, CardBody } from 'reactstrap';
 // import goldRewards from '../../../assets/png/goldRewards.png';
-import vote from '../../../assets/png/vote.png';
-import proposal from '../../../assets/png/proposal.png';
+import vote from '../../../../assets/png/vote.png';
+import proposal from '../../../../assets/png/proposal.png';
 
 const Summary = ({ votes, numProposals }: { votes: string; numProposals: number }) => (
   <Row>

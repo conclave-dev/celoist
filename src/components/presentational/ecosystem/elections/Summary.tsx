@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, CardBody } from 'reactstrap';
-import goldCoin from '../../../assets/png/goldCoin.png';
-import score from '../../../assets/png/score.png';
+import goldCoin from '../../../../assets/png/goldCoin.png';
+import score from '../../../../assets/png/score.png';
 
 const Summary = () => (
   <Row>

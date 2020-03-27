@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import homeLight from '../../../assets/png/homeLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import proposalLight from '../../../assets/png/proposalLight.png';
+import educationLight from '../../../assets/png/educationLight.png';
+import faqLight from '../../../assets/png/faqLight.png';
 
 const SidebarContentEcosystem = () => (
   <>
@@ -34,12 +36,36 @@ const SidebarContentEcosystem = () => (
   </>
 );
 
+const SidebarContentValidators = () => (
+  <>
+    <li className="menu-title">Validators</li>
+    <li>
+      <Link to="" className="waves-effect">
+        <div className="iconSidebar">
+          <img src={educationLight} height={22} />
+        </div>
+        <span>Education</span>
+      </Link>
+    </li>
+    <li>
+      <Link to="" className="waves-effect">
+        <div className="iconSidebar">
+          <img src={faqLight} height={22} />
+        </div>
+        <span>F.A.Q.</span>
+      </Link>
+    </li>
+  </>
+);
+
 const MemoizedSidebarContentEcosystem = memo(SidebarContentEcosystem);
+const MemoizedSidebarContentValidators = memo(SidebarContentValidators);
 
 const SidebarContent = () => (
   <div id="sidebar-menu">
     <ul className="metismenu list-unstyled" id="side-menu">
       <MemoizedSidebarContentEcosystem />
+      <MemoizedSidebarContentValidators />
     </ul>
   </div>
 );

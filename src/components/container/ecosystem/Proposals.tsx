@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Row, Col, Card, CardBody, Alert, Button, Spinner } from 'reactstrap';
 import { map } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { fetchProposals } from '../../data/actions/network';
-import { formatBigInt } from '../../util/numbers';
+import { fetchProposals } from '../../../data/actions/network';
+import { formatBigInt } from '../../../util/numbers';
 
 const mapState = ({ network }) => ({ network });
 const mapDispatch = { fetchProposals };

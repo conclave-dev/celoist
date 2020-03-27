@@ -2,12 +2,12 @@ import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
 import { isEmpty, map } from 'lodash';
-import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../data/actions/network';
-import Header from '../presentational/elections/Header';
-import Summary from '../presentational/elections/Summary';
-import Groups from '../presentational/elections/Groups';
-import Group from '../presentational/elections/Group';
-import { formatBigInt } from '../../util/numbers';
+import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
+import Header from '../../presentational/ecosystem/elections/Header';
+import Summary from '../../presentational/ecosystem/elections/Summary';
+import Groups from '../../presentational/ecosystem/elections/Groups';
+import Group from '../../presentational/ecosystem/elections/Group';
+import { formatBigInt } from '../../../util/numbers';
 
 const mapState = ({ network }) => ({ network });
 const mapDispatch = { fetchGroups, fetchGroupMembers, fetchGroupDetails };

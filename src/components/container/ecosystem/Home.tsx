@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
-import Header from '../presentational/home/Header';
-import Summary from '../presentational/home/Summary';
-import Blogs from '../presentational/home/Blogs';
-import Twitter from '../presentational/home/Twitter';
-import { fetchBlogs } from '../../data/actions/home';
-import { fetchGroups, fetchProposals } from '../../data/actions/network';
-import { formatBigInt } from '../../util/numbers';
+import Header from '../../presentational/ecosystem/home/Header';
+import Summary from '../../presentational/ecosystem/home/Summary';
+import Blogs from '../../presentational/ecosystem/home/Blogs';
+import Twitter from '../../presentational/ecosystem/home/Twitter';
+import { fetchBlogs } from '../../../data/actions/home';
+import { fetchGroups, fetchProposals } from '../../../data/actions/network';
+import { formatBigInt } from '../../../util/numbers';
 
 const mapState = ({ home, network }) => ({ home, network });
 const mapDispatch = { fetchBlogs, fetchGroups, fetchProposals };
