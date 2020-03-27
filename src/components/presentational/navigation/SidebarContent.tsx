@@ -1,10 +1,11 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
+import Anchor from '../reusable/Anchor';
 import homeLight from '../../../assets/png/homeLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import proposalLight from '../../../assets/png/proposalLight.png';
-import educationLight from '../../../assets/png/educationLight.png';
-import faqLight from '../../../assets/png/faqLight.png';
+import validatorsLight from '../../../assets/png/validatorsLight.png';
+import votersLight from '../../../assets/png/votersLight.png';
 
 const SidebarContentEcosystem = () => (
   <>
@@ -36,36 +37,36 @@ const SidebarContentEcosystem = () => (
   </>
 );
 
-const SidebarContentValidators = () => (
+const SidebarContentEducation = () => (
   <>
-    <li className="menu-title">Validators</li>
+    <li className="menu-title">Education</li>
     <li>
-      <Link to="" className="waves-effect">
+      <Anchor href="" color="#8699ad">
         <div className="iconSidebar">
-          <img src={educationLight} height={22} />
+          <img src={validatorsLight} height={22} />
         </div>
-        <span>Education</span>
-      </Link>
+        <span>Validators</span>
+      </Anchor>
     </li>
     <li>
-      <Link to="" className="waves-effect">
+      <Anchor href="" color="#8699ad">
         <div className="iconSidebar">
-          <img src={faqLight} height={22} />
+          <img src={votersLight} height={22} />
         </div>
-        <span>F.A.Q.</span>
-      </Link>
+        <span>Voters</span>
+      </Anchor>
     </li>
   </>
 );
 
 const MemoizedSidebarContentEcosystem = memo(SidebarContentEcosystem);
-const MemoizedSidebarContentValidators = memo(SidebarContentValidators);
+const MemoizedSidebarContentEducation = memo(SidebarContentEducation);
 
 const SidebarContent = () => (
   <div id="sidebar-menu">
     <ul className="metismenu list-unstyled" id="side-menu">
       <MemoizedSidebarContentEcosystem />
-      <MemoizedSidebarContentValidators />
+      <MemoizedSidebarContentEducation />
     </ul>
   </div>
 );
