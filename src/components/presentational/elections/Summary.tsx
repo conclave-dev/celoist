@@ -1,7 +1,5 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, CardBody } from 'reactstrap';
-// import SummarySpinner from '../reusable/SummarySpinner';
-// import goldCoinRewards from '../../../assets/png/goldCoinRewards.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
 

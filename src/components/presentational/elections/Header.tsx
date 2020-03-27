@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Spinner } from 'reactstrap';
 
-const Header = () => (
+const Header = ({ inProgress }: { inProgress: boolean }) => (
   <div className="page-title-box">
     <Row className="align-items-center">
       <Col sm={6}>
@@ -10,6 +10,11 @@ const Header = () => (
           <li className="breadcrumb-item">Election #0</li>
           <li className="breadcrumb-item">{`Block #0`}</li>
         </ol>
+      </Col>
+      <Col sm={6}>
+        <div className="float-right d-none d-md-block">
+          {inProgress && <Spinner size="large" color="warning" />}
+        </div>
       </Col>
     </Row>
   </div>

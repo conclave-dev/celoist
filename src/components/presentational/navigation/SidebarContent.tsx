@@ -20,7 +20,7 @@ const SidebarContentGeneral = () => (
 
 const SidebarContentNetwork = () => (
   <>
-    <li className="menu-title">Network</li>
+    <li className="menu-title">Ecosystem</li>
     <li>
       <Link to="/elections" className="waves-effect">
         <div className="iconSidebar">

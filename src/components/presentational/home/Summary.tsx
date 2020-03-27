@@ -2,18 +2,10 @@ import React, { memo } from 'react';
 import { Row, Col, Card, CardBody } from 'reactstrap';
 import SummarySpinner from '../reusable/SummarySpinner';
 // import goldRewards from '../../../assets/png/goldRewards.png';
-import vote from '../../../assets/png/vote.png';
-import proposal from '../../../assets/png/proposal.png';
+import voteLight from '../../../assets/png/voteLight.png';
+import proposalLight from '../../../assets/png/proposalLight.png';
 
-const Summary = ({
-  votes,
-  numProposals,
-  networkInProgress
-}: {
-  votes: string;
-  numProposals: number;
-  networkInProgress: boolean;
-}) => (
+const Summary = ({ votes, numProposals }: { votes: string; numProposals: number }) => (
   <Row>
     {/**
       TODO: Calculate the annual reward %
@@ -33,13 +25,9 @@ const Summary = ({
       <Card className="bg-green">
         <CardBody>
           <div className="float-right">
-            <img src={vote} width={48} />
+            <img src={voteLight} width={48} />
           </div>
-          {votes === '0' || networkInProgress ? (
-            <SummarySpinner color="success" />
-          ) : (
-            <h5 className="font-20 mt-0 pt-1">{votes}</h5>
-          )}
+          <h5 className="font-20 mt-0 pt-1">{votes}</h5>
           <p className="text-muted mb-0">Election Votes</p>
         </CardBody>
       </Card>
@@ -48,13 +36,9 @@ const Summary = ({
       <Card className="bg-blue">
         <CardBody>
           <div className="float-right">
-            <img src={proposal} width={48} />
+            <img src={proposalLight} width={48} />
           </div>
-          {!numProposals || networkInProgress ? (
-            <SummarySpinner color="primary" />
-          ) : (
-            <h5 className="font-20 mt-0 pt-1">{numProposals}</h5>
-          )}
+          <h5 className="font-20 mt-0 pt-1">{numProposals}</h5>
           <p className="text-muted mb-0">Governance Proposals</p>
         </CardBody>
       </Card>

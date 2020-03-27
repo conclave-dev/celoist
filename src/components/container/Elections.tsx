@@ -9,7 +9,7 @@ import Groups from '../presentational/elections/Groups';
 import Group from '../presentational/elections/Group';
 import { formatBigInt } from '../../util/numbers';
 
-const mapState = ({ network: { groups } }) => ({ groups });
+const mapState = ({ network }) => ({ network });
 const mapDispatch = { fetchGroups, fetchGroupMembers, fetchGroupDetails };
 const connector = connect(mapState, mapDispatch);
 
@@ -38,11 +38,11 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
   };
 
   render = () => {
-    const { groups } = this.props;
+    const { groups, inProgress } = this.props.network;
 
     return (
       <Container fluid>
-        <Header />
+        <Header inProgress={inProgress} />
         <Summary />
         <Row className="mt-4">
           <Groups>

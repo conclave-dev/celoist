@@ -54,7 +54,7 @@ const Group = ({ group, votes, voteCapacityFilled, selectedGroupAddress, handleG
             <Collapse key={`hidden-${group.address}`} isOpen={selectedGroupAddress === group.address}>
               <Row className="justify-content-center pt-4 pb-4">
                 <Col xl={11}>
-                  {group.members && group.members.length ? (
+                  {!!(group.members && group.members.length) && (
                     <ListGroup flush>
                       <Row className="pb-4">
                         <Col xl={3} className="d-flex justify-content-center align-items-center">
@@ -112,10 +112,6 @@ const Group = ({ group, votes, voteCapacityFilled, selectedGroupAddress, handleG
                         );
                       })}
                     </ListGroup>
-                  ) : (
-                    <div className="d-flex justify-content-center align-items-center" style={{ height: '20vh' }}>
-                      <Spinner type="grow" color="primary" />
-                    </div>
                   )}
                 </Col>
               </Row>
