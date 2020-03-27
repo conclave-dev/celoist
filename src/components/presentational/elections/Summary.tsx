@@ -28,7 +28,7 @@ const Summary = () => (
       </Card>
     </Col>
     <Col xl="4" md="4">
-      <Card className="bg-goldCoin">
+      <Card className="bg-gold">
         <CardBody>
           <div className="float-right">
             <img src={score} width={48} />
