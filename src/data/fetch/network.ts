@@ -1,18 +1,93 @@
 import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
+import BigNumber from 'bignumber.js';
 import { network } from './api';
 
 const kit = newKit(network);
 
-const getValidatorGroupsVotes = async () => {
-  const election = await kit.contracts.getElection();
-  return election.getValidatorGroupsVotes();
+const getElection = () => kit.contracts.getElection();
+const getValidators = () => kit.contracts.getValidators();
+const getGovernance = () => kit.contracts.getGovernance();
+
+// const test = async () => (await getElection());
+
+const getElectedGroups = async () => {
+  const election = await getElection();
+  const eligibleGroups = await election.getEligibleValidatorGroupsVotes();
+
+  const { groups, totalVotes } = eligibleGroups.reduce(
+    (acc, group, index) => {
+      if (group.votes.isZero()) {
+        return acc;
+      }
+
+      return {
+        groups: {
+          ...acc.groups,
+          [group.address]: group
+        },
+        totalVotes: BigNumber.sum(acc.totalVotes, group.votes)
+      };
+    },
+    {
+      groups: {},
+      totalVotes: new BigNumber(0)
+    }
+  );
+
+  return { groups, totalVotes };
+};
+
+const getElectedGroupDetails = async (groupAddress: string) => {
+  const validators = await getValidators();
+  const validatorGroup = await validators.getValidatorGroup(groupAddress, true);
+
+  return {
+    ...validatorGroup,
+    members: await Promise.map(validatorGroup.members, member => validators.getValidatorFromSigner(member))
+  };
+};
+
+const getElectedGroupMembers = async () => {
+  const signers = await (await getElection()).getCurrentValidatorSigners();
+  const validatorsContract = await kit.contracts.getValidators();
+  const validators = await Promise.reduce(
+    signers,
+    async (acc, signer) => {
+      const { affiliation, score, ...validator } = await validatorsContract.getValidatorFromSigner(signer);
+      const newAcc = { ...acc };
+
+      if (affiliation) {
+        if (newAcc[affiliation]) {
+          newAcc[affiliation] = {
+            members: [...newAcc[affiliation].members, validator],
+            memberScores: [...newAcc[affiliation].memberScores, score]
+          };
+        } else {
+          newAcc[affiliation] = {
+            members: [validator],
+            memberScores: [score]
+          };
+        }
+      }
+
+      return newAcc;
+    },
+    {}
+  );
+
+  return validators;
 };
 
 const getGovernanceProposals = async () => {
-  const governance = await kit.contracts.getGovernance();
-  const queuedProposals = await Promise.map(await governance.getQueue(), async ({ proposalID }) =>
-    governance.getProposalRecord(proposalID)
+  const governance = await getGovernance();
+  const queuedProposals = await Promise.reduce(
+    await governance.getQueue(),
+    async (acc, { proposalID }) => ({
+      ...acc,
+      [proposalID]: await governance.getProposalRecord(proposalID)
+    }),
+    {}
   );
   const dequeuedProposals = await Promise.reduce(
     await governance.getDequeue(),
@@ -23,9 +98,12 @@ const getGovernanceProposals = async () => {
         return acc;
       }
 
-      return [...acc, proposal];
+      return {
+        ...acc,
+        [proposalID]: proposal
+      };
     },
-    []
+    {}
   );
 
   return {
@@ -34,4 +112,4 @@ const getGovernanceProposals = async () => {
   };
 };
 
-export { getValidatorGroupsVotes, getGovernanceProposals };
+export { getElectedGroups, getElectedGroupMembers, getElectedGroupDetails, getGovernanceProposals };

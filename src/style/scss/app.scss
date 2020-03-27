@@ -12,11 +12,9 @@ File: Main Css File
 
 
 //Core files
-@import "./node_modules/bootstrap/scss/functions";
-@import "./node_modules/bootstrap/scss/variables";
+@import "./node_modules/bootstrap/scss/bootstrap.scss";
 @import "variables";
 @import "icons";
-@import "./node_modules/bootstrap/scss/mixins.scss";
 
 // Structure
 @import "template/structure/general";
@@ -29,3 +27,4 @@ File: Main Css File
 @import "template/structure/custom-scrollbar";
 @import "template/structure/layouts";
 @import "template/structure/summary";
+@import "template/structure/email";

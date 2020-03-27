@@ -16,10 +16,14 @@ const handleData = (dispatch, type, data) =>
   });
 
 const handleError = (dispatch, type, error) => {
-  Sentry.withScope(scope => {
-    scope.setExtras(error);
-    return Sentry.showReportDialog({ eventId: Sentry.captureException(error) });
-  });
+  if (process.env.NODE_ENV === 'development') {
+    throw error.message;
+  } else {
+    Sentry.withScope(scope => {
+      scope.setExtras(error);
+      return Sentry.showReportDialog({ eventId: Sentry.captureException(error) });
+    });
+  }
 
   return dispatch({
     type,

@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 
+BigNumber.config({ ROUNDING_MODE: 0, DECIMAL_PLACES: 2 });
+
 const fmt = {
   decimalSeparator: '.',
   groupSeparator: ',',

@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 export interface Home {
   blogs: { [key: string]: Blog };
   blogIds: string[];
@@ -21,14 +22,54 @@ export interface BlogPost {
 }
 
 export interface Election {
-  eligibleGroups: Group[];
-  ineligibleGroups: Group[];
+  groups: { [key: string]: Group };
+  groupMembers: { [key: string]: GroupMember };
+  queuedProposals: { [key: number]: Proposal };
+  dequeuedProposals: { [key: string]: Proposal };
+  totalVotes: BigNumber;
 }
 
 export interface Group {
   address: string;
   name: string;
-  votes: string;
-  capacity: string;
+  votes: BigNumber;
+  capacity: BigNumber;
   eligible: boolean;
+}
+
+export interface GroupMember {
+  name: string;
+  address: string;
+  ecdsaPublicKey: string;
+  blsPublicKey: string;
+  affiliation: string;
+  score: BigNumber;
+  signer: string;
+}
+
+export interface Proposal {
+  proposal: ProposalTxs[];
+  metadata: ProposalMetadata;
+  stage: string;
+  upvotes: BigNumber;
+  votes: ProposalVotes;
+}
+
+export interface ProposalTxs {
+  value: string;
+  to: string;
+  input: string;
+}
+
+export interface ProposalMetadata {
+  proposer: string;
+  deposit: string;
+  timestamp: string;
+  transactionCount: number;
+}
+
+export interface ProposalVotes {
+  Yes: string;
+  No: string;
+  Abstain: string;
 }

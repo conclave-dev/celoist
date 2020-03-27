@@ -24,16 +24,13 @@ class Home extends PureComponent<Props> {
   };
 
   render = () => {
-    const { totalVotes, queuedProposals, dequeuedProposals, inProgress: networkInProgress } = this.props.network;
+    const { totalVotes, queuedProposals, dequeuedProposals, inProgress } = this.props.network;
+    const numProposals = Object.keys(queuedProposals).length + Object.keys(dequeuedProposals).length;
 
     return (
       <Container fluid>
-        <Header />
-        <Summary
-          votes={formatBigInt(totalVotes)}
-          proposals={queuedProposals.length + dequeuedProposals.length}
-          networkInProgress={networkInProgress}
-        />
+        <Header inProgress={inProgress} />
+        <Summary votes={formatBigInt(totalVotes)} numProposals={numProposals} />
         <Row className="mt-4">
           <Blogs />
           <Twitter />
