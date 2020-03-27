@@ -4,9 +4,9 @@ import homeLight from '../../../assets/png/homeLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import proposalLight from '../../../assets/png/proposalLight.png';
 
-const SidebarContentGeneral = () => (
+const SidebarContentEcosystem = () => (
   <>
-    <li className="menu-title">General</li>
+    <li className="menu-title">Ecosystem</li>
     <li>
       <Link to="" className="waves-effect">
         <div className="iconSidebar">
@@ -15,12 +15,6 @@ const SidebarContentGeneral = () => (
         <span>Home</span>
       </Link>
     </li>
-  </>
-);
-
-const SidebarContentNetwork = () => (
-  <>
-    <li className="menu-title">Ecosystem</li>
     <li>
       <Link to="/elections" className="waves-effect">
         <div className="iconSidebar">
@@ -40,11 +34,12 @@ const SidebarContentNetwork = () => (
   </>
 );
 
+const MemoizedSidebarContentEcosystem = memo(SidebarContentEcosystem);
+
 const SidebarContent = () => (
   <div id="sidebar-menu">
     <ul className="metismenu list-unstyled" id="side-menu">
-      <SidebarContentGeneral />
-      <SidebarContentNetwork />
+      <MemoizedSidebarContentEcosystem />
     </ul>
   </div>
 );
