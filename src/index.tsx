@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.css';
 import './style/scss/app.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';

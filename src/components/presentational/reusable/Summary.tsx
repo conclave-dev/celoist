@@ -15,7 +15,7 @@ const SummaryItemBody = ({ backgroundColor, imgSrc, value, text }: SummaryItem) 
         <img src={imgSrc} width={48} />
       </div>
       <h5 className="font-20 mt-0 pt-1">{value}</h5>
-      <p className="text-muted mb-0">{text}</p>
+      <p className="text-muted mb-0 text-truncate">{text}</p>
     </CardBody>
   </Card>
 );

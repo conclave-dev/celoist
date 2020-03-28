@@ -8,6 +8,7 @@ import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
 import Group from '../../presentational/ecosystem/elections/Group';
 import { formatBigInt } from '../../../util/numbers';
+import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
 
@@ -43,20 +44,20 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
     const { groups, inProgress } = this.props.network;
     const summaryItems = [
       {
-        imgSrc: '',
-        text: 'X',
-        backgroundColor: 'blue',
-        value: 'X'
-      },
-      {
         imgSrc: goldCoin,
-        text: 'Total Rewards (Previous Election)',
+        text: 'Voter Rewards',
         backgroundColor: 'green',
         value: 0
       },
       {
+        imgSrc: earnings,
+        text: 'Group Earnings',
+        backgroundColor: 'blue',
+        value: 0
+      },
+      {
         imgSrc: score,
-        text: 'Average Score (Previous Election)',
+        text: 'Average Score',
         backgroundColor: 'gold',
         value: 0
       }
@@ -66,7 +67,7 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
       <Container fluid>
         <Header inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
-        <Row className="mt-4">
+        <Row>
           <Groups>
             {!isEmpty(groups) ? (
               map(groups, (group, groupAddress) => {

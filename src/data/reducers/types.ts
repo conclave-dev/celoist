@@ -35,6 +35,8 @@ export interface Group {
   votes: BigNumber;
   capacity: BigNumber;
   eligible: boolean;
+  members: GroupMember[];
+  commission: BigNumber;
 }
 
 export interface GroupMember {
