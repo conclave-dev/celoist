@@ -10,13 +10,13 @@ const Groups = ({ children }: { children: any }) => (
       <ListGroupItem>
         <Row className="align-items-center">
           <Col sm={7} xs={6}>
-            <img src={group} style={{ width: 24 }} />
+            <img src={group} style={{ width: 24 }} alt="Group icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Group
             </span>
           </Col>
           <Col sm={4} xs={4}>
-            <img src={vote} style={{ width: 24 }} />
+            <img src={vote} style={{ width: 24 }} alt="Votes icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Votes
             </span>

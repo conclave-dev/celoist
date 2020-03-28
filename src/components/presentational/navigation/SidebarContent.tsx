@@ -13,7 +13,7 @@ const SidebarContentEcosystem = () => (
     <li>
       <Link to="" className="waves-effect">
         <div className="iconSidebar">
-          <img src={homeLight} height={22} />
+          <img src={homeLight} height={22} alt="Home sidebar menu icon" />
         </div>
         <span>Home</span>
       </Link>
@@ -21,7 +21,7 @@ const SidebarContentEcosystem = () => (
     <li>
       <Link to="/elections" className="waves-effect">
         <div className="iconSidebar">
-          <img src={voteLight} height={22} />
+          <img src={voteLight} height={22} alt="Elections sidebar menu icon" />
         </div>
         <span>Elections</span>
       </Link>
@@ -29,7 +29,7 @@ const SidebarContentEcosystem = () => (
     <li>
       <Link to="/governance" className="waves-effect">
         <div className="iconSidebar">
-          <img src={governanceLight} height={22} />
+          <img src={governanceLight} height={22} alt="Governance sidebar menu icon" />
         </div>
         <span>Governance</span>
       </Link>
@@ -43,7 +43,7 @@ const SidebarContentEducation = () => (
     <li>
       <Anchor href="" color="#8699ad">
         <div className="iconSidebar">
-          <img src={validatorsLight} height={22} />
+          <img src={validatorsLight} height={22} alt="Validators sidebar menu icon" />
         </div>
         <span>Validators</span>
       </Anchor>
@@ -51,7 +51,7 @@ const SidebarContentEducation = () => (
     <li>
       <Anchor href="" color="#8699ad">
         <div className="iconSidebar">
-          <img src={votersLight} height={22} />
+          <img src={votersLight} height={22} alt="Votes sidebar menu icon" />
         </div>
         <span>Voters</span>
       </Anchor>

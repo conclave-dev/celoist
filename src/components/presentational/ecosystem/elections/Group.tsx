@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Progress, ListGroupItem, Button, Row, Col, Spinner } from 'reactstrap';
+import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import { fetchGroupMembers, fetchGroupDetails } from '../../../../data/actions/network';
 import { Group as GroupType } from '../../../../data/reducers/types';

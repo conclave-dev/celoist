@@ -12,7 +12,7 @@ const SummaryItemBody = ({ backgroundColor, imgSrc, value, text }: SummaryItem) 
   <Card className={`mb-4 bg-${backgroundColor}`}>
     <CardBody>
       <div className="float-right">
-        <img src={imgSrc} width={48} />
+        <img src={imgSrc} width={48} alt="Summary icon" />
       </div>
       <h5 className="font-20 mt-0 pt-1">{value}</h5>
       <p className="text-muted mb-0 text-truncate">{text}</p>
