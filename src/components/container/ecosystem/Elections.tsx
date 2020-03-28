@@ -4,10 +4,12 @@ import { Container, Row } from 'reactstrap';
 import { isEmpty, map } from 'lodash';
 import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
 import Header from '../../presentational/ecosystem/elections/Header';
-import Summary from '../../presentational/ecosystem/elections/Summary';
+import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
 import Group from '../../presentational/ecosystem/elections/Group';
 import { formatBigInt } from '../../../util/numbers';
+import goldCoin from '../../../assets/png/goldCoin.png';
+import score from '../../../assets/png/score.png';
 
 const mapState = ({ network }) => ({ network });
 const mapDispatch = { fetchGroups, fetchGroupMembers, fetchGroupDetails };
@@ -39,11 +41,31 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
 
   render = () => {
     const { groups, inProgress } = this.props.network;
+    const summaryItems = [
+      {
+        imgSrc: '',
+        text: 'X',
+        backgroundColor: 'blue',
+        value: 'X'
+      },
+      {
+        imgSrc: goldCoin,
+        text: 'Total Rewards (Previous Election)',
+        backgroundColor: 'green',
+        value: 0
+      },
+      {
+        imgSrc: score,
+        text: 'Average Score (Previous Election)',
+        backgroundColor: 'gold',
+        value: 0
+      }
+    ];
 
     return (
       <Container fluid>
         <Header inProgress={inProgress} />
-        <Summary />
+        <Summary summaryItems={summaryItems} />
         <Row className="mt-4">
           <Groups>
             {!isEmpty(groups) ? (

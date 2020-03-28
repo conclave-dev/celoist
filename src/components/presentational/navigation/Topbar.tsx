@@ -22,15 +22,6 @@ const Topbar = () => {
       <div className="navbar-header">
         <div className="d-flex">
           <div className="navbar-brand-box">
-            <Link to="" className="logo logo-dark">
-              <span className="logo-sm">
-                <img src={celoGlyph} alt="" height="30" />
-              </span>
-              <span className="logo-lg">
-                <img src={celoLogo} alt="" height="64" />
-              </span>
-            </Link>
-
             <Link to="" className="logo logo-light">
               <span className="logo-sm">
                 <img src={celoGlyph} alt="" height="30" />

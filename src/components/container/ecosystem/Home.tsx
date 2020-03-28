@@ -2,12 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
 import Header from '../../presentational/ecosystem/home/Header';
-import Summary from '../../presentational/ecosystem/home/Summary';
+import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { fetchBlogs } from '../../../data/actions/home';
 import { fetchGroups, fetchProposals } from '../../../data/actions/network';
 import { formatBigInt } from '../../../util/numbers';
+import vote from '../../../assets/png/vote.png';
+import proposal from '../../../assets/png/proposal.png';
 
 const mapState = ({ home, network }) => ({ home, network });
 const mapDispatch = { fetchBlogs, fetchGroups, fetchProposals };
@@ -26,12 +28,26 @@ class Home extends PureComponent<Props> {
   render = () => {
     const { totalVotes, queuedProposals, dequeuedProposals, inProgress } = this.props.network;
     const numProposals = Object.keys(queuedProposals).length + Object.keys(dequeuedProposals).length;
+    const summaryItems = [
+      {
+        imgSrc: vote,
+        text: 'Election Votes',
+        backgroundColor: 'green',
+        value: formatBigInt(totalVotes)
+      },
+      {
+        imgSrc: proposal,
+        text: 'Governance Proposals',
+        backgroundColor: 'blue',
+        value: numProposals
+      }
+    ];
 
     return (
       <Container fluid>
         <Header inProgress={inProgress} />
-        <Summary votes={formatBigInt(totalVotes)} numProposals={numProposals} />
-        <Row className="mt-4">
+        <Summary summaryItems={summaryItems} />
+        <Row>
           <Blogs />
           <Twitter />
         </Row>
