@@ -1,13 +1,13 @@
 import React, { memo } from 'react';
 import { Row, Col, Spinner } from 'reactstrap';
 
-const Header = ({ inProgress }: { inProgress: boolean }) => (
+const Header = ({ title, subtitle, inProgress }: { title: string; subtitle: string; inProgress: boolean }) => (
   <Row className="align-items-center">
     <Col sm={6}>
       <div className="page-title-box">
-        <h4 className="font-size-18">Home</h4>
+        <h4 className="font-size-18">{title}</h4>
         <ol className="breadcrumb mb-0">
-          <li className="breadcrumb-item active">Our ecosystem in a nutshell</li>
+          <li className="breadcrumb-item active">{subtitle}</li>
         </ol>
       </div>
     </Col>

@@ -71,7 +71,7 @@ export interface ProposalMetadata {
 }
 
 export interface ProposalVotes {
-  Yes: string;
-  No: string;
-  Abstain: string;
+  Yes: BigNumber;
+  No: BigNumber;
+  Abstain: BigNumber;
 }

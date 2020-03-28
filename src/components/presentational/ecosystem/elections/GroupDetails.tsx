@@ -10,9 +10,9 @@ import { Group } from '../../../../data/reducers/types';
 const GroupDetails = ({ group, isSelected }: { group: Group; isSelected: boolean }) => (
   <Collapse key={`hidden-${group.address}`} isOpen={isSelected}>
     <ListGroupItem className="pr-0 pl-0" style={{ backgroundColor: '#dee2e6', border: 'none', borderRadius: 0 }}>
-      <Row noGutters className="align-items-center">
+      <Row className="align-items-center">
         <Col xs={12}>
-          <Row noGutters className="justify-content-center">
+          <Row className="justify-content-center">
             <Col xs={11}>
               {group.members && group.members.length ? (
                 <ListGroup flush>
@@ -20,56 +20,38 @@ const GroupDetails = ({ group, isSelected }: { group: Group; isSelected: boolean
                     className="pr-0 pl-0"
                     style={{ backgroundColor: 'transparent', border: 'none', paddingTop: 6, paddingBottom: 6 }}
                   >
-                    <h5 className="text-center">Overview</h5>
-                    <Row noGutters className="align-items-center">
-                      <Col xs={3}>
-                        <p className="text-center text-secondary text-truncate font-italic mb-3">
-                          <img src={blueCoin} width={12} className="mr-1" />
-                          <small>Fees</small>
+                    <h5 className="text-center mb-4">Overview</h5>
+                    <Row className="align-items-center">
+                      <Col md={3} xs={6}>
+                        <p className="text-center text-secondary text-truncate mb-3">
+                          <img src={blueCoin} width={20} className="mr-1" />
+                          {group.commission.multipliedBy(100).toFixed(2)}% Fees
                         </p>
                       </Col>
-                      <Col xs={3}>
-                        <p className="text-center text-secondary text-truncate font-italic mb-3">
-                          <img src={goldCoin} width={12} className="mr-1" />
-                          <small>Rewards</small>
+                      <Col md={3} xs={6}>
+                        <p className="text-center text-secondary text-truncate mb-3">
+                          <img src={redCoin} width={20} className="mr-1" />
+                          0% Penalty
                         </p>
                       </Col>
-                      <Col xs={3}>
-                        <p className="text-center text-secondary text-truncate font-italic mb-3">
-                          <img src={greenCoin} width={12} className="mr-1" />
-                          <small>Earnings</small>
+                      <Col md={3} xs={6}>
+                        <p className="text-center text-secondary text-truncate mb-3">
+                          <img src={goldCoin} width={20} className="mr-1" />0 Rewards
                         </p>
                       </Col>
-                      <Col xs={3}>
-                        <p className="text-center text-secondary text-truncate font-italic mb-3">
-                          <img src={redCoin} width={12} className="mr-1" />
-                          <small>Penalty</small>
+                      <Col md={3} xs={6}>
+                        <p className="text-center text-secondary text-truncate mb-3">
+                          <img src={greenCoin} width={20} className="mr-1" />0 Earnings
                         </p>
                       </Col>
                     </Row>
                   </ListGroupItem>
-                  <Row noGutters className="align-items-center">
-                    <Col xs={3}>
-                      <p className="text-secondary text-center text-truncate">
-                        {group.commission.multipliedBy(100).toFixed(2)}%
-                      </p>
-                    </Col>
-                    <Col xs={3}>
-                      <p className="text-secondary text-center text-truncate">{0}</p>
-                    </Col>
-                    <Col xs={3}>
-                      <p className="text-secondary text-center text-truncate">{0}</p>
-                    </Col>
-                    <Col xs={3}>
-                      <p className="text-secondary text-center text-truncate">{0}</p>
-                    </Col>
-                  </Row>
                   <ListGroupItem
                     className="pr-0 pl-0"
                     style={{ backgroundColor: 'transparent', border: 'none', paddingTop: 6, paddingBottom: 6 }}
                   >
                     <h5 className="text-center">Members</h5>
-                    <Row noGutters className="align-items-center">
+                    <Row className="align-items-center">
                       <Col xs={4}>
                         <p className="text-center text-secondary text-truncate font-italic mb-3">
                           <img src={whiteCoin} width={12} className="mr-1" />
@@ -90,7 +72,7 @@ const GroupDetails = ({ group, isSelected }: { group: Group; isSelected: boolean
                       </Col>
                     </Row>
                     {group.members.map(member => (
-                      <Row noGutters key={member.address} className="align-items-center">
+                      <Row key={member.address} className="align-items-center">
                         <Col xs={4}>
                           <p className="text-secondary text-center text-truncate">{member.name}</p>
                         </Col>
@@ -98,7 +80,9 @@ const GroupDetails = ({ group, isSelected }: { group: Group; isSelected: boolean
                           <p className="text-secondary text-center text-truncate">{member.address}</p>
                         </Col>
                         <Col xs={4}>
-                          <p className="text-secondary text-center text-truncate">{member.score.toFixed(5)}</p>
+                          <p className="text-secondary text-center text-truncate">
+                            {`${member.score.multipliedBy(100).toFixed(2)}/100.00`}
+                          </p>
                         </Col>
                       </Row>
                     ))}

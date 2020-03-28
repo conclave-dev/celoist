@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
 import { isEmpty, map } from 'lodash';
 import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
-import Header from '../../presentational/ecosystem/elections/Header';
+import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
 import Group from '../../presentational/ecosystem/elections/Group';
@@ -65,7 +65,7 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
 
     return (
       <Container fluid>
-        <Header inProgress={inProgress} />
+        <Header title="Elections" subtitle="..." inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Groups>

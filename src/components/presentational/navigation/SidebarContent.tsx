@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Anchor from '../reusable/Anchor';
 import homeLight from '../../../assets/png/homeLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
-import proposalLight from '../../../assets/png/proposalLight.png';
+import governanceLight from '../../../assets/png/governanceLight.png';
 import validatorsLight from '../../../assets/png/validatorsLight.png';
 import votersLight from '../../../assets/png/votersLight.png';
 
@@ -27,11 +27,11 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/proposals" className="waves-effect">
+      <Link to="/governance" className="waves-effect">
         <div className="iconSidebar">
-          <img src={proposalLight} height={22} />
+          <img src={governanceLight} height={22} />
         </div>
-        <span>Proposals</span>
+        <span>Governance</span>
       </Link>
     </li>
   </>

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import Header from '../../presentational/ecosystem/home/Header';
+import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
@@ -45,7 +45,7 @@ class Home extends PureComponent<Props> {
 
     return (
       <Container fluid>
-        <Header inProgress={inProgress} />
+        <Header title="Home" subtitle="Our community, in a nutshell" inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Col lg={6} xs={12} className="mb-md-4">
