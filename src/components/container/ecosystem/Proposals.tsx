@@ -25,7 +25,7 @@ export class Proposals extends PureComponent<Props> {
     const inProgressCount = Object.keys(queuedProposals).length + Object.keys(dequeuedProposals).length;
 
     return (
-      <Container fluid className="container-fluid">
+      <Container fluid>
         <Row className="align-items-center">
           <Col sm={6}>
             <div className="page-title-box">

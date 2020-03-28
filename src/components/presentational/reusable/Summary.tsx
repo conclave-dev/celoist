@@ -9,7 +9,7 @@ interface SummaryItem {
 }
 
 const SummaryItemBody = ({ backgroundColor, imgSrc, value, text }: SummaryItem) => (
-  <Card className={`bg-${backgroundColor}`}>
+  <Card className={`mb-4 bg-${backgroundColor}`}>
     <CardBody>
       <div className="float-right">
         <img src={imgSrc} width={48} />

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import Header from '../../presentational/ecosystem/home/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
@@ -48,8 +48,12 @@ class Home extends PureComponent<Props> {
         <Header inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
-          <Blogs />
-          <Twitter />
+          <Col lg={6} xs={12} className="mb-md-4">
+            <Blogs />
+          </Col>
+          <Col lg={6} xs={12}>
+            <Twitter />
+          </Col>
         </Row>
       </Container>
     );
