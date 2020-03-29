@@ -1,6 +1,5 @@
 import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
-import BigNumber from 'bignumber.js';
 import { network } from './api';
 
 const kit = newKit(network);
@@ -9,30 +8,9 @@ const getElection = () => kit.contracts.getElection();
 const getValidators = () => kit.contracts.getValidators();
 const getGovernance = () => kit.contracts.getGovernance();
 
-// const test = async () => (await getElection());
-
-const getElectedGroups = async () => {
+const getEligibleGroups = async () => {
   const election = await getElection();
-  const eligibleGroups = await election.getEligibleValidatorGroupsVotes();
-
-  const { groups, totalVotes } = eligibleGroups.reduce(
-    (acc, group) => {
-      if (group.votes && group.votes.isZero()) {
-        return acc;
-      }
-
-      return {
-        groups: [...acc.groups, group],
-        totalVotes: BigNumber.sum(acc.totalVotes, group.votes)
-      };
-    },
-    {
-      groups: new Array(0),
-      totalVotes: new BigNumber(0)
-    }
-  );
-
-  return { groups: groups.sort((a, b) => b.votes.minus(a.votes)), totalVotes };
+  return election.getEligibleValidatorGroupsVotes();
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {
@@ -109,4 +87,4 @@ const getGovernanceProposals = async () => {
   };
 };
 
-export { getElectedGroups, getElectedGroupMembers, getElectedGroupDetails, getGovernanceProposals };
+export { getEligibleGroups, getElectedGroupMembers, getElectedGroupDetails, getGovernanceProposals };

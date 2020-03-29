@@ -7,13 +7,13 @@ const initialState: Home = initialStateDecorator({
   allBlogIds: ['celoorg']
 });
 
+const fetchBlogs = (state, { blogsById }): { state: Home; blogs: { [key: string]: Blog } } => ({
+  ...state,
+  blogsById
+});
+
 export default (state = initialState, action) => {
   const { type } = action;
-
-  const fetchBlogs = (state, { blogs }): { state: Home; blogs: { [key: string]: Blog } } => ({
-    ...state,
-    blogs
-  });
 
   switch (type) {
     case FETCH_BLOGS:

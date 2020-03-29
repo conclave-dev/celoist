@@ -1,7 +1,7 @@
 import { FETCH_GROUPS, FETCH_PROPOSALS, FETCH_GROUP_MEMBERS, FETCH_GROUP_DETAILS } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import {
-  getElectedGroups,
+  getEligibleGroups,
   getElectedGroupMembers,
   getGovernanceProposals,
   getElectedGroupDetails
@@ -11,7 +11,7 @@ const fetchGroups = () => async dispatch => {
   handleInit(dispatch, FETCH_GROUPS);
 
   try {
-    return handleData(dispatch, FETCH_GROUPS, { groups: await getElectedGroups() });
+    return handleData(dispatch, FETCH_GROUPS, { groups: await getEligibleGroups() });
   } catch (err) {
     return handleError(dispatch, FETCH_GROUPS, { err });
   }

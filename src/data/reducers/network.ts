@@ -8,8 +8,7 @@ const network: Election = {
   groupDetails: {},
   groupMembers: {},
   queuedProposals: {},
-  dequeuedProposals: {},
-  totalVotes: new BigNumber(0)
+  dequeuedProposals: {}
 };
 
 const initialState: Election = initialStateDecorator(network);
@@ -23,15 +22,11 @@ export default (state = initialState, action) => {
       groups
     }: {
       state: Election;
-      groups: {
-        groups: Election['groups'];
-        totalVotes: BigNumber;
-      };
+      groups: Election['groups'];
     }
   ) => ({
     ...state,
-    groups: groups.groups,
-    totalVotes: groups.totalVotes
+    groups
   });
 
   const fetchGroupMembers = (state, { groupMembers }: { groupMembers: Election['groupMembers'] }) => ({

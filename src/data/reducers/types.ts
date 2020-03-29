@@ -27,7 +27,6 @@ export interface Election {
   groupMembers: { [key: string]: GroupMember };
   queuedProposals: { [key: number]: Proposal };
   dequeuedProposals: { [key: string]: Proposal };
-  totalVotes: BigNumber;
 }
 
 export interface Group {

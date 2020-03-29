@@ -8,20 +8,14 @@ import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { fetchBlogs } from '../../../data/actions/home';
 import { fetchGroups, fetchProposals } from '../../../data/actions/network';
-import makeHomeSelector from '../../../data/selectors/home';
+import { makeHomeSelector } from '../../../data/selectors/home';
 import { formatBigInt } from '../../../util/numbers';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
 
 const homeSelector = makeHomeSelector();
 
-const mapState = ({ home, network }) => ({
-  ...homeSelector(home),
-  totalVotes: network.totalVotes,
-  queuedProposals: network.queuedProposals,
-  dequeuedProposals: network.dequeuedProposals,
-  inProgress: home.inProgress || network.inProgress
-});
+const mapState = state => homeSelector(state);
 const mapDispatch = { fetchBlogs, fetchGroups, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
@@ -62,6 +56,9 @@ class Home extends PureComponent<Props> {
         value: numProposals
       }
     ];
+
+    console.log('blogsById', blogsById);
+    console.log('allBlogIds', allBlogIds);
 
     return (
       <Container fluid>
