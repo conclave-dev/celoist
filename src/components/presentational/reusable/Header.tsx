@@ -12,7 +12,7 @@ const Header = ({ title, subtitle, inProgress }: { title: string; subtitle: stri
       </div>
     </Col>
     <Col sm={6}>
-      <div className="float-right d-none d-md-block">{inProgress && <Spinner size="large" color="warning" />}</div>
+      <div className="float-right d-none d-lg-block">{inProgress && <Spinner size="large" color="warning" />}</div>
     </Col>
   </Row>
 );

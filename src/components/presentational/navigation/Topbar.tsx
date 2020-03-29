@@ -5,7 +5,7 @@ import celoGlyph from '../../../assets/svg/celo-glyph.svg';
 
 const Topbar = () => {
   const toggleSidebar = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
     if (isMobile) {
       document.body.classList.remove('vertical-collapsed');
@@ -34,7 +34,7 @@ const Topbar = () => {
           <button
             type="button"
             onClick={toggleSidebar}
-            className="btn btn-sm px-3 font-size-24 header-item waves-effect"
+            className="btn btn-sm px-3 font-size-24 header-item waves-effect d-lg-none d-xs-block"
             id="vertical-menu-btn"
           >
             <i className="mdi mdi-menu"></i>

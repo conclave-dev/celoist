@@ -7,24 +7,22 @@ import governanceLight from '../../../assets/png/governanceLight.png';
 import validatorsLight from '../../../assets/png/validatorsLight.png';
 import votersLight from '../../../assets/png/votersLight.png';
 
-const closeSidebar = () => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
+const closeSidebarMobile = () => {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-  if (isMobile) {
-    document.body.classList.remove('vertical-collapsed');
-    document.body.classList.toggle('sidebar-enable');
+  if (!isMobile) {
     return;
   }
 
-  document.body.classList.toggle('vertical-collapsed');
-  document.body.classList.remove('sidebar-enable');
+  document.body.classList.remove('vertical-collapsed');
+  document.body.classList.toggle('sidebar-enable');
 };
 
 const SidebarContentEcosystem = () => (
   <>
     <li className="menu-title">Ecosystem</li>
     <li>
-      <Link to="/" className="waves-effect" onClick={closeSidebar}>
+      <Link to="/" className="waves-effect" onClick={closeSidebarMobile}>
         <div className="iconSidebar">
           <img src={homeLight} height={22} alt="Home sidebar menu icon" />
         </div>
@@ -32,7 +30,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/elections" className="waves-effect" onClick={closeSidebar}>
+      <Link to="/elections" className="waves-effect" onClick={closeSidebarMobile}>
         <div className="iconSidebar">
           <img src={voteLight} height={22} alt="Elections sidebar menu icon" />
         </div>
@@ -40,7 +38,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/governance" className="waves-effect" onClick={closeSidebar}>
+      <Link to="/governance" className="waves-effect" onClick={closeSidebarMobile}>
         <div className="iconSidebar">
           <img src={governanceLight} height={22} alt="Governance sidebar menu icon" />
         </div>
@@ -54,7 +52,7 @@ const SidebarContentEducation = () => (
   <div id="education">
     <li className="menu-title">Education</li>
     <li>
-      <Link to="#" className="waves-effect" onClick={closeSidebar}>
+      <Link to="#" className="waves-effect" onClick={closeSidebarMobile}>
         <div className="iconSidebar">
           <img src={validatorsLight} height={22} alt="Validators sidebar menu icon" />
         </div>
@@ -62,7 +60,7 @@ const SidebarContentEducation = () => (
       </Link>
     </li>
     <li>
-      <Link to="#" className="waves-effect" onClick={closeSidebar}>
+      <Link to="#" className="waves-effect" onClick={closeSidebarMobile}>
         <div className="iconSidebar">
           <img src={votersLight} height={22} alt="Votes sidebar menu icon" />
         </div>
