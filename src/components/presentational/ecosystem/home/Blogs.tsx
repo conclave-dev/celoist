@@ -1,17 +1,11 @@
 import React, { memo } from 'react';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { connect, ConnectedProps } from 'react-redux';
 import { Card, Badge, CardBody } from 'reactstrap';
 import Content from './Content';
+import { Blog } from '../../../../data/reducers/types';
 
-const mapState = ({ home: { blogs, blogIds } }) => ({ blogs, blogIds });
-const connector = connect(mapState);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-type Props = PropsFromRedux;
-
-const Blogs = ({ blogs, blogIds }: Props) => {
+const Blogs = ({ blogs, blogIds }: { blogs: { [key: string]: Blog }; blogIds: string[] }) => {
   const [firstBlogId] = blogIds;
 
   return (
@@ -52,4 +46,4 @@ const Blogs = ({ blogs, blogIds }: Props) => {
   );
 };
 
-export default connector(memo(Blogs));
+export default memo(Blogs);

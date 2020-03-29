@@ -6,8 +6,8 @@ const fetchBlogs = () => async (dispatch, getState) => {
   handleInit(dispatch, FETCH_BLOGS);
 
   try {
-    const { blogIds } = getState().home;
-    return handleData(dispatch, FETCH_BLOGS, { blogs: await fetchMediumBlogs(blogIds) });
+    const { allBlogIds } = getState().home;
+    return handleData(dispatch, FETCH_BLOGS, { blogs: await fetchMediumBlogs(allBlogIds) });
   } catch (err) {
     return handleError(dispatch, FETCH_BLOGS, { err });
   }

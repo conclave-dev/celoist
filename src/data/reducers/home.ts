@@ -3,8 +3,8 @@ import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import { Home, Blog } from './types';
 
 const initialState: Home = initialStateDecorator({
-  blogs: {},
-  blogIds: ['celoorg']
+  blogsById: {},
+  allBlogIds: ['celoorg']
 });
 
 export default (state = initialState, action) => {
