@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
-import { isEmpty, map } from 'lodash';
 import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
@@ -36,12 +35,15 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
       return this.setState({ selectedGroupAddress: '' });
     }
 
-    this.props.fetchGroupDetails(groupAddress);
+    if (!this.props.network.groupDetails[groupAddress]) {
+      this.props.fetchGroupDetails(groupAddress);
+    }
+
     return this.setState({ selectedGroupAddress: groupAddress });
   };
 
   render = () => {
-    const { groups, inProgress } = this.props.network;
+    const { groups, groupDetails, inProgress } = this.props.network;
     const summaryItems = [
       {
         imgSrc: goldCoin,
@@ -69,16 +71,16 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
         <Summary summaryItems={summaryItems} />
         <Row>
           <Groups>
-            {!isEmpty(groups) ? (
-              map(groups, (group, groupAddress) => {
+            {groups.length ? (
+              groups.map(group => {
                 const { votes, capacity } = group;
                 const voteCapacity = capacity.isZero() ? votes : capacity;
                 const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 100;
 
                 return (
                   <Group
-                    key={groupAddress}
-                    group={group}
+                    key={group.address}
+                    group={{ ...group, ...groupDetails[group.address] }}
                     votes={formatBigInt(votes)}
                     voteCapacityFilled={voteCapacityFilled}
                     selectedGroupAddress={this.state.selectedGroupAddress}

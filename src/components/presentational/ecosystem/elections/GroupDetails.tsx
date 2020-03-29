@@ -22,24 +22,24 @@ const GroupDetails = ({ group, isSelected }: { group: Group; isSelected: boolean
                   >
                     <h5 className="text-center mb-4">Overview</h5>
                     <Row className="align-items-center">
-                      <Col md={3} xs={6}>
+                      <Col lg={3} xs={6}>
                         <p className="text-center text-secondary text-truncate mb-3">
                           <img src={blueCoin} width={20} className="mr-1" alt="blueCoin" />
                           {group.commission.multipliedBy(100).toFixed(2)}% Fees
                         </p>
                       </Col>
-                      <Col md={3} xs={6}>
+                      <Col lg={3} xs={6}>
                         <p className="text-center text-secondary text-truncate mb-3">
                           <img src={redCoin} width={20} className="mr-1" alt="redCoin" />
                           0% Penalty
                         </p>
                       </Col>
-                      <Col md={3} xs={6}>
+                      <Col lg={3} xs={6}>
                         <p className="text-center text-secondary text-truncate mb-3">
                           <img src={goldCoin} width={20} className="mr-1" alt="goldCoin" />0 Rewards
                         </p>
                       </Col>
-                      <Col md={3} xs={6}>
+                      <Col lg={3} xs={6}>
                         <p className="text-center text-secondary text-truncate mb-3">
                           <img src={greenCoin} width={20} className="mr-1" alt="greenCoin" />0 Earnings
                         </p>

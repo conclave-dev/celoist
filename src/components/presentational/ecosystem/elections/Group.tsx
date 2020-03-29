@@ -13,12 +13,14 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
 const Group = ({
+  key,
   group,
   votes,
   voteCapacityFilled,
   selectedGroupAddress,
   handleGroupClick
 }: {
+  key: string;
   group: GroupType;
   votes: string;
   voteCapacityFilled: number;
@@ -28,7 +30,7 @@ const Group = ({
   const isSelected = selectedGroupAddress === group.address;
   return (
     <>
-      <ListGroupItem>
+      <ListGroupItem key={key}>
         <Row className="align-items-center" style={{ flexWrap: 'nowrap' }}>
           <Col sm={7} xs={6} className="text-truncate">
             {group.address}
