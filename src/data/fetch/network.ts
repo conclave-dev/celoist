@@ -16,26 +16,23 @@ const getElectedGroups = async () => {
   const eligibleGroups = await election.getEligibleValidatorGroupsVotes();
 
   const { groups, totalVotes } = eligibleGroups.reduce(
-    (acc, group, index) => {
-      if (group.votes.isZero()) {
+    (acc, group) => {
+      if (group.votes && group.votes.isZero()) {
         return acc;
       }
 
       return {
-        groups: {
-          ...acc.groups,
-          [group.address]: group
-        },
+        groups: [...acc.groups, group],
         totalVotes: BigNumber.sum(acc.totalVotes, group.votes)
       };
     },
     {
-      groups: {},
+      groups: new Array(0),
       totalVotes: new BigNumber(0)
     }
   );
 
-  return { groups, totalVotes };
+  return { groups: groups.sort((a, b) => b.votes.minus(a.votes)), totalVotes };
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {

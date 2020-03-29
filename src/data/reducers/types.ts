@@ -22,7 +22,8 @@ export interface BlogPost {
 }
 
 export interface Election {
-  groups: { [key: string]: Group };
+  groups: Group[];
+  groupDetails: { [key: string]: Group };
   groupMembers: { [key: string]: GroupMember };
   queuedProposals: { [key: number]: Proposal };
   dequeuedProposals: { [key: string]: Proposal };

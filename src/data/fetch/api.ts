@@ -1,4 +1,4 @@
-const backend = 'http://localhost:3001';
+const backend = 'https://backend.celoist.com';
 const network = 'https://geth.celoist.com';
 
 export { backend, network };

@@ -4,7 +4,8 @@ import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import { Election, Proposal } from './types';
 
 const network: Election = {
-  groups: {},
+  groups: [],
+  groupDetails: {},
   groupMembers: {},
   queuedProposals: {},
   dequeuedProposals: {},
@@ -18,11 +19,19 @@ export default (state = initialState, action) => {
 
   const fetchGroups = (
     state,
-    { groups: { groups, totalVotes } }: { groups: Election['groups']; totalVotes: BigNumber }
+    {
+      groups
+    }: {
+      state: Election;
+      groups: {
+        groups: Election['groups'];
+        totalVotes: BigNumber;
+      };
+    }
   ) => ({
     ...state,
-    groups,
-    totalVotes
+    groups: groups.groups,
+    totalVotes: groups.totalVotes
   });
 
   const fetchGroupMembers = (state, { groupMembers }: { groupMembers: Election['groupMembers'] }) => ({
@@ -30,14 +39,13 @@ export default (state = initialState, action) => {
     groupMembers
   });
 
-  const fetchGroupDetails = (state, { group }) => {
+  const fetchGroupDetails = (state, { groupDetails }) => {
     return {
       ...state,
-      groups: {
-        ...state.groups,
-        [group.address]: {
-          ...state.groups[group.address],
-          ...group
+      groupDetails: {
+        ...state.groupDetails,
+        [groupDetails.address]: {
+          ...groupDetails
         }
       }
     };

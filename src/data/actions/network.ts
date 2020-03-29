@@ -31,7 +31,7 @@ const fetchGroupDetails = (groupAddress: string) => async dispatch => {
   handleInit(dispatch, FETCH_GROUP_DETAILS);
 
   try {
-    return handleData(dispatch, FETCH_GROUP_DETAILS, { group: await getElectedGroupDetails(groupAddress) });
+    return handleData(dispatch, FETCH_GROUP_DETAILS, { groupDetails: await getElectedGroupDetails(groupAddress) });
   } catch (err) {
     return handleError(dispatch, FETCH_GROUP_DETAILS, { err });
   }
