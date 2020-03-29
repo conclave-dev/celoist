@@ -1,17 +1,30 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import Anchor from '../reusable/Anchor';
+import { UncontrolledPopover, PopoverBody } from 'reactstrap';
 import homeLight from '../../../assets/png/homeLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import governanceLight from '../../../assets/png/governanceLight.png';
 import validatorsLight from '../../../assets/png/validatorsLight.png';
 import votersLight from '../../../assets/png/votersLight.png';
 
+const closeSidebar = () => {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 992;
+
+  if (isMobile) {
+    document.body.classList.remove('vertical-collapsed');
+    document.body.classList.toggle('sidebar-enable');
+    return;
+  }
+
+  document.body.classList.toggle('vertical-collapsed');
+  document.body.classList.remove('sidebar-enable');
+};
+
 const SidebarContentEcosystem = () => (
   <>
     <li className="menu-title">Ecosystem</li>
     <li>
-      <Link to="" className="waves-effect">
+      <Link to="/" className="waves-effect" onClick={closeSidebar}>
         <div className="iconSidebar">
           <img src={homeLight} height={22} alt="Home sidebar menu icon" />
         </div>
@@ -19,7 +32,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/elections" className="waves-effect">
+      <Link to="/elections" className="waves-effect" onClick={closeSidebar}>
         <div className="iconSidebar">
           <img src={voteLight} height={22} alt="Elections sidebar menu icon" />
         </div>
@@ -27,7 +40,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/governance" className="waves-effect">
+      <Link to="/governance" className="waves-effect" onClick={closeSidebar}>
         <div className="iconSidebar">
           <img src={governanceLight} height={22} alt="Governance sidebar menu icon" />
         </div>
@@ -38,25 +51,28 @@ const SidebarContentEcosystem = () => (
 );
 
 const SidebarContentEducation = () => (
-  <>
+  <div id="education">
     <li className="menu-title">Education</li>
     <li>
-      <Anchor href="" color="#8699ad">
+      <Link to="#" className="waves-effect" onClick={closeSidebar}>
         <div className="iconSidebar">
           <img src={validatorsLight} height={22} alt="Validators sidebar menu icon" />
         </div>
         <span>Validators</span>
-      </Anchor>
+      </Link>
     </li>
     <li>
-      <Anchor href="" color="#8699ad">
+      <Link to="#" className="waves-effect" onClick={closeSidebar}>
         <div className="iconSidebar">
           <img src={votersLight} height={22} alt="Votes sidebar menu icon" />
         </div>
         <span>Voters</span>
-      </Anchor>
+      </Link>
     </li>
-  </>
+    <UncontrolledPopover placement="right" target="education">
+      <PopoverBody>Coming soon</PopoverBody>
+    </UncontrolledPopover>
+  </div>
 );
 
 const MemoizedSidebarContentEcosystem = memo(SidebarContentEcosystem);

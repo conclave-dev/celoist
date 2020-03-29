@@ -33,10 +33,10 @@ export class Governance extends PureComponent<Props> {
           inProgress={inProgress}
         />
         <Row>
-          <Col md={3} xs={12}>
+          <Col lg={3} xs={12}>
             <Menu />
           </Col>
-          <Col md={9} xs={12}>
+          <Col lg={9} xs={12}>
             {map({ ...queuedProposals, ...dequeuedProposals }, (proposal, proposalID) => {
               const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
               const { proposer, deposit } = metadata;
