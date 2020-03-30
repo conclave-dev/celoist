@@ -89,7 +89,9 @@ const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
               </ListGroup>
             </Col>
           ) : (
-            <Spinner type="grow" color="warning" className="pt-4 pb-4" />
+            <div className="pt-4 pb-4">
+              <Spinner type="grow" color="warning" />
+            </div>
           )}
         </Row>
       </Col>

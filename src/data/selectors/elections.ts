@@ -27,8 +27,6 @@ const getGroupDetailsById = (
   props: GetGroupDetailsByIdProps
 ) => props.group && props.group.address && groupDetailsById[props.group.address];
 
-const getSelectedGroupId = ({ elections: { selectedGroupId } }: GetSelectedGroupId) => selectedGroupId;
-
 const getGroupTotalVotes = ({ elections: { allGroupIds, groupsById } }) =>
   allGroupIds.reduce((groupTotalVotes, groupId) => groupTotalVotes.plus(groupsById[groupId].votes), new BigNumber(0));
 

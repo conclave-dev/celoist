@@ -42,7 +42,6 @@ class Home extends PureComponent<Props> {
 
   render = () => {
     const { blogsById, allBlogIds, groupTotalVotes, proposalsById, inProgress } = this.props;
-    console.log('proposalsById', proposalsById);
     const numProposals = Object.keys(proposalsById).length;
     const summaryItems = [
       {
