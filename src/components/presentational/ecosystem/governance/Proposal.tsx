@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Card, CardBody, Alert, Button, Badge } from 'reactstrap';
-import { Proposal as ProposalType } from '../../../../data/reducers/types';
+import { Proposal as ProposalType } from '../../../../data/types/governance';
 
 const buttonProps = {
   className: 'mt-2',

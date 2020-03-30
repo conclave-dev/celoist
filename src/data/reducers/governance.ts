@@ -12,10 +12,10 @@ const governance: Governance = {
 
 const initialState = initialStateDecorator(governance);
 
-const fetchProposals = (state, { proposals }: ProposalsById) => {
+const fetchProposals = (state, { proposalsById }: ProposalsById) => {
   return {
     ...state,
-    ...proposals
+    proposalsById
   };
 };
 

@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import { map } from 'lodash';
+import { isEmpty, map } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
-import { fetchProposals } from '../../../data/actions/network';
+import { fetchProposals } from '../../../data/actions/governance';
 import { formatBigInt } from '../../../util/numbers';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
 import Menu from '../../presentational/ecosystem/governance/Menu';
 
-const mapState = ({ network }) => ({ network });
+const mapState = ({ governance }) => ({ governance });
 const mapDispatch = { fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
@@ -19,11 +19,13 @@ export class Governance extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    props.fetchProposals();
+    if (isEmpty(props.governance.proposalsById)) {
+      props.fetchProposals();
+    }
   }
 
   render() {
-    const { queuedProposals, dequeuedProposals, inProgress } = this.props.network;
+    const { proposalsById, inProgress } = this.props.governance;
 
     return (
       <Container fluid>
@@ -37,7 +39,7 @@ export class Governance extends PureComponent<Props> {
             <Menu />
           </Col>
           <Col lg={9} xs={12}>
-            {map({ ...queuedProposals, ...dequeuedProposals }, (proposal, proposalID) => {
+            {map(proposalsById, (proposal, proposalID) => {
               const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
               const { proposer, deposit } = metadata;
               const proposerStart = proposer.substring(0, 4);
