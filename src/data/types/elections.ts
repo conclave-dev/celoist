@@ -1,21 +1,21 @@
 import { BigNumber } from 'bignumber.js';
 
+export type GroupId = string;
 export type GroupsById = { [key: string]: Group };
 export type GroupDetailsById = { [key: string]: GroupDetails };
-export type AllGroupIds = string[];
-export type GroupId = string;
-export type GroupTotalVotes = BigNumber;
+export type AllGroupIds = GroupId[];
+export type GroupVotes = BigNumber;
 
 export interface Group {
-  address: string;
+  address: GroupId;
   name: string;
-  votes: BigNumber;
-  capacity: BigNumber;
+  votes: GroupVotes;
+  capacity: GroupVotes;
 }
 
 export interface GroupDetails {
-  address: string;
-  capacity: BigNumber;
+  address: GroupId;
+  capacity: GroupVotes;
   eligible: boolean;
   members: GroupMember[];
   commission: BigNumber;

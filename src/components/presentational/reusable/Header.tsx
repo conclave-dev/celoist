@@ -3,7 +3,7 @@ import { Row, Col, Spinner } from 'reactstrap';
 
 const Header = ({ title, subtitle, inProgress }: { title: string; subtitle: string; inProgress: boolean }) => (
   <Row className="align-items-center">
-    <Col sm={6}>
+    <Col xs={6}>
       <div className="page-title-box">
         <h4 className="font-size-18">{title}</h4>
         <ol className="breadcrumb mb-0">
@@ -11,8 +11,8 @@ const Header = ({ title, subtitle, inProgress }: { title: string; subtitle: stri
         </ol>
       </div>
     </Col>
-    <Col sm={6}>
-      <div className="float-right d-none d-lg-block">{inProgress && <Spinner size="large" color="warning" />}</div>
+    <Col xs={6}>
+      <div className="float-right">{inProgress && <Spinner size="large" color="warning" />}</div>
     </Col>
   </Row>
 );

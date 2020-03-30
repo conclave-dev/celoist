@@ -1,33 +1,36 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
-import { fetchGroupMembers, fetchGroupDetails } from '../../../../data/actions/network';
-import { Group as GroupType } from '../../../../data/reducers/types';
+import { fetchGroupDetails, setSelectedGroupId } from '../../../../data/actions/elections';
+import { Group as GroupType } from '../../../../data/types/elections';
+import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
 import GroupDetails from './GroupDetails';
 
-const mapState = ({ network: { groupMembers } }) => ({ groupMembers });
-const mapDispatch = { fetchGroupMembers, fetchGroupDetails };
+const groupSelector = makeGroupDetailsSelector();
+
+const mapState = (state, ownProps) => groupSelector(state, ownProps);
+const mapDispatch = { fetchGroupDetails, setSelectedGroupId };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
-type Props = PropsFromRedux;
 
 const Group = ({
   key,
   group,
   votes,
   voteCapacityFilled,
-  selectedGroupAddress,
-  handleGroupClick
+  groupDetails,
+  fetchGroupDetails
 }: {
   key: string;
   group: GroupType;
   votes: string;
   voteCapacityFilled: number;
-  selectedGroupAddress: string;
-  handleGroupClick: ({ currentTarget: { id: groupAddress } }: { currentTarget: { id: any } }) => void;
+  groupDetails: PropsFromRedux['groupDetails'];
+  fetchGroupDetails: PropsFromRedux['fetchGroupDetails'];
 }) => {
-  const isSelected = selectedGroupAddress === group.address;
+  const [showButton, setShowButton] = useState(false);
+
   return (
     <>
       <ListGroupItem key={key}>
@@ -47,20 +50,23 @@ const Group = ({
               color="muted"
               className="btn btn-link waves-effect"
               style={{ margin: 0 }}
-              onClick={event => {
-                return handleGroupClick(event);
-                // return fetchGroupMembers();
+              onClick={() => {
+                setShowButton(!showButton);
+
+                if (!groupDetails) {
+                  return fetchGroupDetails(group.address);
+                }
               }}
             >
               <i
-                className={`mdi mdi-magnify-${isSelected ? 'minus' : 'plus'}`}
-                style={{ color: isSelected ? '#35D07F' : '#9ca8b3', width: 12 }}
+                className={`mdi mdi-magnify-${showButton ? 'minus' : 'plus'}`}
+                style={{ color: showButton ? '#35D07F' : '#9ca8b3', width: 12 }}
               />
             </Button>
           </Col>
         </Row>
       </ListGroupItem>
-      <GroupDetails group={group} isSelected={isSelected} />
+      {showButton && <GroupDetails groupDetails={groupDetails} />}
     </>
   );
 };

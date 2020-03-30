@@ -2,14 +2,14 @@ import { createSelector } from 'reselect';
 import { getProposalsById, getInProgress as getGovernanceInProgress } from './governance';
 import { getGroupTotalVotes } from './elections';
 import { BlogsById, AllBlogIds } from '../types/home';
-import { GroupTotalVotes } from '../types/elections';
+import { GroupVotes } from '../types/elections';
 import { ProposalsById } from '../types/governance';
 
 type HomeCreateSelector = {
   blogsById: BlogsById;
   allBlogIds: AllBlogIds;
   proposalsById: ProposalsById;
-  groupTotalVotes: GroupTotalVotes;
+  groupTotalVotes: GroupVotes;
   inProgress: boolean;
 };
 

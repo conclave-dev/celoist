@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect';
 import BigNumber from 'bignumber.js';
-import { Group, GroupsById, GroupDetailsById, AllGroupIds, GroupId } from '../types/elections';
+import { Group, GroupsById, GroupDetails, AllGroupIds, GroupId } from '../types/elections';
 
 type GetGroupsById = { elections: { groupsById: GroupsById } };
 type GetAllGroupIds = { elections: { allGroupIds: AllGroupIds } };
-type GetGroupDetailsById = { elections: { groupDetailsById: GroupDetailsById } };
+type GetGroupDetailsById = { elections: { groupDetailsById: GroupDetails } };
 type GetGroupDetailsByIdProps = { group: Group };
 type GetSelectedGroupId = { elections: { selectedGroupId: GroupId } };
 type ElectionsCreateSelector = {
@@ -13,9 +13,7 @@ type ElectionsCreateSelector = {
   inProgress: boolean;
 };
 type GroupDetailsCreateSelector = {
-  groupDetailsById: GroupDetailsById;
-  selectedGroupId: string;
-  inProgress: boolean;
+  groupDetails: GroupDetails;
 };
 
 const getInProgress = ({ elections: { inProgress } }) => inProgress;
@@ -27,7 +25,7 @@ const getAllGroupIds = ({ elections: { allGroupIds } }: GetAllGroupIds) => allGr
 const getGroupDetailsById = (
   { elections: { groupDetailsById } }: GetGroupDetailsById,
   props: GetGroupDetailsByIdProps
-) => (props.group && props.group.address ? groupDetailsById[props.group.address] : {});
+) => props.group && props.group.address && groupDetailsById[props.group.address];
 
 const getSelectedGroupId = ({ elections: { selectedGroupId } }: GetSelectedGroupId) => selectedGroupId;
 
@@ -46,11 +44,9 @@ const makeElectionsSelector = () =>
 
 const makeGroupDetailsSelector = () =>
   createSelector(
-    [getGroupDetailsById, getSelectedGroupId, getInProgress],
-    (groupDetailsById, selectedGroupId, inProgress): GroupDetailsCreateSelector => ({
-      groupDetailsById,
-      selectedGroupId,
-      inProgress
+    [getGroupDetailsById],
+    (groupDetails): GroupDetailsCreateSelector => ({
+      groupDetails
     })
   );
 

@@ -9,7 +9,19 @@ const getValidators = () => kit.contracts.getValidators();
 
 const getEligibleGroups = async () => {
   const election = await getElection();
-  return election.getEligibleValidatorGroupsVotes();
+  return (await election.getEligibleValidatorGroupsVotes()).reduce(
+    (acc, group) => ({
+      groupsById: {
+        ...acc.groupsById,
+        [group.address]: group
+      },
+      allGroupIds: [...acc.allGroupIds, group.address]
+    }),
+    {
+      groupsById: {},
+      allGroupIds: new Array(0)
+    }
+  );
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {

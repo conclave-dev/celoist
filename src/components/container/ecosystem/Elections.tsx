@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row } from 'reactstrap';
-import { fetchGroups, fetchGroupMembers, fetchGroupDetails } from '../../../data/actions/network';
+import { Container, Row, Spinner } from 'reactstrap';
+import { fetchGroups, fetchGroupDetails } from '../../../data/actions/elections';
+import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
@@ -11,8 +12,10 @@ import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
 
-const mapState = ({ network }) => ({ network });
-const mapDispatch = { fetchGroups, fetchGroupMembers, fetchGroupDetails };
+const electionsSelector = makeElectionsSelector();
+
+const mapState = state => electionsSelector(state);
+const mapDispatch = { fetchGroups, fetchGroupDetails };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -21,29 +24,14 @@ type Props = PropsFromRedux;
 class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
   constructor(props) {
     super(props);
-    this.state = {
-      selectedGroupAddress: ''
-    };
+
+    if (!props.allGroupIds.length) {
+      this.props.fetchGroups();
+    }
   }
 
-  componentDidMount = () => {
-    this.props.fetchGroups();
-  };
-
-  handleGroupClick = ({ currentTarget: { id: groupAddress } }) => {
-    if (this.state.selectedGroupAddress === groupAddress) {
-      return this.setState({ selectedGroupAddress: '' });
-    }
-
-    if (!this.props.network.groupDetails[groupAddress]) {
-      this.props.fetchGroupDetails(groupAddress);
-    }
-
-    return this.setState({ selectedGroupAddress: groupAddress });
-  };
-
   render = () => {
-    const { groups, groupDetails, inProgress } = this.props.network;
+    const { groupsById, allGroupIds, inProgress } = this.props;
     const summaryItems = [
       {
         imgSrc: goldCoin,
@@ -71,25 +59,24 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
         <Summary summaryItems={summaryItems} />
         <Row>
           <Groups>
-            {groups.length ? (
-              groups.map(group => {
-                const { votes, capacity } = group;
+            {allGroupIds.length ? (
+              allGroupIds.map(groupId => {
+                const group = groupsById[groupId];
+                const { address, votes, capacity } = group;
                 const voteCapacity = capacity.isZero() ? votes : capacity;
                 const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 100;
 
                 return (
                   <Group
-                    key={group.address}
-                    group={{ ...group, ...groupDetails[group.address] }}
+                    key={address}
+                    group={group}
                     votes={formatBigInt(votes)}
                     voteCapacityFilled={voteCapacityFilled}
-                    selectedGroupAddress={this.state.selectedGroupAddress}
-                    handleGroupClick={this.handleGroupClick}
                   />
                 );
               })
             ) : (
-              <></>
+              <Spinner type="grow" color="warning" />
             )}
           </Groups>
         </Row>
