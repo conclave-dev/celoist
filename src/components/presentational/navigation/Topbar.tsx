@@ -5,7 +5,7 @@ import celoGlyph from '../../../assets/svg/celo-glyph.svg';
 
 const Topbar = () => {
   const toggleSidebar = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 991;
 
     if (isMobile) {
       document.body.classList.remove('vertical-collapsed');

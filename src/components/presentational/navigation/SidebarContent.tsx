@@ -8,7 +8,7 @@ import validatorsLight from '../../../assets/png/validatorsLight.png';
 import votersLight from '../../../assets/png/votersLight.png';
 
 const closeSidebarMobile = () => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 991;
 
   if (!isMobile) {
     return;
