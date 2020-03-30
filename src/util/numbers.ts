@@ -10,9 +10,9 @@ const fmt = {
 
 BigNumber.config({ FORMAT: fmt });
 
-const formatInt = (n: number) => new BigNumber(n).toFormat(0);
+const formatNum = (n: number) => new BigNumber(n).toFormat(0);
 
-const formatBigInt = (n: number) => formatInt(n / 1000000000000000000);
+const formatBigInt = (n: BigNumber) => formatNum(n.dividedBy(1000000000000000000).toNumber());
 
 // Abbreviates long numbers into a more readable format
-export { formatInt, formatBigInt };
+export { formatNum, formatBigInt };

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import home from './home';
-import network from './network';
+import elections from './elections';
+import governance from './governance';
 
-export default combineReducers({ home, network });
+export default combineReducers({ home, elections, governance });

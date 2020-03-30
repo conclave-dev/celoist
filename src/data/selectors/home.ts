@@ -1,26 +1,35 @@
 import { createSelector } from 'reselect';
-import BigNumber from 'bignumber.js';
-import { getProposals } from './network';
+import { getProposalsById, getInProgress as getGovernanceInProgress } from './governance';
+import { getGroupTotalVotes } from './elections';
+import { BlogsById, AllBlogIds } from '../types/home';
+import { GroupTotalVotes } from '../types/elections';
+import { ProposalsById } from '../types/governance';
+
+type HomeCreateSelector = {
+  blogsById: BlogsById;
+  allBlogIds: AllBlogIds;
+  proposalsById: ProposalsById;
+  groupTotalVotes: GroupTotalVotes;
+  inProgress: boolean;
+};
+
+const getInProgress = state => state.home.inProgress || getGovernanceInProgress(state);
 
 const getBlogs = state => ({
   blogsById: state.home.blogsById,
   allBlogIds: state.home.allBlogIds
 });
 
-const getTotalVotes = state =>
-  state.network.groups.reduce((totalVotes, group) => totalVotes.plus(group.votes), new BigNumber(0));
-
-const getHomeInProgress = state => state.home.inProgress || state.network.inProgress;
-
 const makeHomeSelector = () =>
   createSelector(
-    [getBlogs, getProposals, getTotalVotes, getHomeInProgress],
-    (blogs, proposals, totalVotes, inProgress) => ({
-      ...blogs,
-      ...proposals,
-      totalVotes,
+    [getBlogs, getProposalsById, getGroupTotalVotes, getInProgress],
+    ({ blogsById, allBlogIds }, { proposalsById }, groupTotalVotes, inProgress): HomeCreateSelector => ({
+      blogsById,
+      allBlogIds,
+      proposalsById,
+      groupTotalVotes,
       inProgress
     })
   );
 
-export { getBlogs, getTotalVotes, makeHomeSelector };
+export { getBlogs, getInProgress, makeHomeSelector };

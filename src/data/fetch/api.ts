@@ -1,4 +1,4 @@
 const backend = 'https://backend.celoist.com';
-const network = 'https://geth.celoist.com';
+const chain = 'https://geth.celoist.com';
 
-export { backend, network };
+export { backend, chain };

@@ -1,13 +1,22 @@
 import { FETCH_BLOGS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { Home, Blog } from './types';
+import { BlogsById, AllBlogIds } from '../types/home';
 
-const initialState: Home = initialStateDecorator({
+interface Home {
+  blogsById: BlogsById;
+  allBlogIds: AllBlogIds;
+}
+
+type FetchBlogs = { state: Home; blogs: { [key: string]: BlogsById } };
+
+const homeState: Home = {
   blogsById: {},
   allBlogIds: ['celoorg']
-});
+};
 
-const fetchBlogs = (state, { blogsById }): { state: Home; blogs: { [key: string]: Blog } } => ({
+const initialState: Home = initialStateDecorator(homeState);
+
+const fetchBlogs = (state, { blogsById }): FetchBlogs => ({
   ...state,
   blogsById
 });
