@@ -7,7 +7,8 @@ import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { fetchBlogs } from '../../../data/actions/home';
-import { fetchGroups, fetchProposals } from '../../../data/actions/network';
+import { fetchGroups } from '../../../data/actions/elections';
+import { fetchProposals } from '../../../data/actions/governance';
 import { makeHomeSelector } from '../../../data/selectors/home';
 import { formatBigInt } from '../../../util/numbers';
 import vote from '../../../assets/png/vote.png';
@@ -30,24 +31,25 @@ class Home extends PureComponent<Props> {
       this.props.fetchBlogs();
     }
 
-    if (props.totalVotes.isZero()) {
+    if (props.groupTotalVotes.isZero()) {
       this.props.fetchGroups();
     }
 
-    if (isEmpty(props.queuedProposals) || isEmpty(props.dequeuedProposals)) {
+    if (isEmpty(props.proposalsById)) {
       this.props.fetchProposals();
     }
   }
 
   render = () => {
-    const { blogsById, allBlogIds, totalVotes, queuedProposals, dequeuedProposals, inProgress } = this.props;
-    const numProposals = Object.keys(queuedProposals).length + Object.keys(dequeuedProposals).length;
+    const { blogsById, allBlogIds, groupTotalVotes, proposalsById, inProgress } = this.props;
+    console.log('proposalsById', proposalsById);
+    const numProposals = Object.keys(proposalsById).length;
     const summaryItems = [
       {
         imgSrc: vote,
         text: 'Election Votes',
         backgroundColor: 'green',
-        value: formatBigInt(totalVotes)
+        value: formatBigInt(groupTotalVotes)
       },
       {
         imgSrc: proposal,
@@ -56,9 +58,6 @@ class Home extends PureComponent<Props> {
         value: numProposals
       }
     ];
-
-    console.log('blogsById', blogsById);
-    console.log('allBlogIds', allBlogIds);
 
     return (
       <Container fluid>

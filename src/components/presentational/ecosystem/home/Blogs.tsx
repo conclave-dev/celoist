@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { Card, Badge, CardBody } from 'reactstrap';
 import Content from './Content';
-import { Blog } from '../../../../data/reducers/types';
+import { Blog } from '../../../../data/types/home';
 
 const Blogs = ({ blogs, blogIds }: { blogs: { [key: string]: Blog }; blogIds: string[] }) => {
   const [firstBlogId] = blogIds;

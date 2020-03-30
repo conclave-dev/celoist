@@ -1,5 +1,5 @@
 import { Promise } from 'bluebird';
-import { Blog } from '../reducers/types';
+import { Blog } from '../types/home';
 import { backend } from './api';
 import { stripHTML } from '../../util/text';
 
