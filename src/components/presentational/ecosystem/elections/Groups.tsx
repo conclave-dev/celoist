@@ -1,27 +1,27 @@
 import React, { memo } from 'react';
 import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
 
-import vote from '../../../assets/png/vote.png';
-import group from '../../../assets/png/group.png';
+import vote from '../../../../assets/png/vote.png';
+import group from '../../../../assets/png/group.png';
 
 const Groups = ({ children }: { children: any }) => (
   <Col xl={12}>
     <ListGroup>
       <ListGroupItem>
-        <Row noGutters className="align-items-center">
-          <Col xl={1} />
-          <Col xl={7}>
-            <img className="mr-1" src={group} width={24} />
+        <Row className="align-items-center">
+          <Col sm={7} xs={6}>
+            <img src={group} style={{ width: 24 }} alt="Group icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Group
             </span>
           </Col>
-          <Col xl={4}>
-            <img className="mr-1" src={vote} width={24} />
+          <Col sm={4} xs={4}>
+            <img src={vote} style={{ width: 24 }} alt="Votes icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Votes
             </span>
           </Col>
+          <Col sm={1} xs={2} />
         </Row>
       </ListGroupItem>
       {children}

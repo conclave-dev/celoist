@@ -3,7 +3,6 @@ import ErrorBoundary from './ErrorBoundary';
 import Router from './Router';
 import Topbar from './presentational/navigation/Topbar';
 import Sidebar from './presentational/navigation/Sidebar';
-import Footer from './presentational/navigation/Footer';
 
 const App = () => (
   <ErrorBoundary>
