@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row, Spinner } from 'reactstrap';
-import { fetchGroups, fetchGroupDetails } from '../../../data/actions/elections';
+import { Container, Row, Col, Spinner } from 'reactstrap';
+import { fetchGroups } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
 import Group from '../../presentational/ecosystem/elections/Group';
-import { formatBigInt } from '../../../util/numbers';
 import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
@@ -15,7 +14,7 @@ import score from '../../../assets/png/score.png';
 const electionsSelector = makeElectionsSelector();
 
 const mapState = state => electionsSelector(state);
-const mapDispatch = { fetchGroups, fetchGroupDetails };
+const mapDispatch = { fetchGroups };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -63,20 +62,12 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
               allGroupIds.map(groupId => {
                 const group = groupsById[groupId];
                 const { address, votes, capacity } = group;
-                const voteCapacity = capacity.isZero() ? votes : capacity;
-                const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 100;
-
-                return (
-                  <Group
-                    key={address}
-                    group={group}
-                    votes={formatBigInt(votes)}
-                    voteCapacityFilled={voteCapacityFilled}
-                  />
-                );
+                return <Group key={address} group={group} votes={votes} capacity={capacity} />;
               })
             ) : (
-              <Spinner type="grow" color="warning" />
+              <Col xs={12} className="pt-4 pb-4 d-flex justify-content-center align-items-center">
+                <Spinner type="grow" color="warning" />
+              </Col>
             )}
           </Groups>
         </Row>

@@ -30,7 +30,7 @@ const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
                     <Col lg={3} xs={6}>
                       <p className="text-center text-secondary text-truncate mb-3">
                         <img src={redCoin} width={20} className="mr-1" alt="redCoin" />
-                        0% Penalty
+                        {(1 - groupDetails.slashingMultiplier.dividedBy(1).toNumber()) * 100}% Penalty
                       </p>
                     </Col>
                     <Col lg={3} xs={6}>
@@ -73,7 +73,7 @@ const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
                   {groupDetails.members.map(member => (
                     <Row key={member.address} className="align-items-center">
                       <Col xs={4}>
-                        <p className="text-secondary text-center text-truncate">{member.name}</p>
+                        <p className="text-secondary text-center text-truncate">{member.name || 'N/A'}</p>
                       </Col>
                       <Col xs={4}>
                         <p className="text-secondary text-center text-truncate">{member.address}</p>

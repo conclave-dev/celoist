@@ -19,6 +19,7 @@ export interface GroupDetails {
   eligible: boolean;
   members: GroupMember[];
   commission: BigNumber;
+  slashingMultiplier: BigNumber;
 }
 
 export interface GroupMember {

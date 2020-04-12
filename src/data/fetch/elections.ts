@@ -1,16 +1,38 @@
 import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
-import { chain } from './api';
+import { rpcChain, wsChain } from './api';
+import { ElectionWrapper } from '@celo/contractkit/lib/wrappers/Election';
+import { ValidatorsWrapper } from '@celo/contractkit/lib/wrappers/Validators';
 
-const kit = newKit(chain);
+const kit = newKit(rpcChain);
+const wsKit = newKit(wsChain);
 
-const getElection = () => kit.contracts.getElection();
-const getValidators = () => kit.contracts.getValidators();
+// Call setProvider to override contractkit's default HTTP provider
+wsKit.web3.setProvider(wsChain);
+
+const contracts: { election?: ElectionWrapper; validators?: ValidatorsWrapper } = {};
+
+const getElection = async () => {
+  if (!contracts.election) {
+    contracts.election = await kit.contracts.getElection();
+  }
+
+  return contracts.election;
+};
+const getValidators = async () => {
+  if (!contracts.validators) {
+    contracts.validators = await kit.contracts.getValidators();
+  }
+
+  return contracts.validators;
+};
 
 const getEligibleGroups = async () => {
   const election = await getElection();
-  return (await election.getEligibleValidatorGroupsVotes()).reduce(
-    (acc, group) => ({
+
+  const eligibleGroups = await Promise.reduce(
+    await election.getValidatorGroupsVotes(),
+    async (acc, group) => ({
       groupsById: {
         ...acc.groupsById,
         [group.address]: group
@@ -22,6 +44,8 @@ const getEligibleGroups = async () => {
       allGroupIds: new Array(0)
     }
   );
+
+  return eligibleGroups;
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {

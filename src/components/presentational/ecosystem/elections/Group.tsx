@@ -4,7 +4,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { fetchGroupDetails, setSelectedGroupId } from '../../../../data/actions/elections';
 import { Group as GroupType } from '../../../../data/types/elections';
 import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
+import { formatBigInt } from '../../../../util/numbers';
 import GroupDetails from './GroupDetails';
+import BigNumber from 'bignumber.js';
 
 const groupSelector = makeGroupDetailsSelector();
 
@@ -18,14 +20,14 @@ const Group = ({
   key,
   group,
   votes,
-  voteCapacityFilled,
+  capacity,
   groupDetails,
   fetchGroupDetails
 }: {
   key: string;
   group: GroupType;
-  votes: string;
-  voteCapacityFilled: number;
+  votes: BigNumber;
+  capacity: BigNumber;
   groupDetails: PropsFromRedux['groupDetails'];
   fetchGroupDetails: PropsFromRedux['fetchGroupDetails'];
 }) => {
@@ -39,8 +41,17 @@ const Group = ({
             {group.address}
           </Col>
           <Col sm={4} xs={4}>
-            <Progress style={{ height: 36 }} max={100} color="warning" value={voteCapacityFilled}>
-              {votes}
+            <Progress
+              animated
+              style={{ height: 30 }}
+              color="warning"
+              className="text-truncate"
+              value={votes
+                .dividedBy(capacity)
+                .multipliedBy(100)
+                .toNumber()}
+            >
+              <span className="text-truncate">{formatBigInt(votes)}</span>
             </Progress>
           </Col>
           <Col sm={1} xs={2}>

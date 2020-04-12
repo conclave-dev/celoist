@@ -18,7 +18,7 @@ const Groups = ({ children }: { children: any }) => (
           <Col sm={4} xs={4}>
             <img src={vote} style={{ width: 24 }} alt="Votes icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
-              Votes
+              Votes (total/capacity)
             </span>
           </Col>
           <Col sm={1} xs={2} />

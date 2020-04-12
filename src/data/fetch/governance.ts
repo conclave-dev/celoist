@@ -1,8 +1,8 @@
 import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
-import { chain } from './api';
+import { rpcChain } from './api';
 
-const kit = newKit(chain);
+const kit = newKit(rpcChain);
 
 const getGovernance = () => kit.contracts.getGovernance();
 

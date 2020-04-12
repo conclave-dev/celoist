@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@celo/contractkit": "^0.2.11-baklava2",
+    "@celo/contractkit": "^0.3.4",
     "@sentry/browser": "^5.12.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -41,8 +41,7 @@
     "simplebar-react": "^2.1.0",
     "sweetalert2": "^9.8.2",
     "sweetalert2-react-content": "^3.0.1",
-    "typescript": "~3.7.2",
-    "web3": "^1.2.6"
+    "typescript": "~3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",

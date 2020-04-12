@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-BigNumber.config({ ROUNDING_MODE: 0, DECIMAL_PLACES: 2 });
+BigNumber.config({ ROUNDING_MODE: BigNumber.ROUND_HALF_UP, DECIMAL_PLACES: 2 });
 
 const fmt = {
   decimalSeparator: '.',
