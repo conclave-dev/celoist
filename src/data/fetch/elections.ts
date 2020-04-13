@@ -19,6 +19,7 @@ const getElection = async () => {
 
   return contracts.election;
 };
+
 const getValidators = async () => {
   if (!contracts.validators) {
     contracts.validators = await kit.contracts.getValidators();

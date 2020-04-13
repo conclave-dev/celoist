@@ -8,6 +8,7 @@ const getGovernance = () => kit.contracts.getGovernance();
 
 const getGovernanceProposals = async () => {
   const governance = await getGovernance();
+
   const queuedProposals = await Promise.reduce(
     await governance.getQueue(),
     async (acc, { proposalID }) => ({
