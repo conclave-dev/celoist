@@ -15,10 +15,10 @@ const Groups = ({ children }: { children: any }) => (
               Group
             </span>
           </Col>
-          <Col sm={4} xs={4}>
+          <Col sm={4} xs={4} style={{ paddingRight: 5, paddingLeft: 5 }}>
             <img src={vote} style={{ width: 24 }} alt="Votes icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
-              Votes (total/capacity)
+              Votes
             </span>
           </Col>
           <Col sm={1} xs={2} />

@@ -40,7 +40,7 @@ const Group = ({
           <Col sm={7} xs={6} className="text-truncate">
             {group.address}
           </Col>
-          <Col sm={4} xs={4}>
+          <Col sm={4} xs={5} style={{ paddingRight: 5, paddingLeft: 5 }}>
             <div style={{ position: 'relative', height: 36 }}>
               <Progress
                 animated
@@ -54,19 +54,19 @@ const Group = ({
               />
               <div
                 className="d-flex justify-content-center align-items-center text-truncate"
-                style={{ height: '100%', width: '100%', position: 'absolute' }}
+                style={{ height: '100%', width: '100%', position: 'absolute', fontSize: 14 }}
               >
                 {formatBigInt(votes)}
               </div>
             </div>
           </Col>
-          <Col sm={1} xs={2}>
+          <Col sm={1} xs={1} className="d-flex justify-content-center">
             <Button
               outline
               id={group.address}
               color="muted"
               className="btn btn-link waves-effect"
-              style={{ margin: 0 }}
+              style={{ margin: 0, paddingRight: 0, paddingLeft: 0 }}
               onClick={() => {
                 setShowButton(!showButton);
 
