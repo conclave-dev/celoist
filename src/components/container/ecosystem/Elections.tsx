@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row, Col, Spinner } from 'reactstrap';
+import { Container, Card, Row, Col } from 'reactstrap';
 import { fetchGroups } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
+import Spinner from '../../presentational/reusable/Spinner';
 import Groups from '../../presentational/ecosystem/elections/Groups';
 import Group from '../../presentational/ecosystem/elections/Group';
 import earnings from '../../../assets/png/earnings.png';
@@ -69,8 +70,8 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
                 return <Group key={address} group={group} votes={votes} capacity={capacity} />;
               })
             ) : (
-              <Col xs={12} className="pt-4 pb-4 d-flex justify-content-center align-items-center">
-                <Spinner type="grow" color="warning" />
+              <Col xs={12}>
+                <Spinner />
               </Col>
             )}
           </Groups>

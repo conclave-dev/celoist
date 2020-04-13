@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { ListGroupItem, Row, Col, ListGroup, Spinner } from 'reactstrap';
+import { ListGroupItem, Row, Col, ListGroup } from 'reactstrap';
 import blueCoin from '../../../../assets/png/blueCoin.png';
 import goldCoin from '../../../../assets/png/goldCoin.png';
 import greenCoin from '../../../../assets/png/greenCoin.png';
@@ -7,6 +7,7 @@ import redCoin from '../../../../assets/png/redCoin.png';
 import whiteCoin from '../../../../assets/png/whiteCoin.png';
 import { GroupDetails as GroupDetailsType } from '../../../../data/types/elections';
 import Anchor from '../../reusable/Anchor';
+import Spinner from '../../reusable/Spinner';
 
 const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
   <ListGroupItem className="pr-0 pl-0" style={{ backgroundColor: '#dee2e6', border: 'none', borderRadius: 0 }}>
@@ -97,9 +98,7 @@ const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
               </ListGroup>
             </Col>
           ) : (
-            <div className="pt-4 pb-4">
-              <Spinner type="grow" color="warning" />
-            </div>
+            <Spinner />
           )}
         </Row>
       </Col>
