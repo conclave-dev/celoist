@@ -31,7 +31,7 @@ export class Governance extends PureComponent<Props> {
       <Container fluid>
         <Header
           title="Governance"
-          subtitle="Improvements and fixes proposed by the community"
+          subtitle="Improvements and fixes proposed by Celo community members"
           inProgress={inProgress}
         />
         <Row>

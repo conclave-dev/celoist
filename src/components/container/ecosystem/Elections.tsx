@@ -54,7 +54,11 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
 
     return (
       <Container fluid>
-        <Header title="Elections" subtitle="..." inProgress={inProgress} />
+        <Header
+          title="Elections"
+          subtitle="Details about the groups participating in Celo's elections and earning rewards for their voters"
+          inProgress={inProgress}
+        />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Groups>
