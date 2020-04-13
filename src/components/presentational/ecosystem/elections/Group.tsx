@@ -38,32 +38,7 @@ const Group = ({
     <>
       <ListGroupItem key={key}>
         <Row className="align-items-center" style={{ flexWrap: 'nowrap' }}>
-          <Col sm={7} xs={6} className="text-truncate">
-            <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${group.address}`} color="#3488ec">
-              {group.address}
-            </Anchor>
-          </Col>
-          <Col sm={4} xs={5} style={{ paddingRight: 5, paddingLeft: 5 }}>
-            <div style={{ position: 'relative', height: 36 }}>
-              <Progress
-                animated
-                style={{ height: '100%', width: '100%', position: 'absolute' }}
-                color="warning"
-                className="text-truncate"
-                value={votes
-                  .dividedBy(capacity)
-                  .multipliedBy(100)
-                  .toNumber()}
-              />
-              <div
-                className="d-flex justify-content-center align-items-center text-truncate"
-                style={{ height: '100%', width: '100%', position: 'absolute', fontSize: 14 }}
-              >
-                {formatBigInt(votes)}
-              </div>
-            </div>
-          </Col>
-          <Col sm={1} xs={1} className="d-flex justify-content-center">
+          <Col xs={1} className="d-flex justify-content-center">
             <Button
               outline
               id={group.address}
@@ -83,6 +58,34 @@ const Group = ({
                 style={{ color: showButton ? '#35D07F' : '#9ca8b3', width: 12 }}
               />
             </Button>
+          </Col>
+          <Col xs={3} className="text-truncate">
+            {group.name || 'N/A'}
+          </Col>
+          <Col xs={4} className="text-truncate">
+            <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${group.address}`} color="#3488ec">
+              {group.address}
+            </Anchor>
+          </Col>
+          <Col xs={4}>
+            <div style={{ position: 'relative', height: 36 }}>
+              <Progress
+                animated
+                style={{ height: '100%', width: '100%', position: 'absolute' }}
+                color="warning"
+                className="text-truncate"
+                value={votes
+                  .dividedBy(capacity)
+                  .multipliedBy(100)
+                  .toNumber()}
+              />
+              <div
+                className="d-flex justify-content-center align-items-center text-truncate"
+                style={{ height: '100%', width: '100%', position: 'absolute', fontSize: 14 }}
+              >
+                {formatBigInt(votes)}
+              </div>
+            </div>
           </Col>
         </Row>
       </ListGroupItem>

@@ -4,24 +4,30 @@ import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
 import vote from '../../../../assets/png/vote.png';
 import group from '../../../../assets/png/group.png';
 
-const Groups = ({ children }: { children: any }) => (
+const Groups = ({ children }: { children: JSX.Element | JSX.Element[] }) => (
   <Col xl={12}>
     <ListGroup>
       <ListGroupItem>
         <Row className="align-items-center">
-          <Col sm={7} xs={6}>
-            <img src={group} style={{ width: 24 }} alt="Group icon" />
+          <Col xs={1} className="d-flex justify-content-center">
+            <img src={group} style={{ width: 24 }} alt="Group icon" className="mr-1" />
+          </Col>
+          <Col xs={3}>
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
-              Group
+              Name
             </span>
           </Col>
-          <Col sm={4} xs={4} style={{ paddingRight: 5, paddingLeft: 5 }}>
+          <Col xs={4}>
+            <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
+              Address
+            </span>
+          </Col>
+          <Col xs={4}>
             <img src={vote} style={{ width: 24 }} alt="Votes icon" />
             <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>
               Votes
             </span>
           </Col>
-          <Col sm={1} xs={2} />
         </Row>
       </ListGroupItem>
       {children}
