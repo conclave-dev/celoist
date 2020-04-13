@@ -27,7 +27,7 @@ class Home extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    if (isEmpty(props.blogs)) {
+    if (isEmpty(props.blogsById)) {
       this.props.fetchBlogs();
     }
 
@@ -60,7 +60,11 @@ class Home extends PureComponent<Props> {
 
     return (
       <Container fluid>
-        <Header title="Home" subtitle="Our ecosystem in a nutshell" inProgress={inProgress} />
+        <Header
+          title="Home"
+          subtitle="Our ecosystem in a nutshell"
+          inProgress={inProgress || groupTotalVotes.isZero()}
+        />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Col lg={6} xs={12} className="mb-4">

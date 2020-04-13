@@ -1,12 +1,13 @@
 import React, { memo, useState } from 'react';
 import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import { fetchGroupDetails, setSelectedGroupId } from '../../../../data/actions/elections';
 import { Group as GroupType } from '../../../../data/types/elections';
 import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
 import { formatBigInt } from '../../../../util/numbers';
 import GroupDetails from './GroupDetails';
-import BigNumber from 'bignumber.js';
+import Anchor from '../../reusable/Anchor';
 
 const groupSelector = makeGroupDetailsSelector();
 
@@ -38,7 +39,9 @@ const Group = ({
       <ListGroupItem key={key}>
         <Row className="align-items-center" style={{ flexWrap: 'nowrap' }}>
           <Col sm={7} xs={6} className="text-truncate">
-            {group.address}
+            <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${group.address}`} color="#3488ec">
+              {group.address}
+            </Anchor>
           </Col>
           <Col sm={4} xs={5} style={{ paddingRight: 5, paddingLeft: 5 }}>
             <div style={{ position: 'relative', height: 36 }}>

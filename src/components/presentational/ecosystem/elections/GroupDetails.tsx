@@ -6,6 +6,7 @@ import greenCoin from '../../../../assets/png/greenCoin.png';
 import redCoin from '../../../../assets/png/redCoin.png';
 import whiteCoin from '../../../../assets/png/whiteCoin.png';
 import { GroupDetails as GroupDetailsType } from '../../../../data/types/elections';
+import Anchor from '../../reusable/Anchor';
 
 const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
   <ListGroupItem className="pr-0 pl-0" style={{ backgroundColor: '#dee2e6', border: 'none', borderRadius: 0 }}>
@@ -76,7 +77,14 @@ const GroupDetails = ({ groupDetails }: { groupDetails: GroupDetailsType }) => (
                         <p className="text-secondary text-center text-truncate">{member.name || 'N/A'}</p>
                       </Col>
                       <Col xs={4}>
-                        <p className="text-secondary text-center text-truncate">{member.address}</p>
+                        <p className="text-secondary text-center text-truncate">
+                          <Anchor
+                            href={`https://baklava-blockscout.celo-testnet.org/address/${member.address}`}
+                            color="#3488ec"
+                          >
+                            {member.address}
+                          </Anchor>
+                        </p>
                       </Col>
                       <Col xs={4}>
                         <p className="text-secondary text-center text-truncate">
