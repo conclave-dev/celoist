@@ -41,18 +41,24 @@ const Group = ({
             {group.address}
           </Col>
           <Col sm={4} xs={4}>
-            <Progress
-              animated
-              style={{ height: 30 }}
-              color="warning"
-              className="text-truncate"
-              value={votes
-                .dividedBy(capacity)
-                .multipliedBy(100)
-                .toNumber()}
-            >
-              <span className="text-truncate">{formatBigInt(votes)}</span>
-            </Progress>
+            <div style={{ position: 'relative', height: 36 }}>
+              <Progress
+                animated
+                style={{ height: '100%', width: '100%', position: 'absolute' }}
+                color="warning"
+                className="text-truncate"
+                value={votes
+                  .dividedBy(capacity)
+                  .multipliedBy(100)
+                  .toNumber()}
+              />
+              <div
+                className="d-flex justify-content-center align-items-center text-truncate"
+                style={{ height: '100%', width: '100%', position: 'absolute' }}
+              >
+                {formatBigInt(votes)}
+              </div>
+            </div>
           </Col>
           <Col sm={1} xs={2}>
             <Button
