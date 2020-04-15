@@ -2,7 +2,6 @@ import { BigNumber } from 'bignumber.js';
 
 export type GroupId = string;
 export type GroupsById = { [key: string]: Group };
-export type GroupDetailsById = { [key: string]: GroupDetails };
 export type AllGroupIds = GroupId[];
 export type GroupVotes = BigNumber;
 
@@ -11,15 +10,6 @@ export interface Group {
   name: string;
   votes: GroupVotes;
   capacity: GroupVotes;
-}
-
-export interface GroupDetails {
-  address: GroupId;
-  capacity: GroupVotes;
-  eligible: boolean;
-  members: GroupMember[];
-  commission: BigNumber;
-  slashingMultiplier: BigNumber;
 }
 
 export interface GroupMember {

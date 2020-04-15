@@ -1,26 +1,19 @@
-import { FETCH_GROUPS, FETCH_GROUP_DETAILS } from './actions';
+import { FETCH_ELECTION } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { getGroups, getElectedGroupDetails } from '../fetch/elections';
+import { populateElection } from '../fetch/elections';
 
-const fetchGroups = () => async dispatch => {
-  handleInit(dispatch, FETCH_GROUPS);
+const fetchElection = (blockNumber?: number) => async dispatch => {
+  handleInit(dispatch, FETCH_ELECTION);
 
   try {
-    const { groupsById, allGroupIds } = await getGroups();
-    return handleData(dispatch, FETCH_GROUPS, { groupsById, allGroupIds });
+    const { groupsById, allGroupIds } = await populateElection(blockNumber);
+    return handleData(dispatch, FETCH_ELECTION, {
+      groupsById,
+      allGroupIds
+    });
   } catch (err) {
-    return handleError(dispatch, FETCH_GROUPS, { err });
+    return handleError(dispatch, FETCH_ELECTION, { err });
   }
 };
 
-const fetchGroupDetails = (groupId: string) => async dispatch => {
-  handleInit(dispatch, FETCH_GROUP_DETAILS);
-
-  try {
-    return handleData(dispatch, FETCH_GROUP_DETAILS, { groupDetails: await getElectedGroupDetails(groupId), groupId });
-  } catch (err) {
-    return handleError(dispatch, FETCH_GROUP_DETAILS, { err });
-  }
-};
-
-export { fetchGroups, fetchGroupDetails };
+export { fetchElection };

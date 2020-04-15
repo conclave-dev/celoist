@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import { fetchGroups } from '../../../data/actions/elections';
+import { fetchElection } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
@@ -15,19 +15,17 @@ import score from '../../../assets/png/score.png';
 const electionsSelector = makeElectionsSelector();
 
 const mapState = state => electionsSelector(state);
-const mapDispatch = { fetchGroups };
+const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
+class Elections extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    if (!props.allGroupIds.length) {
-      this.props.fetchGroups();
-    }
+    props.fetchElection();
   }
 
   render = () => {

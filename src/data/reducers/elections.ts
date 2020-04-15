@@ -1,53 +1,36 @@
-import { FETCH_GROUPS, FETCH_GROUP_DETAILS } from '../actions/actions';
+import { FETCH_ELECTION } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { GroupsById, GroupDetailsById, AllGroupIds } from '../types/elections';
+import { GroupsById, AllGroupIds } from '../types/elections';
 
 interface Elections {
   groupsById: GroupsById;
-  groupDetailsById: GroupDetailsById;
   allGroupIds: AllGroupIds;
 }
 
-interface FetchGroups {
+interface FetchElection {
   groupsById: GroupsById;
-  allGroupIds: GroupDetailsById;
-}
-
-interface FetchGroupDetails {
-  groupDetails: AllGroupIds;
-  groupId: string;
+  allGroupIds: AllGroupIds;
 }
 
 const elections: Elections = {
   groupsById: {},
-  groupDetailsById: {},
   allGroupIds: []
 };
 
 const initialState = initialStateDecorator(elections);
 
-const fetchGroups = (state, { groupsById, allGroupIds }: FetchGroups) => ({
+const fetchElection = (state, { groupsById, allGroupIds }): FetchElection => ({
   ...state,
   groupsById,
   allGroupIds
-});
-
-const fetchGroupDetails = (state, { groupDetails, groupId }: FetchGroupDetails) => ({
-  ...state,
-  groupDetailsById: {
-    ...state.groupDetailsById,
-    [groupId]: groupDetails
-  }
 });
 
 export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case FETCH_GROUPS:
-      return evalActionPayload(state, action, fetchGroups);
-    case FETCH_GROUP_DETAILS:
-      return evalActionPayload(state, action, fetchGroupDetails);
+    case FETCH_ELECTION:
+      return evalActionPayload(state, action, fetchElection);
     default:
       return state;
   }

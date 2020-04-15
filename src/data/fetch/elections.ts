@@ -1,62 +1,32 @@
 import { newKit } from '@celo/contractkit';
-import { Promise } from 'bluebird';
-import { rpcChain, wsChain } from './api';
-import { ElectionWrapper } from '@celo/contractkit/lib/wrappers/Election';
-import { ValidatorsWrapper } from '@celo/contractkit/lib/wrappers/Validators';
+import { rpcChain } from './api';
+import { backendFetch } from './util';
+import BigNumber from 'bignumber.js';
 
 const kit = newKit(rpcChain);
-const wsKit = newKit(wsChain);
 
-// Call setProvider to override contractkit's default HTTP provider
-wsKit.web3.setProvider(wsChain);
+const populateElection = async (blockNumber?: number) => {
+  const { groups, groupAddresses, groupVotes } = await backendFetch('/celo/election', {
+    blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber())
+  });
 
-const contracts: { election?: ElectionWrapper; validators?: ValidatorsWrapper } = {};
-
-const getElection = async () => {
-  if (!contracts.election) {
-    contracts.election = await kit.contracts.getElection();
-  }
-
-  return contracts.election;
-};
-
-const getValidators = async () => {
-  if (!contracts.validators) {
-    contracts.validators = await kit.contracts.getValidators();
-  }
-
-  return contracts.validators;
-};
-
-const getGroups = async () => {
-  const election = await getElection();
-
-  const groups = await Promise.reduce(
-    await election.getValidatorGroupsVotes(),
-    async (acc, group) => ({
+  return groupAddresses.reduce(
+    (acc, groupAddress, index) => ({
       groupsById: {
         ...acc.groupsById,
-        [group.address]: group
+        [groupAddress]: {
+          ...groups[groupAddress],
+          votes: new BigNumber(groupVotes[index]),
+          capacity: new BigNumber(groups[groupAddress].capacity)
+        }
       },
-      allGroupIds: [...acc.allGroupIds, group.address]
+      allGroupIds: acc.allGroupIds.concat([groupAddress])
     }),
     {
       groupsById: {},
       allGroupIds: new Array(0)
     }
   );
-
-  return groups;
 };
 
-const getElectedGroupDetails = async (groupAddress: string) => {
-  const validators = await getValidators();
-  const validatorGroup = await validators.getValidatorGroup(groupAddress);
-
-  return {
-    ...validatorGroup,
-    members: await Promise.map(validatorGroup.members, member => validators.getValidatorFromSigner(member))
-  };
-};
-
-export { getGroups, getElectedGroupDetails };
+export { populateElection };

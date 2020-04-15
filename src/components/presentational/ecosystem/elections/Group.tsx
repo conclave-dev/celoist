@@ -2,17 +2,13 @@ import React, { memo, useState } from 'react';
 import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import { fetchGroupDetails } from '../../../../data/actions/elections';
 import { Group as GroupType } from '../../../../data/types/elections';
-import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
 import { formatBigInt } from '../../../../util/numbers';
-import GroupDetails from './GroupDetails';
+// import GroupDetails from './GroupDetails';
 import Anchor from '../../reusable/Anchor';
 
-const groupSelector = makeGroupDetailsSelector();
-
-const mapState = (state, ownProps) => groupSelector(state, ownProps);
-const mapDispatch = { fetchGroupDetails };
+const mapState = (state, ownProps) => state;
+const mapDispatch = {};
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -21,16 +17,12 @@ const Group = ({
   key,
   group,
   votes,
-  capacity,
-  groupDetails,
-  fetchGroupDetails
+  capacity
 }: {
   key: string;
   group: GroupType;
   votes: BigNumber;
   capacity: BigNumber;
-  groupDetails: PropsFromRedux['groupDetails'];
-  fetchGroupDetails: PropsFromRedux['fetchGroupDetails'];
 }) => {
   const [showButton, setShowButton] = useState(false);
 
@@ -45,13 +37,7 @@ const Group = ({
               color="muted"
               className="btn btn-link waves-effect"
               style={{ margin: 0, paddingRight: 0, paddingLeft: 0 }}
-              onClick={() => {
-                setShowButton(!showButton);
-
-                if (!groupDetails) {
-                  return fetchGroupDetails(group.address);
-                }
-              }}
+              onClick={() => setShowButton(!showButton)}
             >
               <i
                 className={`mdi mdi-magnify-${showButton ? 'minus' : 'plus'}`}
@@ -75,7 +61,7 @@ const Group = ({
                 color="warning"
                 className="text-truncate"
                 value={votes
-                  .dividedBy(capacity)
+                  .dividedBy(capacity.plus(votes))
                   .multipliedBy(100)
                   .toNumber()}
               />
@@ -89,9 +75,9 @@ const Group = ({
           </Col>
         </Row>
       </ListGroupItem>
-      {showButton && <GroupDetails groupDetails={groupDetails} />}
     </>
   );
 };
+// {showButton && <GroupDetails groupDetails={groupDetails} />}
 
 export default connector(memo(Group));
