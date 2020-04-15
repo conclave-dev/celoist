@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react';
 import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import BigNumber from 'bignumber.js';
-import { fetchGroupDetails, setSelectedGroupId } from '../../../../data/actions/elections';
+import { fetchGroupDetails } from '../../../../data/actions/elections';
 import { Group as GroupType } from '../../../../data/types/elections';
 import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
 import { formatBigInt } from '../../../../util/numbers';
@@ -12,7 +12,7 @@ import Anchor from '../../reusable/Anchor';
 const groupSelector = makeGroupDetailsSelector();
 
 const mapState = (state, ownProps) => groupSelector(state, ownProps);
-const mapDispatch = { fetchGroupDetails, setSelectedGroupId };
+const mapDispatch = { fetchGroupDetails };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

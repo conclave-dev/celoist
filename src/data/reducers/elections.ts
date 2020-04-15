@@ -1,13 +1,11 @@
-import { SET_SELECTED_GROUP_ID } from './../actions/actions';
 import { FETCH_GROUPS, FETCH_GROUP_DETAILS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { GroupsById, GroupDetailsById, AllGroupIds, GroupId } from '../types/elections';
+import { GroupsById, GroupDetailsById, AllGroupIds } from '../types/elections';
 
 interface Elections {
   groupsById: GroupsById;
   groupDetailsById: GroupDetailsById;
   allGroupIds: AllGroupIds;
-  selectedGroupId: GroupId;
 }
 
 interface FetchGroups {
@@ -20,15 +18,10 @@ interface FetchGroupDetails {
   groupId: string;
 }
 
-interface SetSelectedGroupId {
-  selectedGroupId: string;
-}
-
 const elections: Elections = {
   groupsById: {},
   groupDetailsById: {},
-  allGroupIds: [],
-  selectedGroupId: ''
+  allGroupIds: []
 };
 
 const initialState = initialStateDecorator(elections);
@@ -47,11 +40,6 @@ const fetchGroupDetails = (state, { groupDetails, groupId }: FetchGroupDetails) 
   }
 });
 
-const setSelectedGroupId = (state, { selectedGroupId }: SetSelectedGroupId) => ({
-  ...state,
-  selectedGroupId
-});
-
 export default (state = initialState, action) => {
   const { type } = action;
 
@@ -60,8 +48,6 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, fetchGroups);
     case FETCH_GROUP_DETAILS:
       return evalActionPayload(state, action, fetchGroupDetails);
-    case SET_SELECTED_GROUP_ID:
-      return evalActionPayload(state, action, setSelectedGroupId);
     default:
       return state;
   }

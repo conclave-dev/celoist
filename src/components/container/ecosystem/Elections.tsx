@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Card, Row, Col } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import { fetchGroups } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';

@@ -28,10 +28,10 @@ const getValidators = async () => {
   return contracts.validators;
 };
 
-const getEligibleGroups = async () => {
+const getGroups = async () => {
   const election = await getElection();
 
-  const eligibleGroups = await Promise.reduce(
+  const groups = await Promise.reduce(
     await election.getValidatorGroupsVotes(),
     async (acc, group) => ({
       groupsById: {
@@ -46,12 +46,12 @@ const getEligibleGroups = async () => {
     }
   );
 
-  return eligibleGroups;
+  return groups;
 };
 
 const getElectedGroupDetails = async (groupAddress: string) => {
   const validators = await getValidators();
-  const validatorGroup = await validators.getValidatorGroup(groupAddress, true);
+  const validatorGroup = await validators.getValidatorGroup(groupAddress);
 
   return {
     ...validatorGroup,
@@ -59,4 +59,4 @@ const getElectedGroupDetails = async (groupAddress: string) => {
   };
 };
 
-export { getEligibleGroups, getElectedGroupDetails };
+export { getGroups, getElectedGroupDetails };

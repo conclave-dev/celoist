@@ -1,12 +1,11 @@
 import { createSelector } from 'reselect';
 import BigNumber from 'bignumber.js';
-import { Group, GroupsById, GroupDetails, AllGroupIds, GroupId } from '../types/elections';
+import { Group, GroupsById, GroupDetails, AllGroupIds } from '../types/elections';
 
 type GetGroupsById = { elections: { groupsById: GroupsById } };
 type GetAllGroupIds = { elections: { allGroupIds: AllGroupIds } };
 type GetGroupDetailsById = { elections: { groupDetailsById: GroupDetails } };
 type GetGroupDetailsByIdProps = { group: Group };
-type GetSelectedGroupId = { elections: { selectedGroupId: GroupId } };
 type ElectionsCreateSelector = {
   groupsById: GroupsById;
   allGroupIds: AllGroupIds;
