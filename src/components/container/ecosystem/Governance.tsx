@@ -4,7 +4,7 @@ import { isEmpty, map } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
 import { fetchProposals } from '../../../data/actions/governance';
-import { formatBigInt } from '../../../util/numbers';
+import { formatVotes } from '../../../util/numbers';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
 import Menu from '../../presentational/ecosystem/governance/Menu';
 
@@ -44,7 +44,7 @@ export class Governance extends PureComponent<Props> {
               const { proposer, deposit } = metadata;
               const proposerStart = proposer.substring(0, 4);
               const proposerEnd = proposer.substring(proposer.length - 4);
-              const metadataString = `By ${proposerStart}...${proposerEnd} (${formatBigInt(deposit)} cGLD deposit)`;
+              const metadataString = `By ${proposerStart}...${proposerEnd} (${formatVotes(deposit)} cGLD deposit)`;
               return (
                 <Proposal
                   key={proposalID}

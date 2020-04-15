@@ -1,10 +1,11 @@
 import { FETCH_ELECTION } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { GroupsById, AllGroupIds } from '../types/elections';
+import { GroupsById, AllGroupIds, Config } from '../types/elections';
 
 interface Elections {
   groupsById: GroupsById;
   allGroupIds: AllGroupIds;
+  config: Config;
 }
 
 interface FetchElection {
@@ -14,15 +15,17 @@ interface FetchElection {
 
 const elections: Elections = {
   groupsById: {},
-  allGroupIds: []
+  allGroupIds: [],
+  config: {}
 };
 
 const initialState = initialStateDecorator(elections);
 
-const fetchElection = (state, { groupsById, allGroupIds }): FetchElection => ({
+const fetchElection = (state, { groupsById, allGroupIds, config }): FetchElection => ({
   ...state,
   groupsById,
-  allGroupIds
+  allGroupIds,
+  config
 });
 
 export default (state = initialState, action) => {

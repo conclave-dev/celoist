@@ -9,7 +9,6 @@ import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { fetchBlogs } from '../../../data/actions/home';
 import { fetchProposals } from '../../../data/actions/governance';
 import { makeHomeSelector } from '../../../data/selectors/home';
-import { formatBigInt } from '../../../util/numbers';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
 
@@ -36,14 +35,14 @@ class Home extends PureComponent<Props> {
   }
 
   render = () => {
-    const { blogsById, allBlogIds, groupTotalVotes, proposalsById, inProgress } = this.props;
+    const { blogsById, allBlogIds, proposalsById, inProgress } = this.props;
     const numProposals = Object.keys(proposalsById).length;
     const summaryItems = [
       {
         imgSrc: vote,
         text: 'Election Votes',
         backgroundColor: 'green',
-        value: formatBigInt(groupTotalVotes)
+        value: 0
       },
       {
         imgSrc: proposal,
@@ -55,11 +54,7 @@ class Home extends PureComponent<Props> {
 
     return (
       <Container fluid>
-        <Header
-          title="Home"
-          subtitle="Our ecosystem in a nutshell"
-          inProgress={inProgress || groupTotalVotes.isZero()}
-        />
+        <Header title="Home" subtitle="Our ecosystem in a nutshell" inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Col lg={6} xs={12} className="mb-4">

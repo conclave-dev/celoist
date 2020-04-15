@@ -1,13 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row } from 'reactstrap';
 import { fetchElection } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
-import Spinner from '../../presentational/reusable/Spinner';
 import Groups from '../../presentational/ecosystem/elections/Groups';
-import Group from '../../presentational/ecosystem/elections/Group';
 import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
@@ -29,7 +27,7 @@ class Elections extends PureComponent<Props> {
   }
 
   render = () => {
-    const { groupsById, allGroupIds, inProgress } = this.props;
+    const { groupsById, allGroupIds, config, inProgress } = this.props;
     const summaryItems = [
       {
         imgSrc: goldCoin,
@@ -60,19 +58,7 @@ class Elections extends PureComponent<Props> {
         />
         <Summary summaryItems={summaryItems} />
         <Row>
-          <Groups>
-            {allGroupIds.length ? (
-              allGroupIds.map(groupId => {
-                const group = groupsById[groupId];
-                const { address, votes, capacity } = group;
-                return <Group key={address} group={group} votes={votes} capacity={capacity} />;
-              })
-            ) : (
-              <Col xs={12}>
-                <Spinner />
-              </Col>
-            )}
-          </Groups>
+          <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />
         </Row>
       </Container>
     );
