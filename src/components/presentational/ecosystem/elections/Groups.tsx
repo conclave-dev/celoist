@@ -9,7 +9,7 @@ import group from '../../../../assets/png/group.png';
 
 const GroupsLargeScreens = () => (
   <ListGroupItem className="d-none d-lg-block">
-    <Row noGutters className="align-items-center">
+    <Row noGutters className="align-items-center pt-1 pb-1">
       <Col lg={2}>
         <img src={group} style={{ width: 24 }} alt="Group icon" className="mr-1" />
         <span className="text-muted" style={{ fontWeight: 400, fontSize: 14 }}>

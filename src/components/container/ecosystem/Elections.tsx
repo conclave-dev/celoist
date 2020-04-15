@@ -23,7 +23,9 @@ class Elections extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    props.fetchElection();
+    if (!props.allGroupIds.length) {
+      props.fetchElection();
+    }
   }
 
   render = () => {
