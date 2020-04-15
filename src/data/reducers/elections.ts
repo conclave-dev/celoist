@@ -1,67 +1,39 @@
-import { SET_SELECTED_GROUP_ID } from './../actions/actions';
-import { FETCH_GROUPS, FETCH_GROUP_DETAILS } from '../actions/actions';
+import { FETCH_ELECTION } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { GroupsById, GroupDetailsById, AllGroupIds, GroupId } from '../types/elections';
+import { GroupsById, AllGroupIds, Config } from '../types/elections';
 
 interface Elections {
   groupsById: GroupsById;
-  groupDetailsById: GroupDetailsById;
   allGroupIds: AllGroupIds;
-  selectedGroupId: GroupId;
+  config: Config;
 }
 
-interface FetchGroups {
+interface FetchElection {
   groupsById: GroupsById;
-  allGroupIds: GroupDetailsById;
-}
-
-interface FetchGroupDetails {
-  groupDetails: AllGroupIds;
-  groupId: string;
-}
-
-interface SetSelectedGroupId {
-  selectedGroupId: string;
+  allGroupIds: AllGroupIds;
 }
 
 const elections: Elections = {
   groupsById: {},
-  groupDetailsById: {},
   allGroupIds: [],
-  selectedGroupId: ''
+  config: {}
 };
 
 const initialState = initialStateDecorator(elections);
 
-const fetchGroups = (state, { groupsById, allGroupIds }: FetchGroups) => ({
+const fetchElection = (state, { groupsById, allGroupIds, config }): FetchElection => ({
   ...state,
   groupsById,
-  allGroupIds
-});
-
-const fetchGroupDetails = (state, { groupDetails, groupId }: FetchGroupDetails) => ({
-  ...state,
-  groupDetailsById: {
-    ...state.groupDetailsById,
-    [groupId]: groupDetails
-  }
-});
-
-const setSelectedGroupId = (state, { selectedGroupId }: SetSelectedGroupId) => ({
-  ...state,
-  selectedGroupId
+  allGroupIds,
+  config
 });
 
 export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case FETCH_GROUPS:
-      return evalActionPayload(state, action, fetchGroups);
-    case FETCH_GROUP_DETAILS:
-      return evalActionPayload(state, action, fetchGroupDetails);
-    case SET_SELECTED_GROUP_ID:
-      return evalActionPayload(state, action, setSelectedGroupId);
+    case FETCH_ELECTION:
+      return evalActionPayload(state, action, fetchElection);
     default:
       return state;
   }

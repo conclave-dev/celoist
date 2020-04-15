@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/browser';
-
 const handleInit = (dispatch, type) =>
   dispatch({
     type,

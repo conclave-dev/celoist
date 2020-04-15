@@ -1,51 +1,33 @@
 import { createSelector } from 'reselect';
-import BigNumber from 'bignumber.js';
-import { Group, GroupsById, GroupDetails, AllGroupIds, GroupId } from '../types/elections';
+import { GroupsById, AllGroupIds, Config } from '../types/elections';
 
 type GetGroupsById = { elections: { groupsById: GroupsById } };
 type GetAllGroupIds = { elections: { allGroupIds: AllGroupIds } };
-type GetGroupDetailsById = { elections: { groupDetailsById: GroupDetails } };
-type GetGroupDetailsByIdProps = { group: Group };
-type GetSelectedGroupId = { elections: { selectedGroupId: GroupId } };
+type GetConfig = { elections: { config: Config } };
 type ElectionsCreateSelector = {
   groupsById: GroupsById;
   allGroupIds: AllGroupIds;
+  config: Config;
   inProgress: boolean;
-};
-type GroupDetailsCreateSelector = {
-  groupDetails: GroupDetails;
 };
 
 const getInProgress = ({ elections: { inProgress } }) => inProgress;
 
 const getGroupsById = ({ elections: { groupsById } }: GetGroupsById) => groupsById;
 
+const getConfig = ({ elections: { config } }: GetConfig) => config;
+
 const getAllGroupIds = ({ elections: { allGroupIds } }: GetAllGroupIds) => allGroupIds;
-
-const getGroupDetailsById = (
-  { elections: { groupDetailsById } }: GetGroupDetailsById,
-  props: GetGroupDetailsByIdProps
-) => props.group && props.group.address && groupDetailsById[props.group.address];
-
-const getGroupTotalVotes = ({ elections: { allGroupIds, groupsById } }) =>
-  allGroupIds.reduce((groupTotalVotes, groupId) => groupTotalVotes.plus(groupsById[groupId].votes), new BigNumber(0));
 
 const makeElectionsSelector = () =>
   createSelector(
-    [getGroupsById, getAllGroupIds, getInProgress],
-    (groupsById, allGroupIds, inProgress): ElectionsCreateSelector => ({
+    [getGroupsById, getAllGroupIds, getConfig, getInProgress],
+    (groupsById, allGroupIds, config, inProgress): ElectionsCreateSelector => ({
       groupsById,
       allGroupIds,
+      config,
       inProgress
     })
   );
 
-const makeGroupDetailsSelector = () =>
-  createSelector(
-    [getGroupDetailsById],
-    (groupDetails): GroupDetailsCreateSelector => ({
-      groupDetails
-    })
-  );
-
-export { getGroupsById, getGroupTotalVotes, getInProgress, makeElectionsSelector, makeGroupDetailsSelector };
+export { getGroupsById, getInProgress, makeElectionsSelector };

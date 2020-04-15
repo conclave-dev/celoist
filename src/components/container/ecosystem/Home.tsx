@@ -7,17 +7,15 @@ import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { fetchBlogs } from '../../../data/actions/home';
-import { fetchGroups } from '../../../data/actions/elections';
 import { fetchProposals } from '../../../data/actions/governance';
 import { makeHomeSelector } from '../../../data/selectors/home';
-import { formatBigInt } from '../../../util/numbers';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
 
 const homeSelector = makeHomeSelector();
 
 const mapState = state => homeSelector(state);
-const mapDispatch = { fetchBlogs, fetchGroups, fetchProposals };
+const mapDispatch = { fetchBlogs, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -27,12 +25,8 @@ class Home extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    if (isEmpty(props.blogs)) {
+    if (isEmpty(props.blogsById)) {
       this.props.fetchBlogs();
-    }
-
-    if (props.groupTotalVotes.isZero()) {
-      this.props.fetchGroups();
     }
 
     if (isEmpty(props.proposalsById)) {
@@ -41,14 +35,14 @@ class Home extends PureComponent<Props> {
   }
 
   render = () => {
-    const { blogsById, allBlogIds, groupTotalVotes, proposalsById, inProgress } = this.props;
+    const { blogsById, allBlogIds, proposalsById, inProgress } = this.props;
     const numProposals = Object.keys(proposalsById).length;
     const summaryItems = [
       {
         imgSrc: vote,
         text: 'Election Votes',
         backgroundColor: 'green',
-        value: formatBigInt(groupTotalVotes)
+        value: 0
       },
       {
         imgSrc: proposal,

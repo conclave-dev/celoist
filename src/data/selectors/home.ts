@@ -1,15 +1,12 @@
 import { createSelector } from 'reselect';
 import { getProposalsById, getInProgress as getGovernanceInProgress } from './governance';
-import { getGroupTotalVotes } from './elections';
 import { BlogsById, AllBlogIds } from '../types/home';
-import { GroupVotes } from '../types/elections';
 import { ProposalsById } from '../types/governance';
 
 type HomeCreateSelector = {
   blogsById: BlogsById;
   allBlogIds: AllBlogIds;
   proposalsById: ProposalsById;
-  groupTotalVotes: GroupVotes;
   inProgress: boolean;
 };
 
@@ -22,12 +19,11 @@ const getBlogs = state => ({
 
 const makeHomeSelector = () =>
   createSelector(
-    [getBlogs, getProposalsById, getGroupTotalVotes, getInProgress],
-    ({ blogsById, allBlogIds }, { proposalsById }, groupTotalVotes, inProgress): HomeCreateSelector => ({
+    [getBlogs, getProposalsById, getInProgress],
+    ({ blogsById, allBlogIds }, { proposalsById }, inProgress): HomeCreateSelector => ({
       blogsById,
       allBlogIds,
       proposalsById,
-      groupTotalVotes,
       inProgress
     })
   );

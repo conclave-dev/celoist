@@ -1,13 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Container, Row, Spinner } from 'reactstrap';
-import { fetchGroups, fetchGroupDetails } from '../../../data/actions/elections';
+import { Container, Row } from 'reactstrap';
+import { fetchElection } from '../../../data/actions/elections';
 import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
-import Group from '../../presentational/ecosystem/elections/Group';
-import { formatBigInt } from '../../../util/numbers';
 import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
@@ -15,23 +13,23 @@ import score from '../../../assets/png/score.png';
 const electionsSelector = makeElectionsSelector();
 
 const mapState = state => electionsSelector(state);
-const mapDispatch = { fetchGroups, fetchGroupDetails };
+const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
+class Elections extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
     if (!props.allGroupIds.length) {
-      this.props.fetchGroups();
+      props.fetchElection();
     }
   }
 
   render = () => {
-    const { groupsById, allGroupIds, inProgress } = this.props;
+    const { groupsById, allGroupIds, config, inProgress } = this.props;
     const summaryItems = [
       {
         imgSrc: goldCoin,
@@ -55,30 +53,14 @@ class Elections extends PureComponent<Props, { selectedGroupAddress: string }> {
 
     return (
       <Container fluid>
-        <Header title="Elections" subtitle="..." inProgress={inProgress} />
+        <Header
+          title="Elections"
+          subtitle="Details about groups participating in elections and earning rewards for their voters"
+          inProgress={inProgress}
+        />
         <Summary summaryItems={summaryItems} />
         <Row>
-          <Groups>
-            {allGroupIds.length ? (
-              allGroupIds.map(groupId => {
-                const group = groupsById[groupId];
-                const { address, votes, capacity } = group;
-                const voteCapacity = capacity.isZero() ? votes : capacity;
-                const voteCapacityFilled = votes.div(voteCapacity).toNumber() * 100;
-
-                return (
-                  <Group
-                    key={address}
-                    group={group}
-                    votes={formatBigInt(votes)}
-                    voteCapacityFilled={voteCapacityFilled}
-                  />
-                );
-              })
-            ) : (
-              <Spinner type="grow" color="warning" />
-            )}
-          </Groups>
+          <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />
         </Row>
       </Container>
     );

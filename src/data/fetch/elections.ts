@@ -1,22 +1,49 @@
 import { newKit } from '@celo/contractkit';
-import { Promise } from 'bluebird';
-import { chain } from './api';
+import { reduce } from 'lodash';
+import { rpcChain } from './api';
+import { backendFetch } from './util';
+import BigNumber from 'bignumber.js';
 
-const kit = newKit(chain);
+const kit = newKit(rpcChain);
 
-const getElection = () => kit.contracts.getElection();
-const getValidators = () => kit.contracts.getValidators();
+const populateElection = async (blockNumber?: number) => {
+  const { groups, groupAddresses, groupVotes } = await backendFetch('/celo/election', {
+    blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber())
+  });
 
-const getEligibleGroups = async () => {
-  const election = await getElection();
-  return (await election.getEligibleValidatorGroupsVotes()).reduce(
-    (acc, group) => ({
-      groupsById: {
-        ...acc.groupsById,
-        [group.address]: group
-      },
-      allGroupIds: [...acc.allGroupIds, group.address]
-    }),
+  return groupAddresses.reduce(
+    (acc, groupAddress, index) => {
+      const {
+        commission,
+        nextCommission,
+        nextCommissionBlock,
+        lastSlashed,
+        slashingMultiplier,
+        capacity,
+        members,
+        memberAddresses
+      } = groups[groupAddress];
+
+      return {
+        groupsById: {
+          ...acc.groupsById,
+          [groupAddress]: {
+            ...groups[groupAddress],
+            commission: new BigNumber(commission),
+            nextCommission: new BigNumber(nextCommission),
+            nextCommissionBlock: new BigNumber(nextCommissionBlock),
+            lastSlashed: new BigNumber(lastSlashed),
+            slashingMultiplier: new BigNumber(slashingMultiplier),
+            votes: new BigNumber(groupVotes[index]),
+            capacity: new BigNumber(capacity),
+            score: reduce(members, (scoreSum, { score }) => scoreSum.plus(score), new BigNumber(0)).dividedBy(
+              memberAddresses.length
+            )
+          }
+        },
+        allGroupIds: acc.allGroupIds.concat([groupAddress])
+      };
+    },
     {
       groupsById: {},
       allGroupIds: new Array(0)
@@ -24,14 +51,10 @@ const getEligibleGroups = async () => {
   );
 };
 
-const getElectedGroupDetails = async (groupAddress: string) => {
-  const validators = await getValidators();
-  const validatorGroup = await validators.getValidatorGroup(groupAddress, true);
-
-  return {
-    ...validatorGroup,
-    members: await Promise.map(validatorGroup.members, member => validators.getValidatorFromSigner(member))
-  };
+const fetchElectionConfig = async () => {
+  const validators = await kit.contracts.getValidators();
+  const config = await validators.getConfig();
+  return config;
 };
 
-export { getEligibleGroups, getElectedGroupDetails };
+export { populateElection, fetchElectionConfig };

@@ -1,74 +1,134 @@
-import React, { memo, useState } from 'react';
-import { Progress, ListGroupItem, Button, Row, Col } from 'reactstrap';
-import { connect, ConnectedProps } from 'react-redux';
-import { fetchGroupDetails, setSelectedGroupId } from '../../../../data/actions/elections';
-import { Group as GroupType } from '../../../../data/types/elections';
-import { makeGroupDetailsSelector } from '../../../../data/selectors/elections';
-import GroupDetails from './GroupDetails';
+import React, { memo } from 'react';
+import { Progress, ListGroupItem, Row, Col } from 'reactstrap';
+import { Group as GroupType, Config } from '../../../../data/types/elections';
+import { formatSlashingMultiplier, formatCommission, formatVotes, formatScore } from '../../../../util/numbers';
+import Anchor from '../../reusable/Anchor';
 
-const groupSelector = makeGroupDetailsSelector();
-
-const mapState = (state, ownProps) => groupSelector(state, ownProps);
-const mapDispatch = { fetchGroupDetails, setSelectedGroupId };
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-const Group = ({
-  key,
-  group,
-  votes,
-  voteCapacityFilled,
-  groupDetails,
-  fetchGroupDetails
+const GroupLargeScreens = ({
+  group: { name, address, commission, slashingMultiplier, votes, capacity, memberAddresses, score },
+  maxGroupSize
 }: {
-  key: string;
   group: GroupType;
-  votes: string;
-  voteCapacityFilled: number;
-  groupDetails: PropsFromRedux['groupDetails'];
-  fetchGroupDetails: PropsFromRedux['fetchGroupDetails'];
-}) => {
-  const [showButton, setShowButton] = useState(false);
+  maxGroupSize: Config['maxGroupSize'];
+}) => (
+  <ListGroupItem className="d-none d-lg-block">
+    <Row noGutters className="align-items-center" style={{ flexWrap: 'nowrap' }}>
+      <Col lg={2} className="text-truncate">
+        <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}`} color="#3488ec">
+          {name || address}
+        </Anchor>
+      </Col>
+      <Col lg={2} className="text-truncate text-center">
+        {formatCommission(commission)}%
+      </Col>
+      <Col lg={2} className="text-truncate text-center">
+        <span>{`${memberAddresses.length}/${maxGroupSize || '?'}`}</span>
+      </Col>
+      <Col lg={2} className="text-truncate text-center">
+        {formatScore(score)}/100
+      </Col>
+      <Col lg={2} className="text-truncate text-center">
+        {formatSlashingMultiplier(slashingMultiplier)}x
+      </Col>
+      <Col lg={2} style={{ position: 'relative', height: 30 }}>
+        <Progress
+          animated
+          style={{ height: '100%', width: '100%', position: 'absolute' }}
+          color="warning"
+          className="text-truncate"
+          value={votes
+            .dividedBy(capacity)
+            .multipliedBy(100)
+            .toNumber()}
+        />
+        <div
+          className="d-flex justify-content-center align-items-center text-truncate"
+          style={{ height: '100%', width: '100%', position: 'absolute', fontSize: 14 }}
+        >
+          {formatVotes(votes)}
+        </div>
+      </Col>
+    </Row>
+  </ListGroupItem>
+);
 
+const GroupSmallScreens = ({
+  group: { name, address, commission, slashingMultiplier, votes, capacity, memberAddresses, score },
+  maxGroupSize
+}: {
+  group: GroupType;
+  maxGroupSize: Config['maxGroupSize'];
+}) => (
+  <ListGroupItem className="d-block d-lg-none">
+    <Row noGutters style={{ flexWrap: 'nowrap' }} className="pt-3 pb-3">
+      <Col xs={6}>
+        <Row noGutters style={{ height: 36 }} className="mb-2 ">
+          <span className="text-truncate">Name</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">Commission</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">Score</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">Penalties</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">Members</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }}>
+          <span className="text-truncate">Votes</span>
+        </Row>
+      </Col>
+      <Col xs={6}>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}`} color="#3488ec">
+            {name || address}
+          </Anchor>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">{formatCommission(commission)}%</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">{formatScore(score)}/100</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">{formatSlashingMultiplier(slashingMultiplier)}x</span>
+        </Row>
+        <Row noGutters style={{ height: 36 }} className="mb-2">
+          <span className="text-truncate">{`${memberAddresses.length}/${maxGroupSize || '?'}`}</span>
+        </Row>
+        <Row noGutters style={{ position: 'relative', height: 36 }}>
+          <Progress
+            animated
+            style={{ height: '75%', width: '95%', position: 'absolute' }}
+            color="warning"
+            className="text-truncate"
+            value={votes
+              .dividedBy(capacity)
+              .multipliedBy(100)
+              .toNumber()}
+          />
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: '75%', width: '95%', position: 'absolute', fontSize: 14 }}
+          >
+            <span className="text-truncate">{formatVotes(votes)}</span>
+          </div>
+        </Row>
+      </Col>
+    </Row>
+  </ListGroupItem>
+);
+
+const Group = ({ group, maxGroupSize }: { group: GroupType; maxGroupSize: Config['maxGroupSize'] }) => {
   return (
     <>
-      <ListGroupItem key={key}>
-        <Row className="align-items-center" style={{ flexWrap: 'nowrap' }}>
-          <Col sm={7} xs={6} className="text-truncate">
-            {group.address}
-          </Col>
-          <Col sm={4} xs={4}>
-            <Progress style={{ height: 36 }} max={100} color="warning" value={voteCapacityFilled}>
-              {votes}
-            </Progress>
-          </Col>
-          <Col sm={1} xs={2}>
-            <Button
-              outline
-              id={group.address}
-              color="muted"
-              className="btn btn-link waves-effect"
-              style={{ margin: 0 }}
-              onClick={() => {
-                setShowButton(!showButton);
-
-                if (!groupDetails) {
-                  return fetchGroupDetails(group.address);
-                }
-              }}
-            >
-              <i
-                className={`mdi mdi-magnify-${showButton ? 'minus' : 'plus'}`}
-                style={{ color: showButton ? '#35D07F' : '#9ca8b3', width: 12 }}
-              />
-            </Button>
-          </Col>
-        </Row>
-      </ListGroupItem>
-      {showButton && <GroupDetails groupDetails={groupDetails} />}
+      <GroupLargeScreens group={group} maxGroupSize={maxGroupSize} />
+      <GroupSmallScreens group={group} maxGroupSize={maxGroupSize} />
     </>
   );
 };
 
-export default connector(memo(Group));
+export default memo(Group);
