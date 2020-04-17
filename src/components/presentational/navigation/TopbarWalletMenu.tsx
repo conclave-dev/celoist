@@ -3,10 +3,10 @@ import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Spinn
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { connect, ConnectedProps } from 'react-redux';
-import { connectLedger } from '../../../data/actions/wallets';
+import { connectLedger, disconnectLedger } from '../../../data/actions/wallets';
 
 const mapState = ({ wallets: { ledger, errorMessage } }) => ({ ledger, errorMessage });
-const mapDispatch = { connectLedger };
+const mapDispatch = { connectLedger, disconnectLedger };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -30,9 +30,11 @@ class TopbarWalletMenu extends PureComponent<Props> {
       `,
       showCancelButton: true,
       showConfirmButton: true,
-      preConfirm: ({ value }) => {
+      preConfirm: () => {
         // @ts-ignore
-        if (window.document.getElementById('accountIndex').value >= 0) {
+        const value = parseInt(window.document.getElementById('accountIndex').value);
+
+        if (value >= 0) {
           SweetAlert.fire({
             title: 'Connecting...',
             html: `
@@ -92,7 +94,7 @@ class TopbarWalletMenu extends PureComponent<Props> {
           </DropdownItem>
           <div className="dropdown-divider" />
           {address ? (
-            <DropdownItem onClick={() => this.specifyAccountIndex()}>
+            <DropdownItem onClick={() => this.props.disconnectLedger()}>
               <i className="mdi mdi-close-circle align-middle mr-2" style={{ color: '#fb7c6d' }} />
               Disconnect
             </DropdownItem>
