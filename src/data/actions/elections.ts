@@ -13,7 +13,7 @@ const fetchElection = (blockNumber?: number) => async dispatch => {
       config: await fetchElectionConfig()
     });
   } catch (err) {
-    return handleError(dispatch, FETCH_ELECTION, { err });
+    return handleError(dispatch, FETCH_ELECTION, err);
   }
 };
 
