@@ -21,7 +21,7 @@ const unpackResponse = async (response: Response) => {
 const backendFetch = async (endpoint: string, data: object = {}) => {
   try {
     return unpackResponse(
-      await fetch(`${backend}/${endpoint}`, {
+      await fetch(`${backend}${endpoint}`, {
         ...defaultOptions,
         body: JSON.stringify(data)
       })
