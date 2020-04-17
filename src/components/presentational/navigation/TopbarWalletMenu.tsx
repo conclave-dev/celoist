@@ -62,7 +62,7 @@ class TopbarWalletMenu extends PureComponent<Props> {
       });
     }
 
-    if (prevProps.ledger && !prevProps.ledger.addressDerivationPath !== this.props.ledger.addressDerivationPath) {
+    if (prevProps.ledger && this.props.ledger.addressDerivationPath && !prevProps.ledger.addressDerivationPath !== this.props.ledger.addressDerivationPath) {
       return SweetAlert.fire({
         title: 'Connected',
         icon: 'success',
