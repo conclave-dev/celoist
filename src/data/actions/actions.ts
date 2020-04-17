@@ -1,3 +1,4 @@
 export const FETCH_BLOGS = 'FETCH_BLOGS';
 export const FETCH_ELECTION = 'FETCH_ELECTION';
 export const FETCH_PROPOSALS = 'FETCH_PROPOSALS';
+export const CONNECT_LEDGER = 'CONNECT_LEDGER';

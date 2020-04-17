@@ -13,16 +13,11 @@ const handleData = (dispatch, type, data) =>
     ...data
   });
 
-const handleError = (dispatch, type, error) => {
-  if (process.env.NODE_ENV !== 'production') {
-    throw error;
-  }
-
-  return dispatch({
+const handleError = (dispatch, type, error) =>
+  dispatch({
     type,
     status: error.status || 400,
     message: error.message || 'Unspecified error'
   });
-};
 
 export { handleInit, handleData, handleError };

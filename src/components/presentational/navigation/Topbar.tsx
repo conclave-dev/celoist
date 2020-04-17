@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import celoLogo from '../../../assets/svg/celo-logo.svg';
 import celoGlyph from '../../../assets/svg/celo-glyph.svg';
@@ -42,7 +42,7 @@ const Topbar = () => {
           </button>
         </div>
         <div className="d-flex">
-          <TopbarWalletMenu isOpen={false} toggle={() => {}} />
+          <TopbarWalletMenu />
         </div>
       </div>
     </header>
