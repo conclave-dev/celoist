@@ -4,11 +4,15 @@ import { rpcChain } from './api';
 import { backendFetch } from './util';
 import BigNumber from 'bignumber.js';
 
+import { setUpLedger } from './ledger';
+
+setUpLedger();
+
 const kit = newKit(rpcChain);
 
 const populateElection = async (blockNumber?: number) => {
   const { groups, groupAddresses, groupVotes } = await backendFetch('/celo/election', {
-    blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber())
+    opts: { blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber()) }
   });
 
   return groupAddresses.reduce(
