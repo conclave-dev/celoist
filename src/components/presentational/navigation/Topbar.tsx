@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import celoLogo from '../../../assets/svg/celo-logo.svg';
 import celoGlyph from '../../../assets/svg/celo-glyph.svg';

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Container, Row, Col, Card, CardBody, Badge } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody } from 'reactstrap';
 import { isEmpty, map } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
