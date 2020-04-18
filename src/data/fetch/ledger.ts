@@ -6,8 +6,8 @@ const derivationPathBase = "44'/52752'/0'/0/";
 const setUpLedger = async (derivationPathIndex: number) => {
   const transport = await TransportU2F.create();
 
-  transport.exchangeTimeout = 5000;
-  transport.unresponsiveTimeout = 5000;
+  transport.exchangeTimeout = 60000;
+  transport.unresponsiveTimeout = 10000;
 
   return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
 };
