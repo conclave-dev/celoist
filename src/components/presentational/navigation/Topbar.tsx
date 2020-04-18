@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import celoLogo from '../../../assets/svg/celo-logo.svg';
 import celoGlyph from '../../../assets/svg/celo-glyph.svg';
+import TopbarWalletMenu from './TopbarWalletMenu';
 
 const Topbar = () => {
   const toggleSidebar = () => {
@@ -37,8 +38,11 @@ const Topbar = () => {
             className="btn btn-sm px-3 font-size-24 header-item waves-effect d-lg-none d-xs-block"
             id="vertical-menu-btn"
           >
-            <i className="mdi mdi-menu"></i>
+            <i className="mdi mdi-menu" style={{ fontSize: 24 }} />
           </button>
+        </div>
+        <div className="d-flex">
+          <TopbarWalletMenu />
         </div>
       </div>
     </header>

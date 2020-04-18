@@ -8,7 +8,7 @@ const fetchProposals = () => async dispatch => {
   try {
     return handleData(dispatch, FETCH_PROPOSALS, { proposalsById: await getGovernanceProposals() });
   } catch (err) {
-    return handleError(dispatch, FETCH_PROPOSALS, { err });
+    return handleError(dispatch, FETCH_PROPOSALS, err);
   }
 };
 

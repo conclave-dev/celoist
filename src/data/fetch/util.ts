@@ -9,14 +9,7 @@ const defaultOptions = {
 };
 
 // Resolves the promise from calling `json` and returns the value of `data`
-const unpackResponse = async (response: Response) => {
-  try {
-    const { data } = await response.json();
-    return data;
-  } catch (err) {
-    return err;
-  }
-};
+const unpackResponse = async (response: Response) => (await response.json()).data;
 
 const backendFetch = async (endpoint: string, data: object = {}) => {
   try {

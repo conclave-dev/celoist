@@ -9,7 +9,7 @@ const fetchBlogs = () => async (dispatch, getState) => {
     const { allBlogIds } = getState().home;
     return handleData(dispatch, FETCH_BLOGS, { blogsById: await fetchMediumBlogs(allBlogIds) });
   } catch (err) {
-    return handleError(dispatch, FETCH_BLOGS, { err });
+    return handleError(dispatch, FETCH_BLOGS, err);
   }
 };
 
