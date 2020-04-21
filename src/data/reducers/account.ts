@@ -1,11 +1,11 @@
 import { CONNECT_LEDGER, DISCONNECT_LEDGER } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 
-const walletState = {
+const accountState = {
   ledger: {}
 };
 
-const initialState = initialStateDecorator(walletState);
+const initialState = initialStateDecorator(accountState);
 
 const connectLedger = (state, { ledger }) => ({
   ...state,

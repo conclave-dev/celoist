@@ -1,6 +1,6 @@
 import { CONNECT_LEDGER, DISCONNECT_LEDGER } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { setUpLedger } from '../fetch/ledger';
+import { setUpLedger } from '../fetch/account';
 
 const connectLedger = (accountIndex: number = 0) => async (dispatch) => {
   handleInit(dispatch, CONNECT_LEDGER);
@@ -17,7 +17,7 @@ const disconnectLedger = () => async (dispatch, getState) => {
   handleInit(dispatch, DISCONNECT_LEDGER);
 
   try {
-    const { ledger: { ledger }} = getState().wallets;
+    const { ledger: { ledger }} = getState().account;
 
     await ledger.transport.close();
 

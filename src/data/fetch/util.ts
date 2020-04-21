@@ -24,4 +24,11 @@ const backendFetch = async (endpoint: string, data: object = {}) => {
   }
 };
 
-export { backendFetch, defaultOptions };
+const getGasConfig = async (kit, tx) => {
+  const txClone = { ...tx };
+  txClone.gasPrice = await kit.web3.eth.getGasPrice();
+  txClone.gas = await kit.web3.eth.estimateGas();
+  return txClone;
+};
+
+export { backendFetch, defaultOptions, getGasConfig };
