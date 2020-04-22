@@ -11,7 +11,6 @@ const ProfileBalances = ({ votes, cGLD, cUSD }) => (
         </h4>
       </CardBody>
       <CardBody>
-        <ApexSpline />
         <p className="text-center font-italic">Previous 10 Elections</p>
       </CardBody>
     </Card>

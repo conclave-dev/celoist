@@ -1,6 +1,6 @@
-import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT } from './actions';
+import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT, GET_ACCOUNT_ASSETS } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { setUpLedger, getAccountSummary } from '../fetch/account';
+import { setUpLedger, getAccountSummary, getAssets } from '../fetch/account';
 
 const connectLedger = (accountIndex: number = 0) => async dispatch => {
   handleInit(dispatch, CONNECT_LEDGER);
@@ -41,4 +41,15 @@ const setAccount = () => async (dispatch, getState) => {
   }
 };
 
-export { connectLedger, disconnectLedger, setAccount };
+const getAccountAssets = (account: string) => async dispatch => {
+  handleInit(dispatch, GET_ACCOUNT_ASSETS);
+
+  try {
+    const { cGLD, cUSD } = await getAssets(account);
+    return handleData(dispatch, GET_ACCOUNT_ASSETS, { cGLD, cUSD });
+  } catch (err) {
+    return handleError(dispatch, GET_ACCOUNT_ASSETS, err);
+  }
+};
+
+export { connectLedger, disconnectLedger, setAccount, getAccountAssets };

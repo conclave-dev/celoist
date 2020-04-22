@@ -4,6 +4,7 @@ import Home from './container/ecosystem/Home';
 import Elections from './container/ecosystem/Elections';
 import Governance from './container/ecosystem/Governance';
 import Profile from './container/account/Profile';
+import Portfolio from './container/account/Portfolio';
 
 const Router = () => (
   <Switch>
@@ -19,6 +20,9 @@ const Router = () => (
     </Route>
     <Route exact path="/account">
       <Profile />
+    </Route>
+    <Route exact path="/account/portfolio">
+      <Portfolio />
     </Route>
   </Switch>
 );

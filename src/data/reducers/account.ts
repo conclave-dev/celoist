@@ -1,5 +1,6 @@
-import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT } from '../actions/actions';
+import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT, GET_ACCOUNT_ASSETS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
+import BigNumber from 'bignumber.js';
 
 const accountState = {
   ledger: {},
@@ -8,7 +9,11 @@ const accountState = {
   authorizedSigners: {},
   metadataURL: '',
   wallet: '',
-  dataEncryptionKey: ''
+  dataEncryptionKey: '',
+  assets: {
+    cGLD: new BigNumber(0),
+    cUSD: new BigNumber(0)
+  }
 };
 
 const initialState = initialStateDecorator(accountState);
@@ -33,6 +38,14 @@ const setAccount = (state, { address, name, authorizedSigners, metadataURL, wall
   dataEncryptionKey
 });
 
+const getAccountAssets = (state, { cGLD, cUSD }) => ({
+  ...state,
+  assets: {
+    cGLD,
+    cUSD
+  }
+});
+
 export default (state = initialState, action) => {
   const { type } = action;
 
@@ -43,6 +56,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, disconnectLedger);
     case SET_ACCOUNT:
       return evalActionPayload(state, action, setAccount);
+    case GET_ACCOUNT_ASSETS:
+      return evalActionPayload(state, action, getAccountAssets);
     default:
       return state;
   }
