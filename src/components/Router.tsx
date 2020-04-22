@@ -7,20 +7,18 @@ import Profile from './container/account/Profile';
 
 const Router = () => (
   <Switch>
-    <Redirect exact={true} from="/" to="/ecosystem" />
-    <Route path="/ecosystem">
+    <Redirect exact from="/" to="/ecosystem" />
+    <Route exact path="/ecosystem">
       <Home />
     </Route>
-    <Route path="/ecosystem/elections">
+    <Route exact path="/ecosystem/elections">
       <Elections />
     </Route>
-    <Route path="/ecosystem/governance">
+    <Route exact path="/ecosystem/governance">
       <Governance />
     </Route>
-    <Route path="/account">
+    <Route exact path="/account">
       <Profile />
-    </Route>
-    <Route path="/account/portfolio">
     </Route>
   </Switch>
 );
