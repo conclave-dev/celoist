@@ -1,8 +1,14 @@
-import { CONNECT_LEDGER, DISCONNECT_LEDGER } from '../actions/actions';
+import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 
 const accountState = {
-  ledger: {}
+  ledger: {},
+  address: '',
+  name: '',
+  authorizedSigners: {},
+  metadataURL: '',
+  wallet: '',
+  dataEncryptionKey: ''
 };
 
 const initialState = initialStateDecorator(accountState);
@@ -17,6 +23,16 @@ const disconnectLedger = (state, { ledger }) => ({
   ledger
 });
 
+const setAccount = (state, { address, name, authorizedSigners, metadataURL, wallet, dataEncryptionKey }) => ({
+  ...state,
+  address,
+  name,
+  authorizedSigners,
+  metadataURL,
+  wallet,
+  dataEncryptionKey
+});
+
 export default (state = initialState, action) => {
   const { type } = action;
 
@@ -25,6 +41,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, connectLedger);
     case DISCONNECT_LEDGER:
       return evalActionPayload(state, action, disconnectLedger);
+    case SET_ACCOUNT:
+      return evalActionPayload(state, action, setAccount);
     default:
       return state;
   }

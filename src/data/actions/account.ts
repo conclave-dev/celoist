@@ -1,8 +1,8 @@
-import { CONNECT_LEDGER, DISCONNECT_LEDGER } from './actions';
+import { CONNECT_LEDGER, DISCONNECT_LEDGER, SET_ACCOUNT } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { setUpLedger } from '../fetch/account';
+import { setUpLedger, getAccountSummary } from '../fetch/account';
 
-const connectLedger = (accountIndex: number = 0) => async (dispatch) => {
+const connectLedger = (accountIndex: number = 0) => async dispatch => {
   handleInit(dispatch, CONNECT_LEDGER);
 
   try {
@@ -17,7 +17,9 @@ const disconnectLedger = () => async (dispatch, getState) => {
   handleInit(dispatch, DISCONNECT_LEDGER);
 
   try {
-    const { ledger: { ledger }} = getState().account;
+    const {
+      ledger: { ledger }
+    } = getState().account;
 
     await ledger.transport.close();
 
@@ -27,4 +29,16 @@ const disconnectLedger = () => async (dispatch, getState) => {
   }
 };
 
-export { connectLedger, disconnectLedger };
+const setAccount = () => async (dispatch, getState) => {
+  handleInit(dispatch, SET_ACCOUNT);
+
+  try {
+    const { ledger } = getState().account;
+    const account = await getAccountSummary(ledger.getAccounts()[0]);
+    return handleData(dispatch, SET_ACCOUNT, { ...account });
+  } catch (err) {
+    return handleError(dispatch, SET_ACCOUNT, err);
+  }
+};
+
+export { connectLedger, disconnectLedger, setAccount };
