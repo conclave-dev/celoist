@@ -5,7 +5,7 @@ import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-w
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
-import { getGasConfig } from './util';
+import { getGasConfig, generateLedgerTxData } from './util';
 
 const derivationPathBase = "44'/52752'/0'";
 const kit = newKit(rpcChain);
@@ -59,65 +59,68 @@ const getAssets = async (account: string) => {
   };
 };
 
-
-const getExchangeRates = async () => {
-  const exchangeBase = 1000000000000000000;
-  const exchangeContract = await getExchangeContract();
-  const dollarsToGold = await exchangeContract.getGoldExchangeRate(exchangeBase);
-  const goldToDollars = await exchangeContract.getUsdExchangeRate(exchangeBase);
-
-  return { dollarsToGold, goldToDollars };
-};
-
-const generateLedgerTxData = async (ledger: Wallet) => {
-  const [account] = ledger.getAccounts();
-  const nonce = await kit.web3.eth.getTransactionCount(account);
-
-  return {
-    from: account,
-    nonce
-  };
-};
-
 const sellGold = async (amount: number, minUSDAmount: number, ledger: Wallet) => {
-  const exchangeContract = await kit.contracts.getExchange();
-  const sellGoldTxABI = await (
-    await exchangeContract.sellGold(new BigNumber(amount), new BigNumber(minUSDAmount))
-  ).txo.encodeABI();
-  const chainId = await kit.web3.eth.getChainId();
-  const tx = getGasConfig(kit, {
-    ...(await generateLedgerTxData(ledger)),
-    data: sellGoldTxABI,
-    gatewayFee: `0x${(20000).toString(16)}`,
-    chainId
-  });
+  try {
+    const exchangeBase = 1000000000000000000;
+    const exchangeContract = await kit.contracts.getExchange();
+    const sellGoldTx = await exchangeContract.sellGold(
+      new BigNumber(amount).multipliedBy(exchangeBase),
+      new BigNumber(minUSDAmount).multipliedBy(exchangeBase)
+    );
 
-  return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+      console.log('sellGoldTx', sellGoldTx);
+
+    const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: exchangeContract.address,
+      data: sellGoldTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
 };
 
 const sellDollars = async (amount: number, minGoldAmount: number, ledger: Wallet) => {
-  const exchangeContract = await kit.contracts.getExchange();
-  const sellDollarsTxABI = await (
-    await exchangeContract.sellDollar(new BigNumber(amount), new BigNumber(minGoldAmount))
-  ).txo.encodeABI();
-  const chainId = await kit.web3.eth.getChainId();
-  const tx = getGasConfig(kit, {
-    ...(await generateLedgerTxData(ledger)),
-    data: sellDollarsTxABI,
-    gatewayFee: `0x${(20000).toString(16)}`,
-    chainId
-  });
+  try {
+    const exchangeBase = 1000000000000000000;
+    const exchangeContract = await kit.contracts.getExchange();
+    const sellDollarsTx = await exchangeContract.sellDollar(
+      new BigNumber(amount).multipliedBy(exchangeBase),
+      new BigNumber(minGoldAmount).multipliedBy(exchangeBase)
+    );
 
-  return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    console.log('amount', amount);
+    console.log('minGoldAmount', minGoldAmount);
+    console.log('sellDollarsTx', sellDollarsTx);
+
+    const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: exchangeContract.address,
+      data: sellDollarsTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
 };
 
-// const test = async () => {
-//   const rates = await getExchangeRates();
-
-//   console.log('gold', rates.dollarsToGold.toFixed(10));
-//   console.log('usd', rates.goldToDollars.toFixed(10));
-// };
-
-// test();
-
-export { setUpLedger, getAccountSummary, getAssets, getExchangeRates, sellGold, sellDollars };
+export { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars };
