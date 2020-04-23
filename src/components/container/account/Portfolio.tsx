@@ -41,60 +41,56 @@ class Portfolio extends PureComponent<Props, { activeTab: string }> {
   render = () => (
     <Container fluid>
       <Header title="Portfolio" subtitle="A birdseye-view of your activity on Celo" inProgress={false} />
-      <Row noGutters>
-        <Col xs={12}>
-          <Card>
-            <CardBody>
-              <Nav tabs className="nav-tabs-custom nav-justified">
-                <NavItem>
-                  <NavLink
-                    className={this.state.activeTab === '1' ? 'active' : ''}
-                    onClick={() => this.setState({ activeTab: '1' })}
-                  >
-                    Assets
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={this.state.activeTab === '2' ? 'active' : ''}
-                    onClick={() => this.setState({ activeTab: '2' })}
-                  >
-                    Vault
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={this.state.activeTab === '3' ? 'active' : ''}
-                    onClick={() => this.setState({ activeTab: '3' })}
-                  >
-                    Groups
-                  </NavLink>
-                </NavItem>
-              </Nav>
+      <Card>
+        <CardBody style={{ height: 668 }}>
+          <Nav tabs className="nav-tabs-custom nav-justified">
+            <NavItem>
+              <NavLink
+                className={this.state.activeTab === '1' ? 'active' : ''}
+                onClick={() => this.setState({ activeTab: '1' })}
+              >
+                Assets
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={this.state.activeTab === '2' ? 'active' : ''}
+                onClick={() => this.setState({ activeTab: '2' })}
+              >
+                Vault
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={this.state.activeTab === '3' ? 'active' : ''}
+                onClick={() => this.setState({ activeTab: '3' })}
+              >
+                Groups
+              </NavLink>
+            </NavItem>
+          </Nav>
 
-              <TabContent activeTab={this.state.activeTab}>
-                <TabPane tabId="1">
-                  <PortfolioAssets cGLD={0} cUSD={0} />
-                </TabPane>
-                <TabPane tabId="2">
-                  <Row>
-                    <Col sm="12">
-                      <PortfolioVault lockedGold={0} unlockedGold={0} pendingWithdrawal={0} />
-                    </Col>
-                  </Row>
-                </TabPane>
-                <TabPane tabId="3">
-                  <Row>
-                    <Col sm="12">
-                      <PortfolioGroups pendingVotes={0} activeVotes={0} />
-                    </Col>
-                  </Row>
-                </TabPane>
-              </TabContent>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+          <TabContent activeTab={this.state.activeTab}>
+            <TabPane tabId="1">
+              <PortfolioAssets {...this.props.assets} />
+            </TabPane>
+            <TabPane tabId="2">
+              <Row>
+                <Col sm="12">
+                  <PortfolioVault lockedGold={0} unlockedGold={0} pendingWithdrawal={0} />
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tabId="3">
+              <Row>
+                <Col sm="12">
+                  <PortfolioGroups pendingVotes={0} activeVotes={0} />
+                </Col>
+              </Row>
+            </TabPane>
+          </TabContent>
+        </CardBody>
+      </Card>
     </Container>
   );
 }

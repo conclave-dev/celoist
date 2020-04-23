@@ -15,6 +15,7 @@ const ApexSpline = ({ chartData, chartDataColors }: { chartData: ChartData[]; ch
         show: false
       },
       width: '100%',
+      height: '100%',
       type: 'area'
     },
     dataLabels: {
