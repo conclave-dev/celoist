@@ -59,17 +59,41 @@ const getAssets = async (account: string) => {
   };
 };
 
-const sellGold = async (amount: number, minUSDAmount: number, ledger: Wallet) => {
+const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
+  const approveSellGold = async (amountUint256: string, ledger) => {
+    const exchangeContract = await kit.contracts.getExchange();
+    const goldTokenContract = await kit.contracts.getGoldToken();
+    const approvalTx = await goldTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
+    const approvalTxABI = await approvalTx.txo.encodeABI();
+
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: goldTokenContract.address,
+      data: approvalTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+
+    return receipt;
+  };
+
   try {
     const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
+
+    await approveSellGold(amountUint256, ledger)
+
     const exchangeContract = await kit.contracts.getExchange();
     const sellGoldTx = await exchangeContract.sellGold(
-      new BigNumber(amount).multipliedBy(exchangeBase),
-      new BigNumber(minUSDAmount).multipliedBy(exchangeBase)
+      amountUint256,
+      minUSDAmount.multipliedBy(exchangeBase).toFixed()
     );
-
-      console.log('sellGoldTx', sellGoldTx);
-
     const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
     const chainId = await kit.web3.eth.getChainId();
     const ledgerTxData = await generateLedgerTxData(kit, ledger);
@@ -90,18 +114,41 @@ const sellGold = async (amount: number, minUSDAmount: number, ledger: Wallet) =>
   }
 };
 
-const sellDollars = async (amount: number, minGoldAmount: number, ledger: Wallet) => {
+const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
+  const approveSellDollars = async (amountUint256: string, ledger) => {
+    const exchangeContract = await kit.contracts.getExchange();
+    const stableTokenContract = await kit.contracts.getStableToken();
+    const approvalTx = await stableTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
+    const approvalTxABI = await approvalTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: stableTokenContract.address,
+      data: approvalTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+
+    return receipt;
+  };
+
   try {
     const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
+
+    await approveSellDollars(amountUint256, ledger);
+
     const exchangeContract = await kit.contracts.getExchange();
     const sellDollarsTx = await exchangeContract.sellDollar(
-      new BigNumber(amount).multipliedBy(exchangeBase),
-      new BigNumber(minGoldAmount).multipliedBy(exchangeBase)
+      amountUint256,
+      minGLDAmount.multipliedBy(exchangeBase).toFixed()
     );
-
-    console.log('amount', amount);
-    console.log('minGoldAmount', minGoldAmount);
-    console.log('sellDollarsTx', sellDollarsTx);
 
     const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
     const chainId = await kit.web3.eth.getChainId();
