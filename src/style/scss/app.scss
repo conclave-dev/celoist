@@ -16,6 +16,14 @@ File: Main Css File
 @import "variables";
 @import "icons";
 
+// Components
+@import "template/components/waves";
+@import "template/components/helper";
+@import "template/components/preloader";
+@import "template/components/nav";
+@import "template/components/reboot";
+@import "template/components/widgets";
+
 // Structure
 @import "template/structure/general";
 @import "template/structure/topbar";

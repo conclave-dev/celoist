@@ -1,4 +1,5 @@
 import { backend } from './api';
+import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 
 const defaultOptions = {
   method: 'POST',
@@ -24,4 +25,20 @@ const backendFetch = async (endpoint: string, data: object = {}) => {
   }
 };
 
-export { backendFetch, defaultOptions };
+const getGasConfig = async (kit, tx) => {
+  const txClone = { ...tx };
+  txClone.gasPrice = await kit.web3.eth.getGasPrice();
+  return txClone;
+};
+
+const generateLedgerTxData = async (kit, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const nonce = await kit.web3.eth.getTransactionCount(account);
+
+  return {
+    from: account,
+    nonce
+  };
+};
+
+export { backendFetch, defaultOptions, getGasConfig, generateLedgerTxData };

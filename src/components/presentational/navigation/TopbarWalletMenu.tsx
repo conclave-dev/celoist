@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Spinner } from 'reactstrap';
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { connect, ConnectedProps } from 'react-redux';
-import { connectLedger, disconnectLedger } from '../../../data/actions/wallets';
+import { connectLedger, disconnectLedger } from '../../../data/actions/account';
 
-const mapState = ({ wallets: { ledger, errorMessage } }) => ({ ledger, errorMessage });
+const mapState = ({ account: { ledger, errorMessage } }) => ({ ledger, errorMessage });
 const mapDispatch = { connectLedger, disconnectLedger };
 const connector = connect(mapState, mapDispatch);
 

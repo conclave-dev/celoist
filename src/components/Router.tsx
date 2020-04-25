@@ -3,18 +3,26 @@ import { Switch, Redirect, Route } from 'react-router-dom';
 import Home from './container/ecosystem/Home';
 import Elections from './container/ecosystem/Elections';
 import Governance from './container/ecosystem/Governance';
+import Profile from './container/account/Profile';
+import Portfolio from './container/account/Portfolio';
 
 const Router = () => (
   <Switch>
-    <Redirect exact={true} from="/" to="/home" />
-    <Route path="/home">
+    <Redirect exact from="/" to="/ecosystem" />
+    <Route exact path="/ecosystem">
       <Home />
     </Route>
-    <Route path="/elections">
+    <Route exact path="/ecosystem/elections">
       <Elections />
     </Route>
-    <Route path="/governance">
+    <Route exact path="/ecosystem/governance">
       <Governance />
+    </Route>
+    <Route exact path="/account">
+      <Profile />
+    </Route>
+    <Route exact path="/account/portfolio">
+      <Portfolio />
     </Route>
   </Switch>
 );
