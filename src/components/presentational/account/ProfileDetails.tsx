@@ -1,40 +1,46 @@
 import React, { memo } from 'react';
-import { Row, Col, Button, ListGroup, ListGroupItem } from 'reactstrap';
-import Anchor from '../../presentational/reusable/Anchor';
+import { Row, Col, Card, CardBody, Button, ListGroup, ListGroupItem } from 'reactstrap';
+import Anchor from '../reusable/Anchor';
 
-const ProfileAccount = ({ name, address, metadataURL, validator }) => {
+const ProfileDetails = ({ name, address, metadataURL, validator }) => {
   const hasValidator = validator && validator !== '0x0000000000000000000000000000000000000000';
 
   return (
-    <>
-      <h4 className="card-title">Account</h4>
-      <ListGroup style={{ height: 200 }}>
-        <ListGroupItem style={{ border: 'none', paddingRight: 0, paddingLeft: 10 }}>
-          <Row noGutters style={{ flexWrap: 'nowrap' }}>
-            <Col xs={4}>
-              <Row noGutters style={{ height: 36 }} className="mb-2 ">
+    <Card>
+      <CardBody>
+        <h4 className="card-title">Account</h4>
+        <Row style={{ flexWrap: 'nowrap' }}>
+          <Col xs={4}>
+            <ListGroup>
+              <ListGroupItem style={{ border: 'none' }}>
                 <span className="text-truncate">Name</span>
-              </Row>
-              <Row noGutters style={{ height: 36 }} className="mb-2">
+              </ListGroupItem>
+              <ListGroupItem style={{ border: 'none' }}>
                 <span className="text-truncate">Address</span>
-              </Row>
-              <Row noGutters style={{ height: 36 }} className="mb-2">
+              </ListGroupItem>
+              <ListGroupItem style={{ border: 'none' }}>
                 <span className="text-truncate">Metadata</span>
-              </Row>
-              <Row noGutters style={{ height: 36 }}>
+              </ListGroupItem>
+              <ListGroupItem style={{ border: 'none' }}>
                 <span className="text-truncate">Validator</span>
-              </Row>
-            </Col>
-            <Col xs={8}>
-              <Row noGutters style={{ height: 36 }} className="mb-2">
-                <span className="text-truncate">{name || 'No name set'}</span>
-              </Row>
-              <Row noGutters style={{ height: 36 }} className="mb-2">
-                <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}/celo`} color="#3488ec">
-                  <span className="text-truncate">{address}</span>
-                </Anchor>
-              </Row>
-              <Row noGutters style={{ height: 36 }} className="mb-2">
+              </ListGroupItem>
+            </ListGroup>
+          </Col>
+          <Col xs={8}>
+            <ListGroup>
+              <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
+                {name || 'No name set'}
+              </ListGroupItem>
+              <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
+                {address ? (
+                  <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}/celo`} color="#3488ec">
+                    {address}
+                  </Anchor>
+                ) : (
+                  <span>N/A</span>
+                )}
+              </ListGroupItem>
+              <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
                 <Button
                   className="waves-effect waves-light"
                   disabled={!metadataURL}
@@ -56,8 +62,8 @@ const ProfileAccount = ({ name, address, metadataURL, validator }) => {
                     <span>View</span>
                   )}
                 </Button>
-              </Row>
-              <Row noGutters style={{ height: 36 }}>
+              </ListGroupItem>
+              <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
                 <Button
                   className="waves-effect waves-light"
                   disabled={!hasValidator}
@@ -82,13 +88,13 @@ const ProfileAccount = ({ name, address, metadataURL, validator }) => {
                     <span>View</span>
                   )}
                 </Button>
-              </Row>
-            </Col>
-          </Row>
-        </ListGroupItem>
-      </ListGroup>
-    </>
+              </ListGroupItem>
+            </ListGroup>
+          </Col>
+        </Row>
+      </CardBody>
+    </Card>
   );
 };
 
-export default memo(ProfileAccount);
+export default memo(ProfileDetails);

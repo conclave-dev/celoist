@@ -89,14 +89,6 @@ const SidebarAccount = memo(({ address, closeSidebarMobile, connectLedger, disco
             </Link>
           </li>
           <li>
-            <Link to="/account/portfolio" className="waves-effect" onClick={closeSidebarMobile}>
-              <div className="iconSidebar">
-                <img src={portfolioLight} height={22} alt="sidebar menu icon" />
-              </div>
-              <span>Portfolio</span>
-            </Link>
-          </li>
-          <li>
             <Link
               to=""
               className="waves-effect"

@@ -3,7 +3,6 @@ import { Container, Row, Col, Card, CardBody, Nav, NavItem, NavLink, TabContent,
 import { isEmpty } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { setAccount, getAccountAssets } from '../../../data/actions/account';
-import PortfolioAssets from '../../presentational/account/PortfolioAssets';
 import PortfolioVault from '../../presentational/account/PortfolioVault';
 import PortfolioGroups from '../../presentational/account/PortfolioGroups';
 import Header from '../../presentational/reusable/Header';
@@ -71,9 +70,7 @@ class Portfolio extends PureComponent<Props, { activeTab: string }> {
           </Nav>
 
           <TabContent activeTab={this.state.activeTab}>
-            <TabPane tabId="1">
-              <PortfolioAssets {...this.props.assets} />
-            </TabPane>
+            <TabPane tabId="1"></TabPane>
             <TabPane tabId="2">
               <Row>
                 <Col sm="12">

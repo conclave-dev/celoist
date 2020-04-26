@@ -85,7 +85,7 @@ const GoldToDollarsExchanger = ({ goldToDollars }) => {
   );
 };
 
-class PortfolioAssetExchanger extends PureComponent<Props> {
+class AssetExchanger extends PureComponent<Props> {
   componentDidMount = () => {
     this.props.getExchangeRates();
   };
@@ -164,30 +164,4 @@ class PortfolioAssetExchanger extends PureComponent<Props> {
   };
 }
 
-export default connector(PortfolioAssetExchanger);
-
-// if (hasExchangeRates) {
-//   assetSymbol === 'cGLD'
-//     ? SweetAlert.fire({
-//         title: 'Exchange cUSD for cGLD',
-//         html: `
-//           <p>Based on current exchange rates, you will receive ~${exchangeRates.goldToDollars.toFixed(
-//             2
-//           )} cUSD per 1 cGLD.</p>
-//           <input id="swal-input1" class="swal2-input" style="margin-bottom: 7.5px" placeholder="Amount of cGLD to exchange">
-//           <input id="swal-input2" class="swal2-input" style="margin-top: 7.5px" placeholder="Amount of cUSD to receive">
-//         `,
-//         showCancelButton: true,
-//         showConfirmButton: true,
-//         confirmButtonText: 'Retry',
-//         onClose: () => removeExchangeRates()
-//       })
-//     : SweetAlert.fire({
-//         title: 'Exchange cGLD for cUSD',
-//         text: '',
-//         showCancelButton: true,
-//         showConfirmButton: true,
-//         confirmButtonText: 'Retry',
-//         onClose: () => removeExchangeRates()
-//       });
-// }
+export default connector(AssetExchanger);

@@ -41,7 +41,16 @@ const getAccountSummary = async (address: string) => {
   }
 
   const accountContract = await getAccountsContract();
-  return accountContract.getAccountSummary(address);
+  const summary = await accountContract.getAccountSummary(address);
+  const assets = await getAssets(address);
+
+  console.log('summary', summary);
+  console.log('assets', assets);
+
+  return {
+    ...summary,
+    ...assets,
+  }
 };
 
 const getAssets = async (account: string) => {
