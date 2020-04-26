@@ -19,11 +19,7 @@ const Router = () => (
     <Route exact path="/ecosystem/governance">
       <Governance />
     </Route>
-    <Route
-      exact
-      path="/account/:address"
-      render={props => <Profile address={props.match.params.address} />}
-    />
+    <Route exact path="/account/:address" render={props => <Profile address={props.match.params.address} />} />
     <Route exact path="/account/portfolio">
       <Portfolio />
     </Route>

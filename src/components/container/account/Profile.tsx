@@ -8,7 +8,7 @@ import ProfileTransactions from '../../presentational/account/ProfileTransaction
 import ProfileBalances from '../../presentational/account/ProfileBalances';
 import Header from '../../presentational/reusable/Header';
 
-const mapState = ({ account }) => ({ ...account });
+const mapState = ({ account }, ownProps) => ({ ...account, ...ownProps });
 const mapDispatch = { setAccount };
 const connector = connect(mapState, mapDispatch);
 
@@ -16,6 +16,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
 class Profile extends PureComponent<Props> {
+  constructor(props) {
+    super(props);
+
+    props.setAccount(props.address);
+  }
+
   componentDidUpdate = prevProps => {
     if (isEmpty(prevProps.ledger) && !isEmpty(this.props.ledger) && !this.props.address) {
       this.props.setAccount();

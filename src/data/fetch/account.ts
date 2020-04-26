@@ -42,9 +42,14 @@ const setUpLedger = async (derivationPathIndex: number) => {
   return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
 };
 
-const getAccountSummary = async (account: string) => {
+const getAccountSummary = async (address: string) => {
+
+  if (!kit.web3.utils.isAddress(address)) {
+    throw new Error('Invalid account address');
+  }
+
   const accountContract = await getAccountsContract();
-  return accountContract.getAccountSummary(account);
+  return accountContract.getAccountSummary(address);
 };
 
 const getAssets = async (account: string) => {

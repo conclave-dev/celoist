@@ -9,7 +9,7 @@ const ProfileAccount = ({ name, address, metadataURL, validator }) => {
     <>
       <h4 className="card-title">Account</h4>
       <ListGroup style={{ height: 200 }}>
-        <ListGroupItem style={{ border: 'none', paddingRight: 0, paddingLeft: 0 }}>
+        <ListGroupItem style={{ border: 'none', paddingRight: 0, paddingLeft: 10 }}>
           <Row noGutters style={{ flexWrap: 'nowrap' }}>
             <Col xs={4}>
               <Row noGutters style={{ height: 36 }} className="mb-2 ">

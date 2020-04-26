@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import {
   CONNECT_LEDGER,
   DISCONNECT_LEDGER,
@@ -36,12 +37,11 @@ const disconnectLedger = () => async (dispatch, getState) => {
   }
 };
 
-const setAccount = () => async (dispatch, getState) => {
+const setAccount = (address: string) => async dispatch => {
   handleInit(dispatch, SET_ACCOUNT);
 
   try {
-    const { ledger } = getState().account;
-    const account = await getAccountSummary(ledger.getAccounts()[0]);
+    const account = await getAccountSummary(address);
     return handleData(dispatch, SET_ACCOUNT, { ...account });
   } catch (err) {
     return handleError(dispatch, SET_ACCOUNT, err);
