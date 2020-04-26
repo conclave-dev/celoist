@@ -20,13 +20,11 @@ const initialState = initialStateDecorator(accountState);
 
 const connectLedger = (state, { ledger }) => ({
   ...state,
-  ledger
+  ledger,
+  address: ledger.getAccounts()[0]
 });
 
-const disconnectLedger = (state, { ledger }) => ({
-  ...state,
-  ledger
-});
+const disconnectLedger = state => state;
 
 const setAccount = (state, { address, name, authorizedSigners, metadataURL, wallet, dataEncryptionKey }) => ({
   ...state,

@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState } from 'react';
 import { Card, CardBody, Button, Row, Col } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import ApexSpline from '../charts/ApexSpline';
@@ -43,7 +43,7 @@ const ResponsiveChartWrapper = ({ children }) => (
 
 const PortfolioAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => {
   const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
-  const clearExchangerAssetSymbol = useMemo(() => () => setExchangerAssetSymbol(''), [exchangerAssetSymbol]);
+  const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
 
   return (
     <Card style={{ border: 'none', maxHeight: 628 }}>

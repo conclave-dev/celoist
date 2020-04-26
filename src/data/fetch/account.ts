@@ -25,14 +25,6 @@ const getAccountsContract = async () => {
   return kit.contracts.getAccounts();
 };
 
-const getExchangeContract = async () => {
-  if (!isEmpty(contracts.exchange)) {
-    return contracts.exchange;
-  }
-
-  return kit.contracts.getExchange();
-};
-
 const setUpLedger = async (derivationPathIndex: number) => {
   const transport = await TransportU2F.create();
 

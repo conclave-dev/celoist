@@ -1,4 +1,4 @@
-import React, { PureComponent, useState, memo } from 'react';
+import React, { PureComponent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Row, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import Swal from 'sweetalert2';
