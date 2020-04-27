@@ -16,6 +16,17 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
+const ResponsiveWrapper = ({ children }) => (
+  <>
+    <Col lg={4} className="d-none d-lg-block">
+      {children}
+    </Col>
+    <Col xs={12} className="d-block d-lg-none mb-4">
+      {children}
+    </Col>
+  </>
+);
+
 class Profile extends PureComponent<Props> {
   componentDidMount = () => {
     if (this.props.address) {
@@ -24,26 +35,26 @@ class Profile extends PureComponent<Props> {
   };
 
   render() {
-    const { name, address, metadataURL, authorizedSigners } = this.props;
+    const { name, address, metadataURL, authorizedSigners, assets } = this.props;
 
     return (
       <Container fluid>
         <Header title="Profile" subtitle="A birdseye view of your Celo activity" inProgress={false} />
         <Row>
-          <Col lg={4} xs={12}>
+          <ResponsiveWrapper>
             <ProfileDetails
               name={name}
               address={address}
               metadataURL={metadataURL}
               validator={authorizedSigners.validator}
             />
-          </Col>
-          <Col lg={4} xs={12}>
-            <ProfileAssets cGLD={new BigNumber(0)} cUSD={new BigNumber(0)} />
-          </Col>
-          <Col lg={4} xs={12}>
+          </ResponsiveWrapper>
+          <ResponsiveWrapper>
+            <ProfileAssets {...assets} />
+          </ResponsiveWrapper>
+          <ResponsiveWrapper>
             <ProfileTransactions transactions={[]} />
-          </Col>
+          </ResponsiveWrapper>
         </Row>
       </Container>
     );

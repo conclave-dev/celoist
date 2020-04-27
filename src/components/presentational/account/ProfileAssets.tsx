@@ -1,74 +1,101 @@
-import React, { PureComponent, memo, useState } from 'react';
-import { ListGroup, ListGroupItem, Card, CardBody, Button, Row, Col } from 'reactstrap';
+import React, { memo, useState } from 'react';
+import { Card, CardBody, Button, Row, Col } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import ProfileAssetsChart from './ProfileAssetsChart';
 // import Anchor from '../reusable/Anchor';
-// import AssetExchanger from './AssetExchanger';
+import AssetExchanger from './AssetExchanger';
+import whiteCoin from '../../../assets/png/whiteCoin.png';
 
-class ProfileAssets extends PureComponent<{ cGLD: BigNumber; cUSD: BigNumber }> {
-  render = () => {
-    // const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
-    // const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
+const ResponsiveHeaderWrapper = ({ children }) => (
+  <>
+    <div className="d-none d-lg-block">{children}</div>
+    <div className="d-none d-lg-none d-xs-block d-flex justify-content-center">{children}</div>
+  </>
+);
 
-    return (
-      <Card>
-        <CardBody>
-          <h4 className="card-title">Assets</h4>
-          <Row className="mb-3">
-            <Col xs={12}>
-              <ProfileAssetsChart cGLD={this.props.cGLD} cUSD={this.props.cUSD} />
+const ProfileAssets = ({ cGLD, cUSD }) => {
+  const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
+  const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
+
+  // <h4 className="card-title">Assets</h4>
+  return (
+    <Card>
+      {exchangerAssetSymbol &&
+        (exchangerAssetSymbol === 'cGLD' ? (
+          <AssetExchanger
+            cGLD={cGLD}
+            cUSD={cUSD}
+            assetSymbol="cGLD"
+            clearExchangerAssetSymbol={clearExchangerAssetSymbol}
+          />
+        ) : (
+          <AssetExchanger
+            cGLD={cGLD}
+            cUSD={cUSD}
+            assetSymbol="cUSD"
+            clearExchangerAssetSymbol={clearExchangerAssetSymbol}
+          />
+        ))}
+      <CardBody>
+        <ResponsiveHeaderWrapper>
+          <Row
+            noGutters
+            className="justify-content-between align-items-center"
+            style={{ width: '100%', flexWrap: 'nowrap' }}
+          >
+            <Col lg={5} xs={5}>
+              <h4 className="card-title">Assets</h4>
+            </Col>
+            <Col lg={7} xs={7} className="d-flex justify-content-end" style={{ flexWrap: 'nowrap', paddingRight: 0 }}>
+              <Button
+                className="waves-effect waves-light mr-1"
+                style={{
+                  color: '#FFF',
+                  backgroundColor: '#fbcc5c',
+                  border: 'none',
+                  height: 32,
+                  paddingTop: 0,
+                  paddingBottom: 0
+                }}
+                onClick={() => setExchangerAssetSymbol('cGLD')}
+              >
+                <div className="d-flex align-items-center">
+                  <i className="mdi mdi-swap-horizontal" />
+                  <img src={whiteCoin} height={16} alt="coin" />
+                </div>
+              </Button>
+              <Button
+                className="waves-effect waves-light ml-1"
+                style={{
+                  color: '#FFF',
+                  backgroundColor: '#35D07F',
+                  border: 'none',
+                  height: 32,
+                  paddingTop: 0,
+                  paddingBottom: 0
+                }}
+                onClick={() => setExchangerAssetSymbol('cUSD')}
+              >
+                <div className="d-flex align-items-center">
+                  <i className="mdi mdi-swap-horizontal" />
+                  <img src={whiteCoin} height={16} alt="coin" />
+                </div>
+              </Button>
             </Col>
           </Row>
-          <Row noGutters className="justify-content-center">
-            <Button
-              className="waves-effect waves-light m-2"
-              style={{
-                color: '#FFF',
-                backgroundColor: '#fbcc5c',
-                border: 'none',
-                height: 36
-              }}
-              onClick={() => null}
-            >
-              <i className="mdi mdi-plus" />
-              <span className="text-truncate">cGLD</span>
-            </Button>
-            <Button
-              className="waves-effect waves-light m-2"
-              style={{
-                color: '#FFF',
-                backgroundColor: '#35D07F',
-                border: 'none',
-                height: 36
-              }}
-              onClick={() => null}
-            >
-              <i className="mdi mdi-plus" />
-              <span className="text-truncate">cUSD</span>
-            </Button>
-          </Row>
-        </CardBody>
-      </Card>
-    );
-  };
-}
+        </ResponsiveHeaderWrapper>
+        <Row style={{ minHeight: 300 }}>
+          <Col xs={12} className="d-flex justify-content-center align-items-center">
+            {!cGLD.isZero() || !cUSD.isZero() ? (
+              <ProfileAssetsChart cGLD={cGLD} cUSD={cUSD} />
+            ) : (
+              <p className="text-truncate">No assets found</p>
+            )}
+          </Col>
+        </Row>
+      </CardBody>
+    </Card>
+  );
+};
 
-// <CardBody style={{ padding: 0, width: '100%' }} className="d-flex justify-content-center">
-//   {exchangerAssetSymbol &&
-//     (exchangerAssetSymbol === 'cGLD' ? (
-//       <AssetExchanger
-//         cGLD={cGLD}
-//         cUSD={cUSD}
-//         assetSymbol="cGLD"
-//         clearExchangerAssetSymbol={clearExchangerAssetSymbol}
-//       />
-//     ) : (
-//       <AssetExchanger
-//         cGLD={cGLD}
-//         cUSD={cUSD}
-//         assetSymbol="cUSD"
-//         clearExchangerAssetSymbol={clearExchangerAssetSymbol}
-//       />
-//     ))}
-// </CardBody>
-export default ProfileAssets;
+export default memo(ProfileAssets);
