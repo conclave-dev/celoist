@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import { Container, Row, Col, Card, CardBody, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { setAccount, getAccountAssets } from '../../../data/actions/account';
+import { setAccount } from '../../../data/actions/account';
 import PortfolioVault from '../../presentational/account/PortfolioVault';
 import PortfolioGroups from '../../presentational/account/PortfolioGroups';
 import Header from '../../presentational/reusable/Header';
 
 const mapState = ({ account }) => ({ ...account });
-const mapDispatch = { setAccount, getAccountAssets };
+const mapDispatch = { setAccount };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -20,20 +20,12 @@ class Portfolio extends PureComponent<Props, { activeTab: string }> {
     this.state = {
       activeTab: '1'
     };
-
-    if (props.address) {
-      this.props.getAccountAssets(props.address);
-    }
   }
 
   componentDidUpdate = prevProps => {
     const { ledger, address } = this.props;
     if (isEmpty(prevProps.ledger) && !isEmpty(ledger) && !address) {
       this.props.setAccount();
-    }
-
-    if (!prevProps.address && address) {
-      this.props.getAccountAssets(address);
     }
   };
 

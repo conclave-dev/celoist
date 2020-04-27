@@ -35,7 +35,6 @@ const setUpLedger = async (derivationPathIndex: number) => {
 };
 
 const getAccountSummary = async (address: string) => {
-
   if (!kit.web3.utils.isAddress(address)) {
     throw new Error('Invalid account address');
   }
@@ -44,13 +43,10 @@ const getAccountSummary = async (address: string) => {
   const summary = await accountContract.getAccountSummary(address);
   const assets = await getAssets(address);
 
-  console.log('summary', summary);
-  console.log('assets', assets);
-
   return {
     ...summary,
-    ...assets,
-  }
+    assets
+  };
 };
 
 const getAssets = async (account: string) => {
@@ -93,7 +89,7 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
 
-    await approveSellGold(amountUint256, ledger)
+    await approveSellGold(amountUint256, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellGoldTx = await exchangeContract.sellGold(
