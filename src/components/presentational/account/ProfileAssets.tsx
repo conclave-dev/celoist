@@ -16,8 +16,8 @@ const ResponsiveHeaderWrapper = ({ children }) => (
 const ProfileAssets = ({ cGLD, cUSD }) => {
   const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
   const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
+  const hasBalance = !cGLD.isZero() || !cUSD.isZero();
 
-  // <h4 className="card-title">Assets</h4>
   return (
     <Card>
       {exchangerAssetSymbol &&
@@ -85,8 +85,12 @@ const ProfileAssets = ({ cGLD, cUSD }) => {
           </Row>
         </ResponsiveHeaderWrapper>
         <Row style={{ minHeight: 300 }}>
-          <Col xs={12} className="d-flex justify-content-center align-items-center">
-            {!cGLD.isZero() || !cUSD.isZero() ? (
+          <Col
+            xs={12}
+            className="d-flex justify-content-center align-items-center p-0"
+            style={{ marginLeft: hasBalance ? -12.5 : 0 }}
+          >
+            {hasBalance ? (
               <ProfileAssetsChart cGLD={cGLD} cUSD={cUSD} />
             ) : (
               <p className="text-truncate">No assets found</p>

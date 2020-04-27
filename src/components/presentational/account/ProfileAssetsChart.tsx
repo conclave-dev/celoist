@@ -2,39 +2,40 @@ import React, { memo } from 'react';
 import Chart from 'react-apexcharts';
 import BigNumber from 'bignumber.js';
 
-const options = {
+const makeOptions = ({ cGLDLabel, cUSDLabel }) => ({
   chart: {
-    type: 'bar',
+    type: 'column',
     toolbar: {
       show: false
-    }
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      barHeight: '100%',
-    }
+    },
+    width: '100%',
+    parentHeightOffset: 0
   },
   dataLabels: {
     enabled: false
   },
-  stroke: {
-    width: 10,
-    colors: ['#fff']
-  },
   colors: ['#fbcc5c', '#35D07F'],
+  plotOptions: {
+    bar: {
+      distributed: true,
+      columnWidth: '100%'
+    }
+  },
   grid: {
     show: false
   },
   yaxis: {
     show: false,
-    labels: {
+    axisTicks: {
+      show: false
+    },
+    axisBorder: {
       show: false
     }
   },
   xaxis: {
     labels: {
-      show: false
+      show: true
     },
     axisTicks: {
       show: false
@@ -42,26 +43,23 @@ const options = {
     axisBorder: {
       show: false
     },
-    categories: ['Gold (cGLD)', 'Dollars (cUSD)']
+    categories: [
+      ['cGLD', cGLDLabel],
+      ['cUSD', cUSDLabel]
+    ]
   },
   tooltip: {
-    theme: 'dark',
     x: {
       show: false
     },
     y: {
-      title: {
-        formatter: () => ''
-      }
+      show: false
     }
   },
   legend: {
-    itemMargin: {
-      horizontal: 5,
-      vertical: 5
-    }
+    show: false
   }
-};
+});
 
 const ProfileAssetsChart = ({
   cGLD = new BigNumber(0),
@@ -69,22 +67,26 @@ const ProfileAssetsChart = ({
 }: {
   cGLD: BigNumber;
   cUSD: BigNumber;
-}) => (
-  <Chart
-    options={options}
-    series={[
-      {
-        name: 'Gold (cGLD)',
-        data: [new BigNumber(cGLD.toNumber() / 1000000000000000000).toFixed(4)]
-      },
-      {
-        name: 'Dollars (cUSD)',
-        data: [cUSD.toNumber() / 1000000000000000000]
-      }
-    ]}
-    type="bar"
-    width="100%"
-  />
-);
+}) => {
+  const cGLDData = cGLD.toNumber() / 1000000000000000000;
+  const cUSDData = cUSD.toNumber() / 1000000000000000000;
+  const cGLDLabel = `~${new BigNumber(cGLDData).toFixed(8)}`;
+  const cUSDLabel = `~${new BigNumber(cUSDData).toFixed(8)}`;
+
+  return (
+    <Chart
+      options={makeOptions({ cGLDLabel, cUSDLabel })}
+      series={[
+        {
+          name: 'Balance',
+          data: [cGLDData, cUSDData]
+        }
+      ]}
+      type="bar"
+      width="100%"
+      height="100%"
+    />
+  );
+};
 
 export default memo(ProfileAssetsChart);
