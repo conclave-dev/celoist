@@ -69,7 +69,7 @@ const showConnectSuccess = (address: string) =>
     showConfirmButton: false
   });
 
-const SidebarAccount = ({ address, closeSidebarMobile, connectLedger, disconnectLedger }: Props) => {
+const SidebarAccount = ({ address, sidebarToggler, connectLedger, disconnectLedger }: Props) => {
   if (address) {
     showConnectSuccess(address);
   }
@@ -80,7 +80,7 @@ const SidebarAccount = ({ address, closeSidebarMobile, connectLedger, disconnect
       {address ? (
         <>
           <li>
-            <Link to="/account" className="waves-effect" onClick={closeSidebarMobile}>
+            <Link to="/account" className="waves-effect" onClick={sidebarToggler}>
               <div className="iconSidebar">
                 <img src={profileLight} height={22} alt="sidebar menu icon" />
               </div>
@@ -92,7 +92,7 @@ const SidebarAccount = ({ address, closeSidebarMobile, connectLedger, disconnect
               to=""
               className="waves-effect"
               onClick={() => {
-                closeSidebarMobile();
+                sidebarToggler();
                 return disconnectLedger();
               }}
             >
@@ -109,7 +109,7 @@ const SidebarAccount = ({ address, closeSidebarMobile, connectLedger, disconnect
             to=""
             className="waves-effect"
             onClick={() => {
-              closeSidebarMobile();
+              sidebarToggler();
               return specifyAccountIndex((accountIndex) => showConnectProgress(connectLedger, accountIndex));
             }}
           >

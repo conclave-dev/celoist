@@ -4,10 +4,9 @@ import SidebarAccount from './SidebarAccount';
 import overviewLight from '../../../assets/png/overviewLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import lightBulbLight from '../../../assets/png/lightBulbLight.png';
+import { isMobile } from '../../../util/responsive';
 
-const closeSidebarMobile = () => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 991;
-
+const sidebarToggler = () => {
   if (!isMobile) {
     return;
   }
@@ -20,7 +19,7 @@ const SidebarContentEcosystem = () => (
   <>
     <li className="menu-title">Ecosystem</li>
     <li>
-      <Link to="/ecosystem" className="waves-effect" onClick={closeSidebarMobile}>
+      <Link to="/ecosystem" className="waves-effect" onClick={sidebarToggler}>
         <div className="iconSidebar">
           <img src={overviewLight} height={22} alt="Overview sidebar menu icon" />
         </div>
@@ -28,7 +27,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/ecosystem/elections" className="waves-effect" onClick={closeSidebarMobile}>
+      <Link to="/ecosystem/elections" className="waves-effect" onClick={sidebarToggler}>
         <div className="iconSidebar">
           <img src={voteLight} height={22} alt="Elections sidebar menu icon" />
         </div>
@@ -36,7 +35,7 @@ const SidebarContentEcosystem = () => (
       </Link>
     </li>
     <li>
-      <Link to="/ecosystem/governance" className="waves-effect" onClick={closeSidebarMobile}>
+      <Link to="/ecosystem/governance" className="waves-effect" onClick={sidebarToggler}>
         <div className="iconSidebar">
           <img src={lightBulbLight} height={22} alt="Governance sidebar menu icon" />
         </div>
@@ -52,7 +51,7 @@ const SidebarContent = () => (
   <div id="sidebar-menu">
     <ul className="metismenu list-unstyled" id="side-menu">
       <MemoizedSidebarContentEcosystem />
-      <SidebarAccount closeSidebarMobile={closeSidebarMobile} />
+      <SidebarAccount sidebarToggler={sidebarToggler} />
     </ul>
   </div>
 );
