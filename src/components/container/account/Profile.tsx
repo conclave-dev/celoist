@@ -1,29 +1,18 @@
-import React, { PureComponent, ReactChild } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import React, { PureComponent } from 'react';
+import { Container, Row } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import { setAccount } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
+import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
 const mapState = ({ account }, ownProps) => ({ ...account, ...ownProps });
 const mapDispatch = { setAccount };
 const connector = connect(mapState, mapDispatch);
-
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
-
-const ResponsiveWrapper = ({ children }: { children: ReactChild }) => (
-  <>
-    <Col lg={4} className="d-none d-lg-block">
-      {children}
-    </Col>
-    <Col xs={12} className="d-block d-lg-none mb-4">
-      {children}
-    </Col>
-  </>
-);
 
 class Profile extends PureComponent<Props> {
   componentDidMount = () => {
@@ -39,7 +28,7 @@ class Profile extends PureComponent<Props> {
       <Container fluid>
         <Header title="Profile" subtitle="A birdseye view of your Celo activity" inProgress={false} />
         <Row>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileDetails
               name={name}
               address={address}
@@ -47,10 +36,10 @@ class Profile extends PureComponent<Props> {
               validator={authorizedSigners.validator}
             />
           </ResponsiveWrapper>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileAssets {...assets} />
           </ResponsiveWrapper>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileTransactions transactions={[]} />
           </ResponsiveWrapper>
         </Row>

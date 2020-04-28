@@ -1,4 +1,4 @@
-import React, { memo, ReactChild, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Card, CardBody, Button, Row, Col } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import ProfileAssetsChart from './ProfileAssetsChart';
@@ -6,13 +6,7 @@ import ProfileAssetsChart from './ProfileAssetsChart';
 import AssetExchanger from './AssetExchanger';
 import greenCoin from '../../../assets/png/greenCoin.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
-
-const ResponsiveHeaderWrapper = ({ children }: { children: ReactChild }) => (
-  <>
-    <div className="d-none d-lg-block">{children}</div>
-    <div className="d-none d-lg-none d-xs-block d-flex justify-content-center">{children}</div>
-  </>
-);
+import ResponsiveWrapper from '../reusable/ResponsiveWrapper';
 
 const ProfileAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => {
   const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
@@ -38,7 +32,7 @@ const ProfileAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => 
           />
         ))}
       <CardBody>
-        <ResponsiveHeaderWrapper>
+        <ResponsiveWrapper mobileClasses="d-flex justify-content-center">
           <Row
             noGutters
             className="justify-content-between align-items-center"
@@ -98,7 +92,7 @@ const ProfileAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => 
               </Button>
             </Col>
           </Row>
-        </ResponsiveHeaderWrapper>
+        </ResponsiveWrapper>
         <Row style={{ minHeight: 300 }}>
           <Col
             xs={12}
