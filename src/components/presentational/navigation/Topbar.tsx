@@ -2,11 +2,10 @@ import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import celoLogo from '../../../assets/svg/celo-logo.svg';
 import celoGlyph from '../../../assets/svg/celo-glyph.svg';
+import { isMobile } from '../../../util/responsive';
 
 const Topbar = () => {
   const toggleSidebar = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 991;
-
     if (isMobile) {
       document.body.classList.remove('vertical-collapsed');
       document.body.classList.toggle('sidebar-enable');
