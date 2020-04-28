@@ -4,7 +4,8 @@ import BigNumber from 'bignumber.js';
 import ProfileAssetsChart from './ProfileAssetsChart';
 // import Anchor from '../reusable/Anchor';
 import AssetExchanger from './AssetExchanger';
-import whiteCoin from '../../../assets/png/whiteCoin.png';
+import greenCoin from '../../../assets/png/greenCoin.png';
+import goldCoin from '../../../assets/png/goldCoin.png';
 
 const ResponsiveHeaderWrapper = ({ children }) => (
   <>
@@ -48,37 +49,51 @@ const ProfileAssets = ({ cGLD, cUSD }) => {
             </Col>
             <Col lg={7} xs={7} className="d-flex justify-content-end" style={{ flexWrap: 'nowrap', paddingRight: 0 }}>
               <Button
+                disabled={!hasBalance}
                 className="waves-effect waves-light mr-1"
                 style={{
                   color: '#FFF',
-                  backgroundColor: '#fbcc5c',
+                  backgroundColor: hasBalance ? '#35D07F' : '#9ca8b3',
                   border: 'none',
                   height: 32,
                   paddingTop: 0,
                   paddingBottom: 0
                 }}
-                onClick={() => setExchangerAssetSymbol('cGLD')}
+                onClick={() => {
+                  if (exchangerAssetSymbol) {
+                    return setExchangerAssetSymbol('');
+                  }
+
+                  setExchangerAssetSymbol('cGLD');
+                }}
               >
                 <div className="d-flex align-items-center">
-                  <i className="mdi mdi-swap-horizontal" />
-                  <img src={whiteCoin} height={16} alt="coin" />
+                  <i className="mdi mdi-sync" />
+                  <img src={goldCoin} height={16} alt="coin" />
                 </div>
               </Button>
               <Button
+                disabled={!hasBalance}
                 className="waves-effect waves-light ml-1"
                 style={{
                   color: '#FFF',
-                  backgroundColor: '#35D07F',
+                  backgroundColor: hasBalance ? '#fbcc5c' : '#9ca8b3',
                   border: 'none',
                   height: 32,
                   paddingTop: 0,
                   paddingBottom: 0
                 }}
-                onClick={() => setExchangerAssetSymbol('cUSD')}
+                onClick={() => {
+                  if (exchangerAssetSymbol) {
+                    return setExchangerAssetSymbol('');
+                  }
+
+                  setExchangerAssetSymbol('cUSD');
+                }}
               >
                 <div className="d-flex align-items-center">
-                  <i className="mdi mdi-swap-horizontal" />
-                  <img src={whiteCoin} height={16} alt="coin" />
+                  <i className="mdi mdi-sync" />
+                  <img src={greenCoin} height={16} alt="coin" />
                 </div>
               </Button>
             </Col>
