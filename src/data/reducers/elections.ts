@@ -6,6 +6,10 @@ interface Elections {
   groupsById: GroupsById;
   allGroupIds: AllGroupIds;
   config: Config;
+  summary: {
+    averageScore: number;
+    groupVoterRewards: any[];
+  };
 }
 
 interface FetchElection {
@@ -16,16 +20,21 @@ interface FetchElection {
 const elections: Elections = {
   groupsById: {},
   allGroupIds: [],
-  config: {}
+  config: {},
+  summary: {
+    averageScore: 0,
+    groupVoterRewards: []
+  }
 };
 
 const initialState = initialStateDecorator(elections);
 
-const fetchElection = (state, { groupsById, allGroupIds, config }): FetchElection => ({
+const fetchElection = (state, { groupsById, allGroupIds, config, summary }): FetchElection => ({
   ...state,
   groupsById,
   allGroupIds,
-  config
+  config,
+  summary
 });
 
 export default (state = initialState, action) => {

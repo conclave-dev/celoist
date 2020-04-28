@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
+import { isEmpty } from 'lodash';
 import { fetchElection } from '../../../data/actions/elections';
-import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
@@ -10,9 +10,12 @@ import earnings from '../../../assets/png/earnings.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 import score from '../../../assets/png/score.png';
 
-const electionsSelector = makeElectionsSelector();
-
-const mapState = (state) => electionsSelector(state);
+const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress } }) => ({
+  groupsById,
+  allGroupIds,
+  config,
+  inProgress
+});
 const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
 
