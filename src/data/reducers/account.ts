@@ -1,7 +1,7 @@
 import {
-  CONNECT_LEDGER,
-  DISCONNECT_LEDGER,
-  SET_ACCOUNT,
+  LOG_IN_LEDGER,
+  LOG_OUT_LEDGER,
+  GET_ACCOUNT_DATA,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX
@@ -12,11 +12,13 @@ import BigNumber from 'bignumber.js';
 const accountState = {
   ledger: {},
   address: '',
-  name: '',
-  authorizedSigners: {},
-  metadataURL: '',
-  wallet: '',
-  dataEncryptionKey: '',
+  summary: {
+    name: '',
+    authorizedSigners: {},
+    metadataURL: '',
+    wallet: '',
+    dataEncryptionKey: ''
+  },
   assets: {
     cGLD: new BigNumber(0),
     cUSD: new BigNumber(0)
@@ -34,17 +36,16 @@ const accountState = {
 
 const initialState = initialStateDecorator(accountState);
 
-const connectLedger = (state, { ledger }) => ({
+const logInLedger = (state, { ledger }) => ({
   ...state,
   ledger,
   address: ledger.getAccounts()[0]
 });
 
-const disconnectLedger = (state) => state;
+const logOutLedger = (state) => state;
 
-const setAccount = (state, { address, name, authorizedSigners, metadataURL, wallet, dataEncryptionKey, assets }) => ({
+const getAccountData = (state, { name, authorizedSigners, metadataURL, wallet, dataEncryptionKey, assets }) => ({
   ...state,
-  address,
   name,
   authorizedSigners,
   metadataURL,
@@ -79,12 +80,12 @@ export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case CONNECT_LEDGER:
-      return evalActionPayload(state, action, connectLedger);
-    case DISCONNECT_LEDGER:
-      return evalActionPayload(state, action, disconnectLedger);
-    case SET_ACCOUNT:
-      return evalActionPayload(state, action, setAccount);
+    case LOG_IN_LEDGER:
+      return evalActionPayload(state, action, logInLedger);
+    case LOG_OUT_LEDGER:
+      return evalActionPayload(state, action, logOutLedger);
+    case GET_ACCOUNT_DATA:
+      return evalActionPayload(state, action, getAccountData);
     case EXCHANGE_GOLD_FOR_DOLLARS:
       return evalActionPayload(state, action, exchangeAssets);
     case EXCHANGE_DOLLARS_FOR_GOLD:

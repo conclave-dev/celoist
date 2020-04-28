@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect, ConnectedProps } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import {
-  connectLedger as connectLedgerAction,
-  disconnectLedger as disconnectLedgerAction
-} from '../../../data/actions/account';
+import { logInLedger as logInLedgerAction, logOutLedger as logOutLedgerAction } from '../../../data/actions/account';
 import profileLight from '../../../assets/png/profileLight.png';
 import keyLight from '../../../assets/png/keyLight.png';
 import lockLight from '../../../assets/png/lockLight.png';
@@ -14,7 +11,7 @@ import lockLight from '../../../assets/png/lockLight.png';
 const SweetAlert = withReactContent(Swal);
 
 const mapState = ({ account: { address } }, ownProps) => ({ address, ...ownProps });
-const mapDispatch = { connectLedger: connectLedgerAction, disconnectLedger: disconnectLedgerAction };
+const mapDispatch = { logInLedger: logInLedgerAction, logOutLedger: logOutLedgerAction };
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
@@ -69,7 +66,7 @@ const showConnectSuccess = (address: string) =>
     showConfirmButton: false
   });
 
-const SidebarAccount = ({ address, sidebarToggler, connectLedger, disconnectLedger }: Props) => {
+const SidebarAccount = ({ address, sidebarToggler, logInLedger, logOutLedger }: Props) => {
   if (address) {
     showConnectSuccess(address);
   }
@@ -93,7 +90,7 @@ const SidebarAccount = ({ address, sidebarToggler, connectLedger, disconnectLedg
               className="waves-effect"
               onClick={() => {
                 sidebarToggler();
-                return disconnectLedger();
+                return logOutLedger();
               }}
             >
               <div className="iconSidebar">
@@ -110,7 +107,7 @@ const SidebarAccount = ({ address, sidebarToggler, connectLedger, disconnectLedg
             className="waves-effect"
             onClick={() => {
               sidebarToggler();
-              return specifyAccountIndex((accountIndex) => showConnectProgress(connectLedger, accountIndex));
+              return specifyAccountIndex((accountIndex) => showConnectProgress(logInLedger, accountIndex));
             }}
           >
             <div className="iconSidebar">

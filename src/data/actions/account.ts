@@ -1,7 +1,7 @@
 import {
-  CONNECT_LEDGER,
-  DISCONNECT_LEDGER,
-  SET_ACCOUNT,
+  LOG_IN_LEDGER,
+  LOG_OUT_LEDGER,
+  GET_ACCOUNT_DATA,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX
@@ -9,19 +9,19 @@ import {
 import { handleInit, handleData, handleError } from '../util/actions';
 import { setUpLedger, getAccountSummary, sellGold, sellDollars } from '../fetch/account';
 
-const connectLedger = (accountIndex = 0) => async (dispatch) => {
-  handleInit(dispatch, CONNECT_LEDGER);
+const logInLedger = (accountIndex = 0) => async (dispatch) => {
+  handleInit(dispatch, LOG_IN_LEDGER);
 
   try {
     const ledger = await setUpLedger(accountIndex);
-    return handleData(dispatch, CONNECT_LEDGER, { ledger });
+    return handleData(dispatch, LOG_IN_LEDGER, { ledger });
   } catch (err) {
-    return handleError(dispatch, CONNECT_LEDGER, err);
+    return handleError(dispatch, LOG_IN_LEDGER, err);
   }
 };
 
-const disconnectLedger = () => async (dispatch, getState) => {
-  handleInit(dispatch, DISCONNECT_LEDGER);
+const logOutLedger = () => async (dispatch, getState) => {
+  handleInit(dispatch, LOG_OUT_LEDGER);
 
   try {
     const {
@@ -30,20 +30,20 @@ const disconnectLedger = () => async (dispatch, getState) => {
 
     await ledger.transport.close();
 
-    return handleData(dispatch, DISCONNECT_LEDGER, { ledger: {} });
+    return handleData(dispatch, LOG_OUT_LEDGER, { ledger: {} });
   } catch (err) {
-    return handleError(dispatch, DISCONNECT_LEDGER, err);
+    return handleError(dispatch, LOG_OUT_LEDGER, err);
   }
 };
 
-const setAccount = (address: string) => async (dispatch) => {
-  handleInit(dispatch, SET_ACCOUNT);
+const getAccountData = (address: string) => async (dispatch) => {
+  handleInit(dispatch, GET_ACCOUNT_DATA);
 
   try {
-    const account = await getAccountSummary(address);
-    return handleData(dispatch, SET_ACCOUNT, { ...account });
+    const { summary, assets } = await getAccountSummary(address);
+    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, assets });
   } catch (err) {
-    return handleError(dispatch, SET_ACCOUNT, err);
+    return handleError(dispatch, GET_ACCOUNT_DATA, err);
   }
 };
 
@@ -99,4 +99,4 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
 
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX, {});
 
-export { connectLedger, disconnectLedger, setAccount, exchangeGoldForDollars, exchangeDollarsForGold, resetExchangeTx };
+export { logInLedger, logOutLedger, getAccountData, exchangeGoldForDollars, exchangeDollarsForGold, resetExchangeTx };

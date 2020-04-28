@@ -1,28 +1,33 @@
 import React, { PureComponent } from 'react';
 import { Container, Row } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
-import { setAccount } from '../../../data/actions/account';
+import { getAccountData } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account }, ownProps) => ({ ...account, ...ownProps });
-const mapDispatch = { setAccount };
+const mapState = ({ account: { ledger, summary, assets } }, ownProps) => ({ ledger, summary, assets, ...ownProps });
+const mapDispatch = { getAccountData };
 const connector = connect(mapState, mapDispatch);
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
 class Profile extends PureComponent<Props> {
   componentDidMount = () => {
-    if (this.props.address) {
-      this.props.setAccount(this.props.address);
+    const { ledger } = this.props;
+    const account = ledger.ledger && ledger.ledger.getAccounts()[0];
+
+    if (account && !this.props.summary.address) {
+      this.props.getAccountData(account);
     }
   };
 
   render() {
-    const { name, address, metadataURL, authorizedSigners, assets } = this.props;
+    const { summary, assets } = this.props;
+    const { name, address, metadataURL, authorizedSigners } = summary;
 
     return (
       <Container fluid>

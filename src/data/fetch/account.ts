@@ -56,7 +56,7 @@ const getAccountSummary = async (address: string) => {
   const assets = await getAssets(address);
 
   return {
-    ...summary,
+    summary,
     assets
   };
 };
