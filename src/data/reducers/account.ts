@@ -40,7 +40,7 @@ const connectLedger = (state, { ledger }) => ({
   address: ledger.getAccounts()[0]
 });
 
-const disconnectLedger = state => state;
+const disconnectLedger = (state) => state;
 
 const setAccount = (state, { address, name, authorizedSigners, metadataURL, wallet, dataEncryptionKey, assets }) => ({
   ...state,
@@ -70,7 +70,7 @@ const exchangeAssets = (
   assets
 });
 
-const resetExchangeTx = state => ({
+const resetExchangeTx = (state) => ({
   ...state,
   exchangeTx: { ...accountState.exchangeTx }
 });

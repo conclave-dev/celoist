@@ -14,7 +14,7 @@ import proposal from '../../../assets/png/proposal.png';
 
 const homeSelector = makeHomeSelector();
 
-const mapState = state => homeSelector(state);
+const mapState = (state) => homeSelector(state);
 const mapDispatch = { fetchBlogs, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 

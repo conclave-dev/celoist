@@ -8,7 +8,6 @@ import {
   disconnectLedger as disconnectLedgerAction
 } from '../../../data/actions/account';
 import profileLight from '../../../assets/png/profileLight.png';
-import portfolioLight from '../../../assets/png/portfolioLight.png';
 import keyLight from '../../../assets/png/keyLight.png';
 import lockLight from '../../../assets/png/lockLight.png';
 
@@ -20,59 +19,59 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-const SidebarAccount = memo(({ address, closeSidebarMobile, connectLedger, disconnectLedger }: Props) => {
-  const specifyAccountIndex = callback => {
-    SweetAlert.fire({
-      title: 'Connect Ledger Nano S/X',
-      icon: 'question',
-      html: `
-          <p>Access an account by entering its index below (default: 0).</p>
-          <input id="accountIndex" class="swal2-input" value="0" />
-          <p class="font-italic">
-            <small>
-              Derivation path: 44'/52752'/0'/0/{index}
-            </small>
-          </p>
-        `,
-      showCancelButton: true,
-      showConfirmButton: true,
-      preConfirm: () => {
-        // @ts-ignore
-        const value = parseInt(window.document.getElementById('accountIndex').value);
+const specifyAccountIndex = (callback) =>
+  SweetAlert.fire({
+    title: 'Connect Ledger Nano S/X',
+    icon: 'question',
+    html: `
+        <p>Access an account by entering its index below (default: 0).</p>
+        <input id="accountIndex" class="swal2-input" value="0" />
+        <p class="font-italic">
+          <small>
+            Derivation path: 44'/52752'/0'/0/{index}
+          </small>
+        </p>
+      `,
+    showCancelButton: true,
+    showConfirmButton: true,
+    preConfirm: () => {
+      // Addresses "has no property value" ts error https://stackoverflow.com/a/43823786
+      const accountIndexElement = window.document.getElementById('accountIndex') as HTMLInputElement;
+      const accountIndex = parseInt(accountIndexElement.value);
 
-        if (value >= 0) {
-          callback(value);
-        }
+      if (accountIndex >= 0) {
+        callback(accountIndex);
       }
-    });
-  };
+    }
+  });
 
-  const showConnectProgress = value =>
-    SweetAlert.fire({
-      title: 'Connecting...',
-      html: `
+const showConnectProgress = (callback, value) =>
+  SweetAlert.fire({
+    title: 'Connecting...',
+    html: `
         <div class="pt-4 pb-4">
           <div role="status" class="spinner-grow text-warning"><span class="sr-only">Loading...</span></div>
         </div>
       `,
-      showConfirmButton: false,
-      showCancelButton: true,
-      onOpen: () => connectLedger(value)
-    });
+    showConfirmButton: false,
+    showCancelButton: true,
+    onOpen: () => callback(value)
+  });
 
-  const showConnectSuccess = () =>
-    SweetAlert.fire({
-      title: 'Connected',
-      icon: 'success',
-      html: `
+const showConnectSuccess = (address: string) =>
+  SweetAlert.fire({
+    title: 'Connected',
+    icon: 'success',
+    html: `
         <p>Successfully connected to ${address}</p>
       `,
-      showCloseButton: true,
-      showConfirmButton: false
-    });
+    showCloseButton: true,
+    showConfirmButton: false
+  });
 
+const SidebarAccount = ({ address, closeSidebarMobile, connectLedger, disconnectLedger }: Props) => {
   if (address) {
-    showConnectSuccess();
+    showConnectSuccess(address);
   }
 
   return (
@@ -111,7 +110,7 @@ const SidebarAccount = memo(({ address, closeSidebarMobile, connectLedger, disco
             className="waves-effect"
             onClick={() => {
               closeSidebarMobile();
-              return specifyAccountIndex(showConnectProgress);
+              return specifyAccountIndex((accountIndex) => showConnectProgress(connectLedger, accountIndex));
             }}
           >
             <div className="iconSidebar">
@@ -123,6 +122,6 @@ const SidebarAccount = memo(({ address, closeSidebarMobile, connectLedger, disco
       )}
     </>
   );
-});
+};
 
-export default connector(SidebarAccount);
+export default connector(memo(SidebarAccount));

@@ -10,9 +10,9 @@ type HomeCreateSelector = {
   inProgress: boolean;
 };
 
-const getInProgress = state => state.home.inProgress || getGovernanceInProgress(state);
+const getInProgress = (state) => state.home.inProgress || getGovernanceInProgress(state);
 
-const getBlogs = state => ({
+const getBlogs = (state) => ({
   blogsById: state.home.blogsById,
   allBlogIds: state.home.allBlogIds
 });

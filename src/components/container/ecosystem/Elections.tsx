@@ -12,7 +12,7 @@ import score from '../../../assets/png/score.png';
 
 const electionsSelector = makeElectionsSelector();
 
-const mapState = state => electionsSelector(state);
+const mapState = (state) => electionsSelector(state);
 const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
 

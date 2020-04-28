@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, ReactChild, useState } from 'react';
 import { Card, CardBody, Button, Row, Col } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import ProfileAssetsChart from './ProfileAssetsChart';
@@ -7,14 +7,14 @@ import AssetExchanger from './AssetExchanger';
 import greenCoin from '../../../assets/png/greenCoin.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
 
-const ResponsiveHeaderWrapper = ({ children }) => (
+const ResponsiveHeaderWrapper = ({ children }: { children: ReactChild }) => (
   <>
     <div className="d-none d-lg-block">{children}</div>
     <div className="d-none d-lg-none d-xs-block d-flex justify-content-center">{children}</div>
   </>
 );
 
-const ProfileAssets = ({ cGLD, cUSD }) => {
+const ProfileAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => {
   const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
   const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
   const hasBalance = !cGLD.isZero() || !cUSD.isZero();

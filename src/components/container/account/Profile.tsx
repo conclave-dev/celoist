@@ -1,13 +1,11 @@
-import React, { PureComponent } from 'react';
-import { Container, Row, Col, Card, CardBody } from 'reactstrap';
-import { isEmpty } from 'lodash';
+import React, { PureComponent, ReactChild } from 'react';
+import { Container, Row, Col } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import { setAccount } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
-import BigNumber from 'bignumber.js';
 
 const mapState = ({ account }, ownProps) => ({ ...account, ...ownProps });
 const mapDispatch = { setAccount };
@@ -16,7 +14,7 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-const ResponsiveWrapper = ({ children }) => (
+const ResponsiveWrapper = ({ children }: { children: ReactChild }) => (
   <>
     <Col lg={4} className="d-none d-lg-block">
       {children}

@@ -2,7 +2,7 @@ import { CONNECT_LEDGER, DISCONNECT_LEDGER } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { setUpLedger } from '../fetch/account';
 
-const connectLedger = (accountIndex: number = 0) => async dispatch => {
+const connectLedger = (accountIndex = 0) => async (dispatch) => {
   handleInit(dispatch, CONNECT_LEDGER);
 
   try {

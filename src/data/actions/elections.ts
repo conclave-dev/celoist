@@ -2,7 +2,7 @@ import { FETCH_ELECTION } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { populateElection, fetchElectionConfig } from '../fetch/elections';
 
-const fetchElection = (blockNumber?: number) => async dispatch => {
+const fetchElection = (blockNumber?: number) => async (dispatch) => {
   handleInit(dispatch, FETCH_ELECTION);
 
   try {

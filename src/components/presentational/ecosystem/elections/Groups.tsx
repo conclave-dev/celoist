@@ -65,7 +65,7 @@ const Groups = ({
       <GroupsLargeScreens />
       <GroupsSmallScreens />
       {allGroupIds.length ? (
-        allGroupIds.map(groupId => (
+        allGroupIds.map((groupId) => (
           <Group key={groupId} group={groupsById[groupId]} maxGroupSize={config.maxGroupSize} />
         ))
       ) : (

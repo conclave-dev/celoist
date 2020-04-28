@@ -26,7 +26,7 @@ const Blogs = ({ blogs, blogIds }: { blogs: { [key: string]: Blog }; blogIds: st
                 By {author} | {moment(pubDate).format('MMMM Do YYYY')}
               </small>
               <p className="mt-2 mb-2">
-                {categories.map(category => (
+                {categories.map((category) => (
                   <Badge key={category} color="secondary" className="mr-1">
                     {category}
                   </Badge>

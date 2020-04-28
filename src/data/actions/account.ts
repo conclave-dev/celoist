@@ -7,9 +7,9 @@ import {
   RESET_EXCHANGE_TX
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars } from '../fetch/account';
+import { setUpLedger, getAccountSummary, sellGold, sellDollars } from '../fetch/account';
 
-const connectLedger = (accountIndex: number = 0) => async dispatch => {
+const connectLedger = (accountIndex = 0) => async (dispatch) => {
   handleInit(dispatch, CONNECT_LEDGER);
 
   try {
@@ -36,7 +36,7 @@ const disconnectLedger = () => async (dispatch, getState) => {
   }
 };
 
-const setAccount = (address: string) => async dispatch => {
+const setAccount = (address: string) => async (dispatch) => {
   handleInit(dispatch, SET_ACCOUNT);
 
   try {
@@ -97,6 +97,6 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
   }
 };
 
-const resetExchangeTx = () => async dispatch => handleData(dispatch, RESET_EXCHANGE_TX, {});
+const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX, {});
 
 export { connectLedger, disconnectLedger, setAccount, exchangeGoldForDollars, exchangeDollarsForGold, resetExchangeTx };

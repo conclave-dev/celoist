@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
-import { Card, CardBody, Row,Col } from 'reactstrap';
+import { Card, CardBody, Row, Col } from 'reactstrap';
 import SimpleBar from 'simplebar-react';
 
-const ProfileTransactions = ({ transactions }) => (
+const ProfileTransactions = ({ transactions }: { transactions: string[] }) => (
   <Card>
     <CardBody>
       <h4 className="card-title">Transactions</h4>

@@ -36,10 +36,7 @@ const GroupLargeScreens = ({
           style={{ height: '100%', width: '100%', position: 'absolute' }}
           color="warning"
           className="text-truncate"
-          value={votes
-            .dividedBy(capacity)
-            .multipliedBy(100)
-            .toNumber()}
+          value={votes.dividedBy(capacity).multipliedBy(100).toNumber()}
         />
         <div
           className="d-flex justify-content-center align-items-center text-truncate"
@@ -105,10 +102,7 @@ const GroupSmallScreens = ({
             style={{ height: '75%', width: '95%', position: 'absolute' }}
             color="warning"
             className="text-truncate"
-            value={votes
-              .dividedBy(capacity)
-              .multipliedBy(100)
-              .toNumber()}
+            value={votes.dividedBy(capacity).multipliedBy(100).toNumber()}
           />
           <div
             className="d-flex justify-content-center align-items-center"

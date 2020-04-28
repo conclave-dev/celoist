@@ -34,6 +34,18 @@ const setUpLedger = async (derivationPathIndex: number) => {
   return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
 };
 
+const getAssets = async (account: string) => {
+  const goldTokenContract = await kit.contracts.getGoldToken();
+  const stableTokenContract = await kit.contracts.getStableToken();
+  const cGLD = await goldTokenContract.balanceOf(account);
+  const cUSD = await stableTokenContract.balanceOf(account);
+
+  return {
+    cGLD,
+    cUSD
+  };
+};
+
 const getAccountSummary = async (address: string) => {
   if (!kit.web3.utils.isAddress(address)) {
     throw new Error('Invalid account address');
@@ -46,18 +58,6 @@ const getAccountSummary = async (address: string) => {
   return {
     ...summary,
     assets
-  };
-};
-
-const getAssets = async (account: string) => {
-  const goldTokenContract = await kit.contracts.getGoldToken();
-  const stableTokenContract = await kit.contracts.getStableToken();
-  const cGLD = await goldTokenContract.balanceOf(account);
-  const cUSD = await stableTokenContract.balanceOf(account);
-
-  return {
-    cGLD,
-    cUSD
   };
 };
 
