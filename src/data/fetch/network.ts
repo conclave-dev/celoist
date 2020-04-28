@@ -1,22 +1,8 @@
 import { newKit } from '@celo/contractkit';
-import { isEmpty } from 'lodash';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
 
 const kit = newKit(rpcChain);
-const contracts: {
-  exchange: any;
-} = {
-  exchange: {}
-};
-
-const getExchangeContract = async () => {
-  if (!isEmpty(contracts.exchange)) {
-    return contracts.exchange;
-  }
-
-  return kit.contracts.getExchange();
-};
 
 const fetchExchangeRates = async () => {
   try {

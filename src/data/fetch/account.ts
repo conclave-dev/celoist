@@ -25,14 +25,6 @@ const getAccountsContract = async () => {
   return kit.contracts.getAccounts();
 };
 
-const getExchangeContract = async () => {
-  if (!isEmpty(contracts.exchange)) {
-    return contracts.exchange;
-  }
-
-  return kit.contracts.getExchange();
-};
-
 const setUpLedger = async (derivationPathIndex: number) => {
   const transport = await TransportU2F.create();
 
@@ -42,9 +34,19 @@ const setUpLedger = async (derivationPathIndex: number) => {
   return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
 };
 
-const getAccountSummary = async (account: string) => {
+const getAccountSummary = async (address: string) => {
+  if (!kit.web3.utils.isAddress(address)) {
+    throw new Error('Invalid account address');
+  }
+
   const accountContract = await getAccountsContract();
-  return accountContract.getAccountSummary(account);
+  const summary = await accountContract.getAccountSummary(address);
+  const assets = await getAssets(address);
+
+  return {
+    ...summary,
+    assets
+  };
 };
 
 const getAssets = async (account: string) => {
@@ -87,12 +89,12 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
 
-    await approveSellGold(amountUint256, ledger)
+    await approveSellGold(amountUint256, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellGoldTx = await exchangeContract.sellGold(
       amountUint256,
-      minUSDAmount.multipliedBy(exchangeBase).toFixed()
+      0 // minUSDAmount.multipliedBy(exchangeBase).toFixed(0)
     );
     const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
     const chainId = await kit.web3.eth.getChainId();
@@ -107,7 +109,13 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
       chainId
     });
 
-    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
   } catch (err) {
     console.error('err', err);
     return err;
@@ -140,14 +148,14 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
 
   try {
     const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
 
     await approveSellDollars(amountUint256, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellDollarsTx = await exchangeContract.sellDollar(
       amountUint256,
-      minGLDAmount.multipliedBy(exchangeBase).toFixed()
+      0 // minGLDAmount.multipliedBy(exchangeBase).toFixed()
     );
 
     const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
@@ -163,7 +171,13 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
       chainId
     });
 
-    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
   } catch (err) {
     console.error('err', err);
     return err;

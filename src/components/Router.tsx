@@ -5,6 +5,7 @@ import Elections from './container/ecosystem/Elections';
 import Governance from './container/ecosystem/Governance';
 import Profile from './container/account/Profile';
 import Portfolio from './container/account/Portfolio';
+import { DEFAULT_ADDRESS } from '../config';
 
 const Router = () => (
   <Switch>
@@ -20,9 +21,6 @@ const Router = () => (
     </Route>
     <Route exact path="/account">
       <Profile />
-    </Route>
-    <Route exact path="/account/portfolio">
-      <Portfolio />
     </Route>
   </Switch>
 );

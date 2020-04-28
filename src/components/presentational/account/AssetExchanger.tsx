@@ -1,16 +1,30 @@
-import React, { PureComponent, useState, memo } from 'react';
+import React, { PureComponent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Row, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import BigNumber from 'bignumber.js';
+import Anchor from '../reusable/Anchor';
+import Spinner from '../reusable/Spinner';
 import { getExchangeRates, removeExchangeRates } from '../../../data/actions/network';
+import { resetExchangeTx } from '../../../data/actions/account';
 import { exchangeDollarsForGold, exchangeGoldForDollars } from '../../../data/actions/account';
 
 const SweetAlert = withReactContent(Swal);
 
-const mapState = ({ network: { exchangeRates } }, ownProps) => ({ exchangeRates, ...ownProps });
-const mapDispatch = { getExchangeRates, removeExchangeRates, exchangeDollarsForGold, exchangeGoldForDollars };
+const mapState = ({ network: { exchangeRates }, account: { exchangeTx, errorMessage } }, ownProps) => ({
+  exchangeRates,
+  exchangeTx,
+  errorMessage,
+  ...ownProps
+});
+const mapDispatch = {
+  getExchangeRates,
+  removeExchangeRates,
+  exchangeDollarsForGold,
+  exchangeGoldForDollars,
+  resetExchangeTx
+};
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -85,10 +99,81 @@ const GoldToDollarsExchanger = ({ goldToDollars }) => {
   );
 };
 
-class PortfolioAssetExchanger extends PureComponent<Props> {
+class AssetExchanger extends PureComponent<Props> {
   componentDidMount = () => {
     this.props.getExchangeRates();
   };
+
+  componentDidUpdate = prevProps => {
+    const { exchangeTx: prevExchangeTx, errorMessage: prevErrorMessage } = prevProps;
+    const { exchangeTx, errorMessage } = this.props;
+
+    if (exchangeTx.transactionHash && prevExchangeTx.transactionHash !== exchangeTx.transactionHash) {
+      return this.exchangeSuccessHandler();
+    }
+
+    if (!prevErrorMessage && errorMessage) {
+      return this.exchangeErrorHandler();
+    }
+  };
+
+  exchangeSuccessHandler = () =>
+    SweetAlert.fire({
+      title: 'Exchange Details',
+      icon: 'success',
+      html: (
+        <div className="pt-4 pb-4">
+          <p className="text-center" style={{ marginBottom: 0 }}>
+            Congratulations! Your exchange was successful. You can view the details{' '}
+            <Anchor
+              href={`https://baklava-blockscout.celo-testnet.org/tx/${this.props.exchangeTx.transactionHash}`}
+              color="3488ec"
+            >
+              here
+            </Anchor>
+            .
+          </p>
+        </div>
+      ),
+      showConfirmButton: false,
+      showCancelButton: true,
+      onClose: () => this.exchangerCloseHandler()
+    });
+
+  exchangeProgressHandler = (exchangeAmount, receiveAmount, sellGold) =>
+    SweetAlert.fire({
+      title: 'Exchanging...',
+      html: (
+        <div className="pt-4 pb-4">
+          <p>Review and confirm the transactions (approval and exchange) on your Ledger to initiate the exchange.</p>
+          <Spinner />
+        </div>
+      ),
+      showConfirmButton: false,
+      showCancelButton: true,
+      onOpen: () =>
+        sellGold
+          ? this.props.exchangeGoldForDollars(exchangeAmount, receiveAmount)
+          : this.props.exchangeDollarsForGold(exchangeAmount, receiveAmount),
+      onClose: () => this.exchangerCloseHandler()
+    });
+
+  exchangeErrorHandler = (
+    errorMsg = 'We encountered an exchange error (normal during high periods of network-usage), please try again.'
+  ) =>
+    SweetAlert.fire({
+      title: 'Exchange Failed',
+      icon: 'error',
+      html: (
+        <div className="pt-4 pb-4">
+          <p className="text-center" style={{ marginBottom: 0 }}>
+            {errorMsg}
+          </p>
+        </div>
+      ),
+      showCancelButton: true,
+      showConfirmButton: false
+    });
 
   exchangerCloseHandler = () => {
     this.props.removeExchangeRates();
@@ -111,23 +196,11 @@ class PortfolioAssetExchanger extends PureComponent<Props> {
               // @ts-ignore
               const dollarAmount = new BigNumber(window.document.getElementById('amount').value);
 
-              if (!dollarAmount.isZero()) {
-                SweetAlert.fire({
-                  title: 'Exchanging...',
-                  html: `
-                    <div class="pt-4 pb-4">
-                      <div role="status" class="spinner-grow text-success" />
-                    </div>
-                  `,
-                  showConfirmButton: false,
-                  showCancelButton: true,
-                  onOpen: () =>
-                    this.props.exchangeDollarsForGold(
-                      dollarAmount,
-                      exchangeRates.dollarsToGold.multipliedBy(dollarAmount)
-                    )
-                });
+              if (dollarAmount.isZero() || dollarAmount.isNaN()) {
+                return this.exchangeErrorHandler('The exchange amount you entered was invalid, please try again.');
               }
+
+              this.exchangeProgressHandler(dollarAmount, exchangeRates.dollarsToGold.multipliedBy(dollarAmount), false);
             },
             onClose: this.exchangerCloseHandler
           })
@@ -141,20 +214,12 @@ class PortfolioAssetExchanger extends PureComponent<Props> {
               // @ts-ignore
               const goldAmount = new BigNumber(window.document.getElementById('amount').value);
 
-              if (!goldAmount.isZero()) {
-                SweetAlert.fire({
-                  title: 'Exchanging...',
-                  html: `
-                    <div class="pt-4 pb-4">
-                      <div role="status" class="spinner-grow text-warning" />
-                    </div>
-                  `,
-                  showConfirmButton: false,
-                  showCancelButton: true,
-                  onOpen: () =>
-                    this.props.exchangeGoldForDollars(goldAmount, exchangeRates.goldToDollars.multipliedBy(goldAmount))
-                });
+              if (goldAmount.isZero() || goldAmount.isNaN()) {
+                console.log('what', goldAmount);
+                return this.exchangeErrorHandler('The exchange amount you entered was invalid, please try again.');
               }
+
+              this.exchangeProgressHandler(goldAmount, exchangeRates.goldToDollars.multipliedBy(goldAmount), true);
             },
             onClose: this.exchangerCloseHandler
           });
@@ -164,30 +229,4 @@ class PortfolioAssetExchanger extends PureComponent<Props> {
   };
 }
 
-export default connector(PortfolioAssetExchanger);
-
-// if (hasExchangeRates) {
-//   assetSymbol === 'cGLD'
-//     ? SweetAlert.fire({
-//         title: 'Exchange cUSD for cGLD',
-//         html: `
-//           <p>Based on current exchange rates, you will receive ~${exchangeRates.goldToDollars.toFixed(
-//             2
-//           )} cUSD per 1 cGLD.</p>
-//           <input id="swal-input1" class="swal2-input" style="margin-bottom: 7.5px" placeholder="Amount of cGLD to exchange">
-//           <input id="swal-input2" class="swal2-input" style="margin-top: 7.5px" placeholder="Amount of cUSD to receive">
-//         `,
-//         showCancelButton: true,
-//         showConfirmButton: true,
-//         confirmButtonText: 'Retry',
-//         onClose: () => removeExchangeRates()
-//       })
-//     : SweetAlert.fire({
-//         title: 'Exchange cGLD for cUSD',
-//         text: '',
-//         showCancelButton: true,
-//         showConfirmButton: true,
-//         confirmButtonText: 'Retry',
-//         onClose: () => removeExchangeRates()
-//       });
-// }
+export default connector(AssetExchanger);

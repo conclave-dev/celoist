@@ -2,9 +2,9 @@ import {
   CONNECT_LEDGER,
   DISCONNECT_LEDGER,
   SET_ACCOUNT,
-  GET_ACCOUNT_ASSETS,
   EXCHANGE_GOLD_FOR_DOLLARS,
-  EXCHANGE_DOLLARS_FOR_GOLD
+  EXCHANGE_DOLLARS_FOR_GOLD,
+  RESET_EXCHANGE_TX
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars } from '../fetch/account';
@@ -36,26 +36,14 @@ const disconnectLedger = () => async (dispatch, getState) => {
   }
 };
 
-const setAccount = () => async (dispatch, getState) => {
+const setAccount = (address: string) => async dispatch => {
   handleInit(dispatch, SET_ACCOUNT);
 
   try {
-    const { ledger } = getState().account;
-    const account = await getAccountSummary(ledger.getAccounts()[0]);
+    const account = await getAccountSummary(address);
     return handleData(dispatch, SET_ACCOUNT, { ...account });
   } catch (err) {
     return handleError(dispatch, SET_ACCOUNT, err);
-  }
-};
-
-const getAccountAssets = (account: string) => async dispatch => {
-  handleInit(dispatch, GET_ACCOUNT_ASSETS);
-
-  try {
-    const { cGLD, cUSD } = await getAssets(account);
-    return handleData(dispatch, GET_ACCOUNT_ASSETS, { cGLD, cUSD });
-  } catch (err) {
-    return handleError(dispatch, GET_ACCOUNT_ASSETS, err);
   }
 };
 
@@ -64,8 +52,21 @@ const exchangeGoldForDollars = (amount, minUSDAmount) => async (dispatch, getSta
 
   try {
     const { ledger } = getState().account;
-    await sellGold(amount, minUSDAmount, ledger);
-    return handleData(dispatch, EXCHANGE_GOLD_FOR_DOLLARS, { sold: amount, received: minUSDAmount });
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      assets
+    } = await sellGold(amount, minUSDAmount, ledger);
+
+    return handleData(dispatch, EXCHANGE_GOLD_FOR_DOLLARS, {
+      exchanged: amount,
+      received: minUSDAmount,
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      assets
+    });
   } catch (err) {
     return handleError(dispatch, EXCHANGE_GOLD_FOR_DOLLARS, err);
   }
@@ -76,18 +77,26 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
 
   try {
     const { ledger } = getState().account;
-    await sellDollars(amount, minGoldAmount, ledger);
-    return handleData(dispatch, EXCHANGE_DOLLARS_FOR_GOLD, { sold: amount, received: minGoldAmount });
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      assets
+    } = await sellDollars(amount, minGoldAmount, ledger);
+
+    return handleData(dispatch, EXCHANGE_DOLLARS_FOR_GOLD, {
+      exchanged: amount,
+      received: minGoldAmount,
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      assets
+    });
   } catch (err) {
     return handleError(dispatch, EXCHANGE_DOLLARS_FOR_GOLD, err);
   }
 };
 
-export {
-  connectLedger,
-  disconnectLedger,
-  setAccount,
-  getAccountAssets,
-  exchangeGoldForDollars,
-  exchangeDollarsForGold
-};
+const resetExchangeTx = () => async dispatch => handleData(dispatch, RESET_EXCHANGE_TX, {});
+
+export { connectLedger, disconnectLedger, setAccount, exchangeGoldForDollars, exchangeDollarsForGold, resetExchangeTx };

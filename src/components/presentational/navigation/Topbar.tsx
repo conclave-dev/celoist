@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import celoLogo from '../../../assets/svg/celo-logo.svg';
 import celoGlyph from '../../../assets/svg/celo-glyph.svg';
-import TopbarWalletMenu from './TopbarWalletMenu';
 
 const Topbar = () => {
   const toggleSidebar = () => {
@@ -40,9 +39,6 @@ const Topbar = () => {
           >
             <i className="mdi mdi-menu" style={{ fontSize: 24 }} />
           </button>
-        </div>
-        <div className="d-flex">
-          <TopbarWalletMenu />
         </div>
       </div>
     </header>

@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { Col, Card, CardBody } from 'reactstrap';
-import ApexSpline from '../charts/ApexSpline';
 
 const ProfileBalances = ({ votes, cGLD, cUSD }) => (
   <Col lg={7} xs={12}>
