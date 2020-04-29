@@ -10,7 +10,7 @@ const GroupContentMobileLabels = () => (
       <span className="text-truncate">Commission</span>
     </Row>
     <Row noGutters style={{ height: 36 }} className="mb-2">
-      <span className="text-truncate">Voter Rewards</span>
+      <span className="text-truncate">Voter Payment</span>
     </Row>
     <Row noGutters style={{ height: 36 }} className="mb-2">
       <span className="text-truncate">Score</span>

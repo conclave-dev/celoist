@@ -18,13 +18,13 @@ const GroupsHeader = () => (
           Commission
         </Col>
         <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
-          Members
-        </Col>
-        <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
-          Voter Rewards
+          Voter Payment
         </Col>
         <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
           Score
+        </Col>
+        <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
+          Members
         </Col>
         <Col lg={2}>
           <img src={vote} style={{ width: 24 }} alt="Votes icon" />

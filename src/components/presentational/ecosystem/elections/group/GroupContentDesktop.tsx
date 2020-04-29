@@ -30,14 +30,16 @@ const GroupContentDesktop = ({
     <Col lg={2} className="text-truncate text-center">
       {commission}
     </Col>
-    <Col lg={2} className="text-truncate text-center">
-      {memberCount}
-    </Col>
-    <Col lg={2} className="text-truncate text-center">
-      {groupVoterPayment}
+    <Col lg={2} className="">
+      <div className="d-flex justify-content-center align-items-center">
+        <span className="text-truncate text-center mr-1">{groupVoterPayment}</span>
+      </div>
     </Col>
     <Col lg={2} className="text-truncate text-center" style={{ color: scoreColor }}>
       {score}
+    </Col>
+    <Col lg={2} className="text-truncate text-center">
+      {memberCount}
     </Col>
     <Col lg={2} style={{ position: 'relative', height: 30 }}>
       <Progress

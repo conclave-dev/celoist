@@ -36,19 +36,19 @@ class Elections extends PureComponent<Props> {
     return [
       {
         imgSrc: goldCoin,
-        text: 'Total Voter Rewards',
+        text: 'Total Voter Payments',
         backgroundColor: 'green',
         value: `${formatTokens(cumulativeRewards)} gold`
       },
       {
         imgSrc: vote,
-        text: 'Group Vote Threshold',
+        text: 'Election Vote Threshold',
         backgroundColor: 'blue',
         value: `${formatVotes(minimumRequiredVotes)} votes`
       },
       {
         imgSrc: validators,
-        text: 'Average Group Score',
+        text: 'Average Score',
         backgroundColor: 'gold',
         value: `${formatScore(averageScore)}%`
       }
@@ -68,7 +68,7 @@ class Elections extends PureComponent<Props> {
       <Container fluid>
         <Header
           title={`Elections ${epochNumber ? '(#' + epochNumber + ')' : ''}`}
-          subtitle="Details about the groups participating in elections and earning rewards for their voters"
+          subtitle="Details about the groups participating in elections and making payments to their members and voters"
           inProgress={inProgress}
         />
         <Summary

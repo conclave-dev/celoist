@@ -33,7 +33,7 @@ const GroupContentMobile = ({
       <Row noGutters style={{ height: 36 }} className="mb-2">
         <span className="text-truncate">{commission}</span>
       </Row>
-      <Row noGutters style={{ height: 36 }} className="mb-2">
+      <Row noGutters style={{ height: 36 }} className="mb-2 align-items-center">
         <span className="text-truncate">{groupVoterPayment}</span>
       </Row>
       <Row noGutters style={{ height: 36, color: scoreColor }} className="mb-2">
