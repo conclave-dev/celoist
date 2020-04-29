@@ -32,38 +32,50 @@ class Elections extends PureComponent<Props> {
     }
   }
 
-  generateSummaryItems = ({ averageScore, cumulativeRewards, cumulativeVotes, inProgress }) => [
-    {
-      imgSrc: goldCoin,
-      text: 'Group Voter Rewards',
-      backgroundColor: 'green',
-      value: formatTokens(cumulativeRewards)
-    },
-    {
-      imgSrc: vote,
-      text: 'Total Group Votes',
-      backgroundColor: 'blue',
-      value: formatVotes(cumulativeVotes)
-    },
-    {
-      imgSrc: validators,
-      text: 'Average Group Score',
-      backgroundColor: 'gold',
-      value: `${formatScore(averageScore)}%`
-    }
-  ];
+  generateSummaryItems = (averageScore, cumulativeRewards, minimumRequiredVotes) => {
+    return [
+      {
+        imgSrc: goldCoin,
+        text: 'Total Voter Rewards',
+        backgroundColor: 'green',
+        value: `${formatTokens(cumulativeRewards)} gold`
+      },
+      {
+        imgSrc: vote,
+        text: 'Group Vote Threshold',
+        backgroundColor: 'blue',
+        value: `${formatVotes(minimumRequiredVotes)} votes`
+      },
+      {
+        imgSrc: validators,
+        text: 'Average Group Score',
+        backgroundColor: 'gold',
+        value: `${formatScore(averageScore)}%`
+      }
+    ];
+  };
 
   render = () => {
-    const { groupsById, allGroupIds, config, inProgress, summary } = this.props;
+    const {
+      groupsById,
+      allGroupIds,
+      config,
+      inProgress,
+      summary: { averageScore, cumulativeRewards, epochNumber }
+    } = this.props;
 
     return (
       <Container fluid>
         <Header
-          title="Elections"
-          subtitle="Details about groups participating in elections and earning rewards for their voters"
+          title={`Elections ${epochNumber ? '(#' + epochNumber + ')' : ''}`}
+          subtitle="Details about the groups participating in elections and earning rewards for their voters"
           inProgress={inProgress}
         />
-        <Summary summaryItems={summary.averageScore ? this.generateSummaryItems(summary) : []} />
+        <Summary
+          summaryItems={
+            averageScore ? this.generateSummaryItems(averageScore, cumulativeRewards, config.minimumRequiredVotes) : []
+          }
+        />
         <Row>{!inProgress && <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />}</Row>
       </Container>
     );

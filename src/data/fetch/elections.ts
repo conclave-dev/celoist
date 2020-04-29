@@ -53,7 +53,16 @@ const populateElection = async (blockNumber?: number) => {
 
 const fetchElectionConfig = async () => {
   const validators = await kit.contracts.getValidators();
-  return validators.getConfig();
+  const election = await kit.contracts.getElection();
+  const { electabilityThreshold } = await election.getConfig();
+  const totalVotes = await (await kit._web3Contracts.getElection()).methods.getTotalVotes().call();
+  const thresholdDecimal = electabilityThreshold.toNumber() / new BigNumber('1e24').toNumber();
+  const minimumRequiredVotes = new BigNumber(thresholdDecimal * parseInt(totalVotes));
+
+  return {
+    maxGroupSize: (await validators.getConfig()).maxGroupSize,
+    minimumRequiredVotes
+  };
 };
 
 const fetchElectionSummary = async (groupsById) => {
@@ -93,7 +102,7 @@ const fetchElectionSummary = async (groupsById) => {
   // Additionally, set each group's epoch reward field
   const { cumulativeRewards, cumulativeVotes, groupsByIdWithRewards } = reduce(
     groupVoterRewards,
-    (acc, { group: { address }, groupVoterPayment, epochNumber }) => {
+    (acc, { group: { address }, groupVoterPayment }) => {
       const lowercaseAddress = address.toLowerCase();
 
       if (!groupsById[lowercaseAddress]) {
@@ -102,10 +111,7 @@ const fetchElectionSummary = async (groupsById) => {
 
       const matchingGroup = {
         ...groupsById[lowercaseAddress],
-        groupVoterPayment: {
-          epochNumber,
-          amount: new BigNumber(groupVoterPayment)
-        }
+        groupVoterPayment: new BigNumber(groupVoterPayment)
       };
 
       return {
@@ -130,6 +136,7 @@ const fetchElectionSummary = async (groupsById) => {
 
   return {
     summary: {
+      epochNumber,
       memberCount,
       cumulativeScore,
       cumulativeRewards,

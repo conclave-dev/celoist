@@ -39,7 +39,7 @@ const GroupLargeScreens = ({
         <span>{`${memberAddresses.length}/${maxGroupSize || '?'}`}</span>
       </Col>
       <Col lg={2} className="text-truncate text-center">
-        {formatTokens(groupVoterPayment.amount)}
+        {formatTokens(groupVoterPayment)}
       </Col>
       <Col lg={2} className="text-truncate text-center" style={{ color: determineScoreColor(score) }}>
         {formatScore(score)}%
@@ -102,7 +102,7 @@ const GroupSmallScreens = ({
           <span className="text-truncate">{formatCommission(commission)}%</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
-          <span className="text-truncate">{formatTokens(groupVoterPayment.amount)}</span>
+          <span className="text-truncate">{formatTokens(groupVoterPayment)}</span>
         </Row>
         <Row noGutters style={{ height: 36, color: determineScoreColor(score) }} className="mb-2">
           <span className="text-truncate">{formatScore(score)}%</span>
