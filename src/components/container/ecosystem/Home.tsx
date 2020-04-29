@@ -52,13 +52,13 @@ class Home extends PureComponent<Props> {
     const summaryItems = [
       {
         imgSrc: vote,
-        text: 'Circulating Celo Gold',
+        text: 'Circulating Gold Supply',
         backgroundColor: 'green',
         value: totalSupplyString.substring(0, totalSupplyString.indexOf('.'))
       },
       {
         imgSrc: proposal,
-        text: 'Pending Proposals',
+        text: 'Live Governance Proposals',
         backgroundColor: 'blue',
         value: numProposals
       }
