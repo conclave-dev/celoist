@@ -31,15 +31,12 @@ export class Governance extends PureComponent<Props> {
       <Container fluid>
         <Header
           title="Governance"
-          subtitle="Improvements and fixes proposed by community members"
+          subtitle="Improvements and fixes proposed by Celo stakeholders"
           inProgress={inProgress}
         />
         <Row>
-          <Col lg={3} xs={12}>
-            <Menu />
-          </Col>
           {!inProgress && (
-            <Col lg={9} xs={12}>
+            <Col xs={12}>
               {!isEmpty(proposalsById) ? (
                 map(proposalsById, (proposal, proposalID) => {
                   const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
