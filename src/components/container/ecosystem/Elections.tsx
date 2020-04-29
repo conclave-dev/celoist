@@ -32,7 +32,7 @@ class Elections extends PureComponent<Props> {
     }
   }
 
-  generateSummaryItems = ({ averageScore, cumulativeRewards, cumulativeVotes }) => [
+  generateSummaryItems = ({ averageScore, cumulativeRewards, cumulativeVotes, inProgress }) => [
     {
       imgSrc: goldCoin,
       text: 'Group Voter Rewards',
@@ -64,9 +64,7 @@ class Elections extends PureComponent<Props> {
           inProgress={inProgress}
         />
         <Summary summaryItems={summary.averageScore ? this.generateSummaryItems(summary) : []} />
-        <Row>
-          <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />
-        </Row>
+        <Row>{!inProgress && <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />}</Row>
       </Container>
     );
   };
