@@ -1,14 +1,14 @@
 import React, { memo } from 'react';
 import { Col, ListGroup } from 'reactstrap';
 import Spinner from '../../reusable/Spinner';
-import GroupsHeader from './GroupsHeader';
-import GroupsContent from './GroupsContent';
+import GroupsDesktopHeader from './groups/GroupsDesktopHeader';
+import GroupsContent from './groups/GroupsContent';
 import { GroupProps } from './types';
 
 const Groups = (props: GroupProps) => (
   <Col>
     <ListGroup>
-      <GroupsHeader />
+      <GroupsDesktopHeader />
       {props.allGroupIds.length ? (
         <GroupsContent {...props} />
       ) : (
