@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Card, CardBody, Alert, Button, Badge } from 'reactstrap';
 import { Proposal as ProposalType } from '../../../../data/types/governance';
+import Anchor from '../../reusable/Anchor';
 
 const buttonProps = {
   className: 'mt-2',
@@ -55,6 +56,7 @@ const ProposalButtons = ({
 const Proposal = ({
   proposalID,
   metadataString,
+  descriptionURL,
   transactions,
   votes,
   upvotes,
@@ -62,6 +64,7 @@ const Proposal = ({
 }: {
   proposalID: number;
   metadataString: string;
+  descriptionURL: string;
   transactions: ProposalType['proposal'];
   votes: ProposalType['votes'];
   upvotes: ProposalType['upvotes'];
@@ -78,12 +81,21 @@ const Proposal = ({
           </p>
         </div>
       </div>
-      <p className="mt-0">Transactions</p>
-      {transactions.map((tx, txIndex) => (
-        <Alert key={`${proposalID}-${txIndex}`} color="secondary">
-          {JSON.stringify(tx)}
-        </Alert>
-      ))}
+      <div>
+        <p className="mt-0 text-truncate">
+          Link:
+          <br />
+          <Anchor href={descriptionURL} color="">
+            {descriptionURL}
+          </Anchor>
+        </p>
+        <p className="mt-0">Transactions:</p>
+        {transactions.map((tx, txIndex) => (
+          <Alert key={`${proposalID}-${txIndex}`} color="secondary">
+            {JSON.stringify(tx)}
+          </Alert>
+        ))}
+      </div>
       <ProposalButtons stage={stage} upvotes={upvotes} votes={votes} />
     </CardBody>
   </Card>
