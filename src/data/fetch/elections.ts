@@ -53,8 +53,7 @@ const populateElection = async (blockNumber?: number) => {
 
 const fetchElectionConfig = async () => {
   const validators = await kit.contracts.getValidators();
-  const config = await validators.getConfig();
-  return config;
+  return validators.getConfig();
 };
 
 const fetchElectionSummary = async (groupsById) => {
@@ -90,9 +89,6 @@ const fetchElectionSummary = async (groupsById) => {
   const epochNumber = await (await kit.contracts.getValidators()).getEpochNumber();
   const groupVoterRewards = await electionWrapper.getGroupVoterRewards(epochNumber.minus(1).toNumber());
 
-  console.log('groupsById', Object.keys(groupsById).length);
-  console.log('groupVoterRewards', groupVoterRewards.length);
-
   // Get cumulative rewards and votes for calculating their averages
   // Additionally, set each group's epoch reward field
   const { cumulativeRewards, cumulativeVotes, groupsByIdWithRewards } = reduce(
@@ -101,13 +97,6 @@ const fetchElectionSummary = async (groupsById) => {
       const lowercaseAddress = address.toLowerCase();
 
       if (!groupsById[lowercaseAddress]) {
-        console.log('NOT FOUND', address);
-        return acc;
-      }
-
-      if (groupsById[lowercaseAddress].votes.isZero()) {
-        console.log('ZERO group:', groupsById[lowercaseAddress]);
-        console.log('payment:', groupVoterPayment);
         return acc;
       }
 
@@ -115,7 +104,7 @@ const fetchElectionSummary = async (groupsById) => {
         ...groupsById[lowercaseAddress],
         groupVoterPayment: {
           epochNumber,
-          amount: groupVoterPayment
+          amount: new BigNumber(groupVoterPayment)
         }
       };
 
@@ -145,9 +134,9 @@ const fetchElectionSummary = async (groupsById) => {
       cumulativeScore,
       cumulativeRewards,
       cumulativeVotes,
-      averageScore: cumulativeScore / memberCount,
       averageRewards,
-      averageVotes
+      averageVotes,
+      averageScore: new BigNumber(cumulativeScore / memberCount)
     },
     groupsByIdWithRewards
   };
