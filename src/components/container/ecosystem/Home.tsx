@@ -1,21 +1,23 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import { isEmpty } from 'lodash';
+import { isEmpty, forEach } from 'lodash';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
-import { fetchBlogs } from '../../../data/actions/home';
+import { getHomeData } from '../../../data/actions/home';
 import { fetchProposals } from '../../../data/actions/governance';
 import { makeHomeSelector } from '../../../data/selectors/home';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
+import { formatTokens } from '../../../util/numbers';
+import BigNumber from 'bignumber.js';
 
 const homeSelector = makeHomeSelector();
 
 const mapState = (state) => homeSelector(state);
-const mapDispatch = { fetchBlogs, fetchProposals };
+const mapDispatch = { getHomeData, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -26,7 +28,7 @@ class Home extends PureComponent<Props> {
     super(props);
 
     if (isEmpty(props.blogsById)) {
-      this.props.fetchBlogs();
+      this.props.getHomeData();
     }
 
     if (isEmpty(props.proposalsById)) {
@@ -35,18 +37,28 @@ class Home extends PureComponent<Props> {
   }
 
   render = () => {
-    const { blogsById, allBlogIds, proposalsById, inProgress } = this.props;
-    const numProposals = Object.keys(proposalsById).length;
+    const { blogsById, allBlogIds, proposalsById, totalSupply, inProgress } = this.props;
+    let numProposals = 0;
+
+    if (!isEmpty(proposalsById)) {
+      forEach(proposalsById, ({ stage }) => {
+        if (stage === 'Referendum') {
+          numProposals += 1;
+        }
+      });
+    }
+
+    const totalSupplyString = formatTokens(new BigNumber(totalSupply));
     const summaryItems = [
       {
         imgSrc: vote,
-        text: 'Election Votes',
+        text: 'Circulating Celo Gold',
         backgroundColor: 'green',
-        value: 0
+        value: totalSupplyString.substring(0, totalSupplyString.indexOf('.'))
       },
       {
         imgSrc: proposal,
-        text: 'Governance Proposals',
+        text: 'Pending Proposals',
         backgroundColor: 'blue',
         value: numProposals
       }
