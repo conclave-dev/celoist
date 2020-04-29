@@ -40,7 +40,7 @@ export class Governance extends PureComponent<Props> {
           </Col>
           {!inProgress && (
             <Col lg={9} xs={12}>
-              {proposalsById.length ? (
+              {!isEmpty(proposalsById) ? (
                 map(proposalsById, (proposal, proposalID) => {
                   const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
                   const { proposer, deposit } = metadata;
