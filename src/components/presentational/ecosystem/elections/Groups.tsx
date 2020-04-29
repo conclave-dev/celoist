@@ -23,10 +23,10 @@ const GroupsLargeScreens = () => (
         Members
       </Col>
       <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
-        Score
+        Voter Rewards
       </Col>
       <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
-        Penalties
+        Score
       </Col>
       <Col lg={2}>
         <img src={vote} style={{ width: 24 }} alt="Votes icon" />

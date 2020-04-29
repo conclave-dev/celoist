@@ -1,20 +1,21 @@
 import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
-import { isEmpty } from 'lodash';
 import { fetchElection } from '../../../data/actions/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
-import earnings from '../../../assets/png/earnings.png';
+import vote from '../../../assets/png/vote.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
-import score from '../../../assets/png/score.png';
+import validators from '../../../assets/png/validators.png';
+import { formatVotes, formatTokens, formatScore } from '../../../util/numbers';
 
-const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress } }) => ({
+const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress, summary } }) => ({
   groupsById,
   allGroupIds,
   config,
-  inProgress
+  inProgress,
+  summary
 });
 const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
@@ -31,28 +32,29 @@ class Elections extends PureComponent<Props> {
     }
   }
 
+  generateSummaryItems = ({ averageScore, cumulativeRewards, cumulativeVotes }) => [
+    {
+      imgSrc: goldCoin,
+      text: 'Group Voter Rewards',
+      backgroundColor: 'green',
+      value: formatTokens(cumulativeRewards)
+    },
+    {
+      imgSrc: vote,
+      text: 'Total Group Votes',
+      backgroundColor: 'blue',
+      value: formatVotes(cumulativeVotes)
+    },
+    {
+      imgSrc: validators,
+      text: 'Average Group Score',
+      backgroundColor: 'gold',
+      value: `${formatScore(averageScore)}%`
+    }
+  ];
+
   render = () => {
-    const { groupsById, allGroupIds, config, inProgress } = this.props;
-    const summaryItems = [
-      {
-        imgSrc: goldCoin,
-        text: 'Voter Rewards',
-        backgroundColor: 'green',
-        value: 0
-      },
-      {
-        imgSrc: earnings,
-        text: 'Group Earnings',
-        backgroundColor: 'blue',
-        value: 0
-      },
-      {
-        imgSrc: score,
-        text: 'Average Score',
-        backgroundColor: 'gold',
-        value: 0
-      }
-    ];
+    const { groupsById, allGroupIds, config, inProgress, summary } = this.props;
 
     return (
       <Container fluid>
@@ -61,7 +63,7 @@ class Elections extends PureComponent<Props> {
           subtitle="Details about groups participating in elections and earning rewards for their voters"
           inProgress={inProgress}
         />
-        <Summary summaryItems={summaryItems} />
+        <Summary summaryItems={summary.averageScore ? this.generateSummaryItems(summary) : []} />
         <Row>
           <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />
         </Row>

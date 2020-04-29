@@ -1,11 +1,25 @@
 import React, { memo } from 'react';
 import { Progress, ListGroupItem, Row, Col } from 'reactstrap';
 import { Group as GroupType, Config } from '../../../../data/types/elections';
-import { formatSlashingMultiplier, formatCommission, formatVotes, formatScore } from '../../../../util/numbers';
+import { formatTokens, formatCommission, formatVotes, formatScore } from '../../../../util/numbers';
 import Anchor from '../../reusable/Anchor';
+import BigNumber from 'bignumber.js';
+
+const determineScoreColor = (score) => {
+  const formattedScore = new BigNumber(formatScore(score));
+
+  switch (true) {
+    case formattedScore.isLessThan(34):
+      return '#fb7c6d';
+    case formattedScore.isLessThan(67):
+      return '#fbcc5c';
+    default:
+      return '#35D07F';
+  }
+};
 
 const GroupLargeScreens = ({
-  group: { name, address, commission, slashingMultiplier, votes, capacity, memberAddresses, score },
+  group: { name, address, commission, votes, capacity, memberAddresses, score, groupVoterPayment },
   maxGroupSize
 }: {
   group: GroupType;
@@ -25,10 +39,10 @@ const GroupLargeScreens = ({
         <span>{`${memberAddresses.length}/${maxGroupSize || '?'}`}</span>
       </Col>
       <Col lg={2} className="text-truncate text-center">
-        {formatScore(score)}/100
+        {formatTokens(groupVoterPayment.amount)}
       </Col>
-      <Col lg={2} className="text-truncate text-center">
-        {formatSlashingMultiplier(slashingMultiplier)}x
+      <Col lg={2} className="text-truncate text-center" style={{ color: determineScoreColor(score) }}>
+        {formatScore(score)}%
       </Col>
       <Col lg={2} style={{ position: 'relative', height: 30 }}>
         <Progress
@@ -50,7 +64,7 @@ const GroupLargeScreens = ({
 );
 
 const GroupSmallScreens = ({
-  group: { name, address, commission, slashingMultiplier, votes, capacity, memberAddresses, score },
+  group: { name, address, commission, groupVoterPayment, votes, capacity, memberAddresses, score },
   maxGroupSize
 }: {
   group: GroupType;
@@ -66,10 +80,10 @@ const GroupSmallScreens = ({
           <span className="text-truncate">Commission</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
-          <span className="text-truncate">Score</span>
+          <span className="text-truncate">Voter Rewards</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
-          <span className="text-truncate">Penalties</span>
+          <span className="text-truncate">Score</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
           <span className="text-truncate">Members</span>
@@ -88,10 +102,10 @@ const GroupSmallScreens = ({
           <span className="text-truncate">{formatCommission(commission)}%</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
-          <span className="text-truncate">{formatScore(score)}/100</span>
+          <span className="text-truncate">{formatTokens(groupVoterPayment.amount)}</span>
         </Row>
-        <Row noGutters style={{ height: 36 }} className="mb-2">
-          <span className="text-truncate">{formatSlashingMultiplier(slashingMultiplier)}x</span>
+        <Row noGutters style={{ height: 36, color: determineScoreColor(score) }} className="mb-2">
+          <span className="text-truncate">{formatScore(score)}%</span>
         </Row>
         <Row noGutters style={{ height: 36 }} className="mb-2">
           <span className="text-truncate">{`${memberAddresses.length}/${maxGroupSize || '?'}`}</span>
