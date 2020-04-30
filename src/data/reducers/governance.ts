@@ -1,21 +1,33 @@
 import { FETCH_PROPOSALS } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { ProposalsById } from '../types/governance';
+import { ProposalsById, AllProposalIds } from '../types/governance';
 
 interface Governance {
-  proposalsById: ProposalsById;
+  queuedProposalsById: ProposalsById;
+  dequeuedProposalsById: ProposalsById;
+  allQueuedProposalIds: AllProposalIds;
+  allDequeuedProposalIds: AllProposalIds;
 }
 
 const governance: Governance = {
-  proposalsById: {}
+  queuedProposalsById: {},
+  dequeuedProposalsById: {},
+  allQueuedProposalIds: [],
+  allDequeuedProposalIds: []
 };
 
 const initialState = initialStateDecorator(governance);
 
-const fetchProposals = (state, { proposalsById }: ProposalsById) => {
+const fetchProposals = (
+  state,
+  { queuedProposalsById, dequeuedProposalsById, allQueuedProposalIds, allDequeuedProposalIds }
+) => {
   return {
     ...state,
-    proposalsById
+    queuedProposalsById,
+    dequeuedProposalsById,
+    allQueuedProposalIds,
+    allDequeuedProposalIds
   };
 };
 
