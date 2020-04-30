@@ -8,15 +8,21 @@ import Blogs from '../../presentational/ecosystem/home/Blogs';
 import Twitter from '../../presentational/ecosystem/home/Twitter';
 import { getHomeData } from '../../../data/actions/home';
 import { fetchProposals } from '../../../data/actions/governance';
-import { makeHomeSelector } from '../../../data/selectors/home';
 import vote from '../../../assets/png/vote.png';
 import proposal from '../../../assets/png/proposal.png';
 import { formatTokens } from '../../../util/numbers';
 import BigNumber from 'bignumber.js';
 
-const homeSelector = makeHomeSelector();
-
-const mapState = (state) => homeSelector(state);
+const mapState = ({
+  home: { blogsById, allBlogIds, totalSupply, inProgress: homeInProgress },
+  governance: { dequeuedProposalsById, inProgress: govInProgress }
+}) => ({
+  blogsById,
+  allBlogIds,
+  totalSupply,
+  dequeuedProposalsById,
+  inProgress: govInProgress || homeInProgress
+});
 const mapDispatch = { getHomeData, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
@@ -37,11 +43,11 @@ class Home extends PureComponent<Props> {
   }
 
   render = () => {
-    const { blogsById, allBlogIds, proposalsById, totalSupply, inProgress } = this.props;
+    const { blogsById, allBlogIds, dequeuedProposalsById, totalSupply, inProgress } = this.props;
     let numProposals = 0;
 
-    if (!isEmpty(proposalsById)) {
-      forEach(proposalsById, ({ stage }) => {
+    if (!isEmpty(dequeuedProposalsById)) {
+      forEach(dequeuedProposalsById, ({ stage }) => {
         if (stage === 'Referendum') {
           numProposals += 1;
         }
