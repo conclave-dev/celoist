@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 
 export type ProposalsById = { [key: string]: Proposal };
+export type AllProposalIds = number[];
 
 export interface Proposal {
   proposal: ProposalTxs[];

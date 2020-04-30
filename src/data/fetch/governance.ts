@@ -9,7 +9,7 @@ const getGovernance = () => kit.contracts.getGovernance();
 const getGovernanceProposals = async () => {
   const governance = await getGovernance();
 
-  const queuedProposals = await Promise.reduce(
+  const queuedProposalsById = await Promise.reduce(
     await governance.getQueue(),
     async (acc, { proposalID }) => ({
       ...acc,
@@ -17,7 +17,7 @@ const getGovernanceProposals = async () => {
     }),
     {}
   );
-  const dequeuedProposals = await Promise.reduce(
+  const dequeuedProposalsById = await Promise.reduce(
     await governance.getDequeue(),
     async (acc, proposalID) => {
       const proposal = await governance.getProposalRecord(proposalID);
@@ -35,8 +35,10 @@ const getGovernanceProposals = async () => {
   );
 
   return {
-    ...queuedProposals,
-    ...dequeuedProposals
+    queuedProposalsById,
+    dequeuedProposalsById,
+    allQueuedProposalIds: Object.keys(queuedProposalsById),
+    allDequeuedProposalIds: Object.keys(dequeuedProposalsById),
   };
 };
 
