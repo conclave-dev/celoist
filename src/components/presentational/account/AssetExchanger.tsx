@@ -33,7 +33,7 @@ type Props = PropsFromRedux;
 const GoldText = () => <span style={{ color: '#fbcc5c' }}>cGLD</span>;
 const DollarText = () => <span style={{ color: '#35D07F' }}>cUSD</span>;
 
-const DollarsToGoldExchanger = ({ dollarsToGold }) => {
+const DollarsToGoldExchanger = ({ dollarsToGold }: { dollarsToGold: BigNumber }) => {
   const [amount, setAmount] = useState('0');
   const parsedAmount = new BigNumber(parseFloat(amount) || 0);
 
@@ -54,7 +54,7 @@ const DollarsToGoldExchanger = ({ dollarsToGold }) => {
           <InputGroupAddon addonType="prepend">
             <InputGroupText>cUSD Amount</InputGroupText>
           </InputGroupAddon>
-          <Input id="amount" value={amount} onChange={evt => setAmount(evt.currentTarget.value)} />
+          <Input id="amount" value={amount} onChange={(evt) => setAmount(evt.currentTarget.value)} />
         </InputGroup>
       </Row>
       <Row noGutters className="justify-content-center" style={{ width: '80%' }}>
@@ -66,7 +66,7 @@ const DollarsToGoldExchanger = ({ dollarsToGold }) => {
   );
 };
 
-const GoldToDollarsExchanger = ({ goldToDollars }) => {
+const GoldToDollarsExchanger = ({ goldToDollars }: { goldToDollars: BigNumber }) => {
   const [amount, setAmount] = useState('0');
   const parsedAmount = new BigNumber(parseFloat(amount) || 0);
 
@@ -87,7 +87,7 @@ const GoldToDollarsExchanger = ({ goldToDollars }) => {
           <InputGroupAddon addonType="prepend">
             <InputGroupText>cGLD Amount</InputGroupText>
           </InputGroupAddon>
-          <Input id="amount" type="number" value={amount} onChange={evt => setAmount(evt.currentTarget.value)} />
+          <Input id="amount" type="number" value={amount} onChange={(evt) => setAmount(evt.currentTarget.value)} />
         </InputGroup>
       </Row>
       <Row noGutters className="justify-content-center" style={{ width: '80%' }}>
@@ -104,7 +104,7 @@ class AssetExchanger extends PureComponent<Props> {
     this.props.getExchangeRates();
   };
 
-  componentDidUpdate = prevProps => {
+  componentDidUpdate = (prevProps) => {
     const { exchangeTx: prevExchangeTx, errorMessage: prevErrorMessage } = prevProps;
     const { exchangeTx, errorMessage } = this.props;
 
@@ -193,8 +193,9 @@ class AssetExchanger extends PureComponent<Props> {
             showConfirmButton: true,
             confirmButtonText: 'Exchange',
             preConfirm: () => {
-              // @ts-ignore
-              const dollarAmount = new BigNumber(window.document.getElementById('amount').value);
+              // Addresses "has no property value" ts error https://stackoverflow.com/a/43823786
+              const amountElement = window.document.getElementById('amount') as HTMLInputElement;
+              const dollarAmount = new BigNumber(amountElement.value);
 
               if (dollarAmount.isZero() || dollarAmount.isNaN()) {
                 return this.exchangeErrorHandler('The exchange amount you entered was invalid, please try again.');
@@ -211,8 +212,9 @@ class AssetExchanger extends PureComponent<Props> {
             showConfirmButton: true,
             confirmButtonText: 'EXCHANGE',
             preConfirm: () => {
-              // @ts-ignore
-              const goldAmount = new BigNumber(window.document.getElementById('amount').value);
+              // Addresses "has no property value" ts error https://stackoverflow.com/a/43823786
+              const amountElement = window.document.getElementById('amount') as HTMLInputElement;
+              const goldAmount = new BigNumber(amountElement.value);
 
               if (goldAmount.isZero() || goldAmount.isNaN()) {
                 console.log('what', goldAmount);

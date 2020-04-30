@@ -1,20 +1,20 @@
-import { CONNECT_LEDGER, DISCONNECT_LEDGER } from './actions';
+import { LOG_IN_LEDGER, LOG_OUT_LEDGER } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { setUpLedger } from '../fetch/account';
 
-const connectLedger = (accountIndex: number = 0) => async dispatch => {
-  handleInit(dispatch, CONNECT_LEDGER);
+const logInLedger = (accountIndex = 0) => async (dispatch) => {
+  handleInit(dispatch, LOG_IN_LEDGER);
 
   try {
     const ledger = await setUpLedger(accountIndex);
-    return handleData(dispatch, CONNECT_LEDGER, { ledger });
+    return handleData(dispatch, LOG_IN_LEDGER, { ledger });
   } catch (err) {
-    return handleError(dispatch, CONNECT_LEDGER, err);
+    return handleError(dispatch, LOG_IN_LEDGER, err);
   }
 };
 
-const disconnectLedger = () => async (dispatch, getState) => {
-  handleInit(dispatch, DISCONNECT_LEDGER);
+const logOutLedger = () => async (dispatch, getState) => {
+  handleInit(dispatch, LOG_OUT_LEDGER);
 
   try {
     const {
@@ -23,10 +23,10 @@ const disconnectLedger = () => async (dispatch, getState) => {
 
     await ledger.transport.close();
 
-    return handleData(dispatch, DISCONNECT_LEDGER, { ledger: {} });
+    return handleData(dispatch, LOG_OUT_LEDGER, { ledger: {} });
   } catch (err) {
-    return handleError(dispatch, DISCONNECT_LEDGER, err);
+    return handleError(dispatch, LOG_OUT_LEDGER, err);
   }
 };
 
-export { connectLedger, disconnectLedger };
+export { logInLedger, logOutLedger };

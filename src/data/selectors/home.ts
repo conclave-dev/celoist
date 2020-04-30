@@ -8,24 +8,27 @@ type HomeCreateSelector = {
   allBlogIds: AllBlogIds;
   proposalsById: ProposalsById;
   inProgress: boolean;
+  totalSupply: number;
 };
 
-const getInProgress = state => state.home.inProgress || getGovernanceInProgress(state);
+const getInProgress = (state) => state.home.inProgress || getGovernanceInProgress(state);
 
-const getBlogs = state => ({
-  blogsById: state.home.blogsById,
-  allBlogIds: state.home.allBlogIds
+const getHomeData = ({ home: { blogsById, allBlogIds, totalSupply } }) => ({
+  blogsById,
+  allBlogIds,
+  totalSupply
 });
 
 const makeHomeSelector = () =>
   createSelector(
-    [getBlogs, getProposalsById, getInProgress],
-    ({ blogsById, allBlogIds }, { proposalsById }, inProgress): HomeCreateSelector => ({
+    [getHomeData, getProposalsById, getInProgress],
+    ({ blogsById, allBlogIds, totalSupply }, { proposalsById }, inProgress): HomeCreateSelector => ({
       blogsById,
       allBlogIds,
+      totalSupply,
       proposalsById,
       inProgress
     })
   );
 
-export { getBlogs, getInProgress, makeHomeSelector };
+export { getHomeData, getInProgress, makeHomeSelector };

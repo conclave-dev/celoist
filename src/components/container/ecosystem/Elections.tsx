@@ -2,17 +2,21 @@ import React, { PureComponent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Container, Row } from 'reactstrap';
 import { fetchElection } from '../../../data/actions/elections';
-import { makeElectionsSelector } from '../../../data/selectors/elections';
 import Header from '../../presentational/reusable/Header';
 import Summary from '../../presentational/reusable/Summary';
 import Groups from '../../presentational/ecosystem/elections/Groups';
-import earnings from '../../../assets/png/earnings.png';
+import vote from '../../../assets/png/vote.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
-import score from '../../../assets/png/score.png';
+import validators from '../../../assets/png/validators.png';
+import { formatVotes, formatTokens, formatScore } from '../../../util/numbers';
 
-const electionsSelector = makeElectionsSelector();
-
-const mapState = state => electionsSelector(state);
+const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress, summary } }) => ({
+  groupsById,
+  allGroupIds,
+  config,
+  inProgress,
+  summary
+});
 const mapDispatch = { fetchElection };
 const connector = connect(mapState, mapDispatch);
 
@@ -28,40 +32,51 @@ class Elections extends PureComponent<Props> {
     }
   }
 
-  render = () => {
-    const { groupsById, allGroupIds, config, inProgress } = this.props;
-    const summaryItems = [
+  generateSummaryItems = (averageScore, cumulativeRewards, minimumRequiredVotes) => {
+    return [
       {
         imgSrc: goldCoin,
-        text: 'Voter Rewards',
+        text: 'Total Voter Payments',
         backgroundColor: 'green',
-        value: 0
+        value: `${formatTokens(cumulativeRewards)} gold`
       },
       {
-        imgSrc: earnings,
-        text: 'Group Earnings',
+        imgSrc: vote,
+        text: 'Election Vote Threshold',
         backgroundColor: 'blue',
-        value: 0
+        value: `${formatVotes(minimumRequiredVotes)} votes`
       },
       {
-        imgSrc: score,
+        imgSrc: validators,
         text: 'Average Score',
         backgroundColor: 'gold',
-        value: 0
+        value: `${formatScore(averageScore)}%`
       }
     ];
+  };
+
+  render = () => {
+    const {
+      groupsById,
+      allGroupIds,
+      config,
+      inProgress,
+      summary: { averageScore, cumulativeRewards, epochNumber }
+    } = this.props;
 
     return (
       <Container fluid>
         <Header
-          title="Elections"
-          subtitle="Details about groups participating in elections and earning rewards for their voters"
+          title={`Elections ${epochNumber ? '(#' + epochNumber + ')' : ''}`}
+          subtitle="Details about the groups participating in elections and making payments to their members and voters"
           inProgress={inProgress}
         />
-        <Summary summaryItems={summaryItems} />
-        <Row>
-          <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />
-        </Row>
+        <Summary
+          summaryItems={
+            averageScore ? this.generateSummaryItems(averageScore, cumulativeRewards, config.minimumRequiredVotes) : []
+          }
+        />
+        <Row>{!inProgress && <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />}</Row>
       </Container>
     );
   };

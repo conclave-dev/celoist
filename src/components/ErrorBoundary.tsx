@@ -11,7 +11,7 @@ export default class ErrorBoundary extends PureComponent<{}, { eventId: string }
 
   componentDidCatch(error, errorInfo) {
     if (isProduction) {
-      Sentry.withScope(scope => {
+      Sentry.withScope((scope) => {
         scope.setExtras(errorInfo);
         this.setState({ eventId: Sentry.captureException(error) });
       });

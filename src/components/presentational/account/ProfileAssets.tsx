@@ -6,15 +6,9 @@ import ProfileAssetsChart from './ProfileAssetsChart';
 import AssetExchanger from './AssetExchanger';
 import greenCoin from '../../../assets/png/greenCoin.png';
 import goldCoin from '../../../assets/png/goldCoin.png';
+import ResponsiveWrapper from '../reusable/ResponsiveWrapper';
 
-const ResponsiveHeaderWrapper = ({ children }) => (
-  <>
-    <div className="d-none d-lg-block">{children}</div>
-    <div className="d-none d-lg-none d-xs-block d-flex justify-content-center">{children}</div>
-  </>
-);
-
-const ProfileAssets = ({ cGLD, cUSD }) => {
+const ProfileAssets = ({ cGLD, cUSD }: { cGLD: BigNumber; cUSD: BigNumber }) => {
   const [exchangerAssetSymbol, setExchangerAssetSymbol] = useState('');
   const clearExchangerAssetSymbol = () => setExchangerAssetSymbol('');
   const hasBalance = !cGLD.isZero() || !cUSD.isZero();
@@ -38,7 +32,7 @@ const ProfileAssets = ({ cGLD, cUSD }) => {
           />
         ))}
       <CardBody>
-        <ResponsiveHeaderWrapper>
+        <ResponsiveWrapper mobileClasses="d-flex justify-content-center">
           <Row
             noGutters
             className="justify-content-between align-items-center"
@@ -98,7 +92,7 @@ const ProfileAssets = ({ cGLD, cUSD }) => {
               </Button>
             </Col>
           </Row>
-        </ResponsiveHeaderWrapper>
+        </ResponsiveWrapper>
         <Row style={{ minHeight: 300 }}>
           <Col
             xs={12}

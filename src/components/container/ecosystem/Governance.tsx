@@ -31,19 +31,16 @@ export class Governance extends PureComponent<Props> {
       <Container fluid>
         <Header
           title="Governance"
-          subtitle="Improvements and fixes proposed by community members"
+          subtitle="Improvements and fixes proposed by Celo stakeholders"
           inProgress={inProgress}
         />
         <Row>
-          <Col lg={3} xs={12}>
-            <Menu />
-          </Col>
           {!inProgress && (
-            <Col lg={9} xs={12}>
-              {proposalsById.length ? (
+            <Col xs={12}>
+              {!isEmpty(proposalsById) ? (
                 map(proposalsById, (proposal, proposalID) => {
                   const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
-                  const { proposer, deposit } = metadata;
+                  const { proposer, deposit, descriptionURL } = metadata;
                   const proposerStart = proposer.substring(0, 4);
                   const proposerEnd = proposer.substring(proposer.length - 4);
                   const metadataString = `By ${proposerStart}...${proposerEnd} (${formatVotes(deposit)} cGLD deposit)`;
@@ -52,6 +49,7 @@ export class Governance extends PureComponent<Props> {
                       key={proposalID}
                       proposalID={proposalID}
                       metadataString={metadataString}
+                      descriptionURL={descriptionURL}
                       transactions={transactions}
                       votes={votes}
                       upvotes={upvotes}

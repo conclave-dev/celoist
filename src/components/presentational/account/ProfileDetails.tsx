@@ -2,7 +2,17 @@ import React, { memo } from 'react';
 import { Row, Col, Card, CardBody, Button, ListGroup, ListGroupItem } from 'reactstrap';
 import Anchor from '../reusable/Anchor';
 
-const ProfileDetails = ({ name, address, metadataURL, validator }) => {
+const ProfileDetails = ({
+  name,
+  address,
+  metadataURL,
+  validator
+}: {
+  name: string;
+  address: string;
+  metadataURL: string;
+  validator: string;
+}) => {
   const hasValidator = validator && validator !== '0x0000000000000000000000000000000000000000';
 
   return (

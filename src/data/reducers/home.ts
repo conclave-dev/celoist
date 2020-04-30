@@ -1,32 +1,35 @@
-import { FETCH_BLOGS } from '../actions/actions';
+import { GET_HOME_DATA } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import { BlogsById, AllBlogIds } from '../types/home';
 
 interface Home {
   blogsById: BlogsById;
   allBlogIds: AllBlogIds;
+  totalSupply: number;
 }
 
-type FetchBlogs = { state: Home; blogs: { [key: string]: BlogsById } };
+type FetchBlogs = { state: Home; payload };
 
 const homeState: Home = {
   blogsById: {},
-  allBlogIds: ['celoorg']
+  allBlogIds: ['celoorg'],
+  totalSupply: 0
 };
 
 const initialState: Home = initialStateDecorator(homeState);
 
-const fetchBlogs = (state, { blogsById }): FetchBlogs => ({
+const getHomeData = (state, { blogsById, totalSupply }): FetchBlogs => ({
   ...state,
-  blogsById
+  blogsById,
+  totalSupply
 });
 
 export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case FETCH_BLOGS:
-      return evalActionPayload(state, action, fetchBlogs);
+    case GET_HOME_DATA:
+      return evalActionPayload(state, action, getHomeData);
     default:
       return state;
   }

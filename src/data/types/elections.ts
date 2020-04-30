@@ -19,6 +19,7 @@ export interface Group {
   votes: GroupVotes;
   capacity: GroupVotes;
   score: BigNumber;
+  groupVoterPayment: BigNumber;
 }
 
 export interface GroupMember {

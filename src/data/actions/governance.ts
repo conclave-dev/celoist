@@ -2,7 +2,7 @@ import { FETCH_PROPOSALS } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { getGovernanceProposals } from '../fetch/governance';
 
-const fetchProposals = () => async dispatch => {
+const fetchProposals = () => async (dispatch) => {
   handleInit(dispatch, FETCH_PROPOSALS);
 
   try {

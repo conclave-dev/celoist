@@ -10,21 +10,19 @@ const fmt = {
 
 BigNumber.config({ FORMAT: fmt });
 
-const slashingMultiplierBase = new BigNumber('1e+24');
-const commissionBase = new BigNumber('1e+22');
-const voteBase = new BigNumber('1e+18');
-const scoreBase = new BigNumber('1e+22');
+const slashingMultiplierBase = new BigNumber('1e24');
+const commissionBase = new BigNumber('1e22');
+const voteBase = new BigNumber('1e18');
+const scoreBase = new BigNumber('1e22');
+const tokenBase = new BigNumber('1e18');
 
 const formatN = (n: number) => new BigNumber(n).toFormat(0);
 
-const formatSlashingMultiplier = (n: BigNumber) =>
-  n
-    .dividedBy(slashingMultiplierBase)
-    .minus(1)
-    .toFormat(2);
-const formatCommission = (n: BigNumber) => n.dividedBy(commissionBase).toNumber();
+const formatSlashingMultiplier = (n: BigNumber) => n.dividedBy(slashingMultiplierBase).minus(1).toFormat(2);
+const formatCommission = (n: BigNumber) => n.dividedBy(commissionBase).toFormat(2);
 const formatVotes = (n: BigNumber) => n.dividedBy(voteBase).toFormat(0);
 const formatScore = (n: BigNumber) => n.dividedBy(scoreBase).toFormat(2);
+const formatTokens = (n: BigNumber) => n.dividedBy(tokenBase).toFormat(2);
 
 // Abbreviates long numbers into a more readable format
-export { formatN, formatSlashingMultiplier, formatCommission, formatVotes, formatScore };
+export { formatN, formatSlashingMultiplier, formatCommission, formatVotes, formatScore, formatTokens };

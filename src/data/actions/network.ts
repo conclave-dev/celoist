@@ -2,7 +2,7 @@ import { GET_EXCHANGE_RATES, REMOVE_EXCHANGE_RATES } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { fetchExchangeRates } from '../fetch/network';
 
-const getExchangeRates = () => async dispatch => {
+const getExchangeRates = () => async (dispatch) => {
   handleInit(dispatch, GET_EXCHANGE_RATES);
 
   try {
@@ -13,7 +13,7 @@ const getExchangeRates = () => async dispatch => {
   }
 };
 
-const removeExchangeRates = () => async dispatch => {
+const removeExchangeRates = () => async (dispatch) => {
   handleInit(dispatch, REMOVE_EXCHANGE_RATES);
 
   try {

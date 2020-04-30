@@ -1,5 +1,5 @@
-import { backend } from './api';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
+import { backend } from './api';
 
 const defaultOptions = {
   method: 'POST',

@@ -4,8 +4,6 @@ import Home from './container/ecosystem/Home';
 import Elections from './container/ecosystem/Elections';
 import Governance from './container/ecosystem/Governance';
 import Profile from './container/account/Profile';
-import Portfolio from './container/account/Portfolio';
-import { DEFAULT_ADDRESS } from '../config';
 
 const Router = () => (
   <Switch>

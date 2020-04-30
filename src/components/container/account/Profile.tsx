@@ -1,47 +1,39 @@
 import React, { PureComponent } from 'react';
-import { Container, Row, Col, Card, CardBody } from 'reactstrap';
-import { isEmpty } from 'lodash';
+import { Container, Row } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
-import { setAccount } from '../../../data/actions/account';
+import { getAccountData } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
-import BigNumber from 'bignumber.js';
+import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account }, ownProps) => ({ ...account, ...ownProps });
-const mapDispatch = { setAccount };
+const mapState = ({ account: { ledger, summary, assets } }, ownProps) => ({ ledger, summary, assets, ...ownProps });
+const mapDispatch = { getAccountData };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
-const ResponsiveWrapper = ({ children }) => (
-  <>
-    <Col lg={4} className="d-none d-lg-block">
-      {children}
-    </Col>
-    <Col xs={12} className="d-block d-lg-none mb-4">
-      {children}
-    </Col>
-  </>
-);
-
 class Profile extends PureComponent<Props> {
   componentDidMount = () => {
-    if (this.props.address) {
-      this.props.setAccount(this.props.address);
+    const { ledger } = this.props;
+    const account = ledger.ledger && ledger.ledger.getAccounts()[0];
+
+    if (account && !this.props.summary.address) {
+      this.props.getAccountData(account);
     }
   };
 
   render() {
-    const { name, address, metadataURL, authorizedSigners, assets } = this.props;
+    const { summary, assets } = this.props;
+    const { name, address, metadataURL, authorizedSigners } = summary;
 
     return (
       <Container fluid>
         <Header title="Profile" subtitle="A birdseye view of your Celo activity" inProgress={false} />
         <Row>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileDetails
               name={name}
               address={address}
@@ -49,10 +41,10 @@ class Profile extends PureComponent<Props> {
               validator={authorizedSigners.validator}
             />
           </ResponsiveWrapper>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileAssets {...assets} />
           </ResponsiveWrapper>
-          <ResponsiveWrapper>
+          <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileTransactions transactions={[]} />
           </ResponsiveWrapper>
         </Row>

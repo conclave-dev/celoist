@@ -1,16 +1,18 @@
-import { FETCH_BLOGS } from './actions';
+import { GET_HOME_DATA } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { fetchMediumBlogs } from '../fetch/home';
+import { fetchMediumBlogs, fetchTotalSupply } from '../fetch/home';
 
-const fetchBlogs = () => async (dispatch, getState) => {
-  handleInit(dispatch, FETCH_BLOGS);
+const getHomeData = () => async (dispatch, getState) => {
+  handleInit(dispatch, GET_HOME_DATA);
 
   try {
     const { allBlogIds } = getState().home;
-    return handleData(dispatch, FETCH_BLOGS, { blogsById: await fetchMediumBlogs(allBlogIds) });
+    const blogsById = await fetchMediumBlogs(allBlogIds);
+    const totalSupply = await fetchTotalSupply();
+    return handleData(dispatch, GET_HOME_DATA, { blogsById, totalSupply });
   } catch (err) {
-    return handleError(dispatch, FETCH_BLOGS, err);
+    return handleError(dispatch, GET_HOME_DATA, err);
   }
 };
 
-export { fetchBlogs };
+export { getHomeData };

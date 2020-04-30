@@ -1,8 +1,16 @@
-import React, { memo } from 'react';
+import React, { memo, ReactChild } from 'react';
 import { Row, Col, Card, CardHeader } from 'reactstrap';
 import SimpleBar from 'simplebar-react';
 
-const Content = ({ icon, className, children }: { icon?: string; className?: string; children: any }) => (
+const Content = ({
+  icon,
+  className,
+  children
+}: {
+  icon?: string;
+  className?: string;
+  children: JSX.Element[] | ReactChild | Element | Element[];
+}) => (
   <Card className={className}>
     {icon && (
       <CardHeader style={{ backgroundColor: '#fff' }}>

@@ -19,7 +19,7 @@ const getExchangeRates = (state, { goldToDollars, dollarsToGold }) => ({
   }
 });
 
-const removeExchangeRates = state => ({
+const removeExchangeRates = (state) => ({
   ...state,
   exchangeRates: {
     goldToDollars: new BigNumber(0),
