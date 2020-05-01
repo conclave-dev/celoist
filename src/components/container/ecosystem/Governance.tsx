@@ -1,14 +1,16 @@
 import React, { PureComponent } from 'react';
-import { Container, Row, Col, Card, CardBody } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, ListGroup } from 'reactstrap';
 import { isEmpty, map } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
+import Submenu from '../../presentational/ecosystem/governance/Submenu';
+import Proposal from '../../presentational/ecosystem/governance/Proposal';
 import { fetchProposals } from '../../../data/actions/governance';
 import { formatVotes } from '../../../util/numbers';
-import Proposal from '../../presentational/ecosystem/governance/Proposal';
-import Menu from '../../presentational/ecosystem/governance/Menu';
 
-const mapState = ({ governance }) => ({ governance });
+const mapState = ({ governance }) => ({
+  ...governance
+});
 const mapDispatch = { fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
@@ -19,13 +21,21 @@ export class Governance extends PureComponent<Props> {
   constructor(props) {
     super(props);
 
-    if (isEmpty(props.governance.proposalsById)) {
+    if (isEmpty(props.dequeuedProposalsByStage)) {
       props.fetchProposals();
     }
   }
 
   render() {
-    const { proposalsById, inProgress } = this.props.governance;
+    const {
+      dequeuedProposalsByStage,
+      allDequeuedProposalStages,
+      queuedProposalsByStage,
+      allQueuedProposalStages,
+      stageFilter,
+      inProgress
+    } = this.props;
+    const filteredProposals = dequeuedProposalsByStage[stageFilter] || queuedProposalsByStage[stageFilter];
 
     return (
       <Container fluid>
@@ -35,25 +45,41 @@ export class Governance extends PureComponent<Props> {
           inProgress={inProgress}
         />
         <Row>
+          <Col lg={3} xs={12}>
+            {!inProgress && (
+              <Card className="card pt-2 pb-4 mb-4">
+                <ListGroup>
+                  {!isEmpty(dequeuedProposalsByStage) && (
+                    <Submenu
+                      title="Dequeued Proposals"
+                      proposalsByStage={dequeuedProposalsByStage}
+                      allProposalStages={allDequeuedProposalStages}
+                    />
+                  )}
+                  {!isEmpty(queuedProposalsByStage) && (
+                    <Submenu
+                      title="Queued Proposals"
+                      proposalsByStage={queuedProposalsByStage}
+                      allProposalStages={allQueuedProposalStages}
+                    />
+                  )}
+                </ListGroup>
+              </Card>
+            )}
+          </Col>
           {!inProgress && (
-            <Col xs={12}>
-              {!isEmpty(proposalsById) ? (
-                map(proposalsById, (proposal, proposalID) => {
-                  const { proposal: transactions, metadata, votes, upvotes, stage } = proposal;
-                  const { proposer, deposit, descriptionURL } = metadata;
-                  const proposerStart = proposer.substring(0, 4);
-                  const proposerEnd = proposer.substring(proposer.length - 4);
-                  const metadataString = `By ${proposerStart}...${proposerEnd} (${formatVotes(deposit)} cGLD deposit)`;
+            <Col lg={9} xs={12}>
+              {filteredProposals && !isEmpty(filteredProposals) ? (
+                map(filteredProposals, (proposal, proposalID) => {
+                  const { proposal: transactions, metadata, votes, upvotes } = proposal;
                   return (
                     <Proposal
                       key={proposalID}
                       proposalID={proposalID}
-                      metadataString={metadataString}
-                      descriptionURL={descriptionURL}
+                      metadata={metadata}
                       transactions={transactions}
                       votes={votes}
                       upvotes={upvotes}
-                      stage={stage}
                     />
                   );
                 })

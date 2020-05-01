@@ -19,6 +19,7 @@ const determineScoreColor = (score) => {
 
 const Group = ({ group, maxGroupSize }: { group: GroupType; maxGroupSize: Config['maxGroupSize'] }) => {
   const { name, address, commission, groupVoterPayment, score, capacity, votes, memberAddresses } = group;
+
   const groupContentData = {
     name,
     address,
