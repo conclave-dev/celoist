@@ -262,9 +262,9 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
   }
 };
 
-const withdraw = async (index: number, ledger: Wallet) => {
+const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
   try {
-    // `index` references the index of the available pending withdrawals of the account
+    // `index` references the numeral index of the available pending withdrawals of the account
     const lockedGoldContract = await kit.contracts.getLockedGold();
     const withdrawTx = await lockedGoldContract.withdraw(index);
 
@@ -294,4 +294,13 @@ const withdraw = async (index: number, ledger: Wallet) => {
   }
 };
 
-export { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars, lockGold, unlockGold, withdraw };
+export {
+  setUpLedger,
+  getAccountSummary,
+  getAssets,
+  sellGold,
+  sellDollars,
+  lockGold,
+  unlockGold,
+  withdrawPendingWithdrawal
+};
