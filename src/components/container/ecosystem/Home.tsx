@@ -15,12 +15,12 @@ import BigNumber from 'bignumber.js';
 
 const mapState = ({
   home: { blogsById, allBlogIds, totalSupply, inProgress: homeInProgress },
-  governance: { dequeuedProposalsById, inProgress: govInProgress }
+  governance: { dequeuedProposalsByStage, inProgress: govInProgress }
 }) => ({
   blogsById,
   allBlogIds,
   totalSupply,
-  dequeuedProposalsById,
+  dequeuedProposalsByStage,
   inProgress: govInProgress || homeInProgress
 });
 const mapDispatch = { getHomeData, fetchProposals };
@@ -43,11 +43,11 @@ class Home extends PureComponent<Props> {
   }
 
   render = () => {
-    const { blogsById, allBlogIds, dequeuedProposalsById, totalSupply, inProgress } = this.props;
+    const { blogsById, allBlogIds, dequeuedProposalsByStage, totalSupply, inProgress } = this.props;
     let numProposals = 0;
 
-    if (!isEmpty(dequeuedProposalsById)) {
-      forEach(dequeuedProposalsById, ({ stage }) => {
+    if (!isEmpty(dequeuedProposalsByStage)) {
+      forEach(dequeuedProposalsByStage, ({ stage }) => {
         if (stage === 'Referendum') {
           numProposals += 1;
         }
@@ -72,7 +72,7 @@ class Home extends PureComponent<Props> {
 
     return (
       <Container fluid>
-        <Header title="Home" subtitle="Our ecosystem in a nutshell" inProgress={inProgress} />
+        <Header title="Home" subtitle="The Celo ecosystem in a nutshell" inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Col lg={6} xs={12} className="mb-4">

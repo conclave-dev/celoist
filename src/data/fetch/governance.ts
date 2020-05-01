@@ -48,8 +48,8 @@ const getGovernanceProposals = async () => {
   return {
     queuedProposalsByStage,
     dequeuedProposalsByStage,
-    allQueuedProposalStages: Object.keys(queuedProposalsByStage),
-    allDequeuedProposalStages: Object.keys(dequeuedProposalsByStage)
+    allQueuedProposalStages: Object.keys(queuedProposalsByStage).sort(),
+    allDequeuedProposalStages: Object.keys(dequeuedProposalsByStage).sort()
   };
 };
 
