@@ -24,7 +24,7 @@ const accountState = {
     cUSD: new BigNumber(0),
     totalLockedGold: new BigNumber(0),
     nonVotingLockedGold: new BigNumber(0),
-    pendingWithdrawal: new BigNumber(0)
+    totalPendingWithdrawalGold: new BigNumber(0)
   },
   exchangeTx: {
     blockHash: '',

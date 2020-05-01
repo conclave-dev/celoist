@@ -37,12 +37,21 @@ const setUpLedger = async (derivationPathIndex: number) => {
 const getAssets = async (account: string) => {
   const goldTokenContract = await kit.contracts.getGoldToken();
   const stableTokenContract = await kit.contracts.getStableToken();
+  const lockedGoldContract = await kit.contracts.getLockedGold();
+
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
 
+  const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
+  const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
+  const totalPendingWithdrawalGold = await lockedGoldContract.getPendingWithdrawalsTotalValue(account);
+
   return {
     cGLD,
-    cUSD
+    cUSD,
+    totalLockedGold,
+    nonVotingLockedGold,
+    totalPendingWithdrawalGold
   };
 };
 
@@ -184,4 +193,105 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
   }
 };
 
-export { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars };
+const lockGold = async (amount: BigNumber, ledger: Wallet) => {
+  try {
+    const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const lockGoldTx = await lockedGoldContract.lock();
+
+    const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: lockGoldTxABI,
+      value: amountUint256, // amount of gold to be locked must be specified as `value` param of the tx obj
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
+  try {
+    const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
+
+    const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: unlockGoldTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+const withdraw = async (index: number, ledger: Wallet) => {
+  try {
+    // `index` references the index of the available pending withdrawals of the account
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const withdrawTx = await lockedGoldContract.withdraw(index);
+
+    const withdrawTxABI = await withdrawTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: withdrawTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+export { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars, lockGold, unlockGold, withdraw };
