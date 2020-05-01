@@ -4,10 +4,21 @@ import {
   GET_ACCOUNT_DATA,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
-  RESET_EXCHANGE_TX
+  RESET_EXCHANGE_TX,
+  LOCK_GOLD,
+  UNLOCK_GOLD,
+  WITHDRAW_PENDING_WITHDRAWAL
 } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
+
+const baseTxFields = {
+  blockHash: '',
+  blockNumber: 0,
+  cumulativeGasUsed: 0,
+  gasUsed: 0,
+  transactionHash: ''
+};
 
 const accountState = {
   ledger: {},
@@ -26,12 +37,11 @@ const accountState = {
     nonVotingLockedGold: new BigNumber(0),
     totalPendingWithdrawalGold: new BigNumber(0)
   },
+  lockedGoldTx: {
+    ...baseTxFields
+  },
   exchangeTx: {
-    blockHash: '',
-    blockNumber: 0,
-    cumulativeGasUsed: 0,
-    gasUsed: 0,
-    transactionHash: '',
+    ...baseTxFields,
     exchanged: new BigNumber(0),
     received: new BigNumber(0)
   }
@@ -70,6 +80,21 @@ const exchangeAssets = (
   assets
 });
 
+const handleLockedGoldTx = (
+  state,
+  { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, assets }
+) => ({
+  ...state,
+  lockedGoldTx: {
+    blockHash,
+    blockNumber,
+    cumulativeGasUsed,
+    gasUsed,
+    transactionHash
+  },
+  assets
+});
+
 const resetExchangeTx = (state) => ({
   ...state,
   exchangeTx: { ...accountState.exchangeTx }
@@ -91,6 +116,10 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, exchangeAssets);
     case RESET_EXCHANGE_TX:
       return evalActionPayload(state, action, resetExchangeTx);
+    case LOCK_GOLD:
+    case UNLOCK_GOLD:
+    case WITHDRAW_PENDING_WITHDRAWAL:
+      return evalActionPayload(state, action, handleLockedGoldTx);
     default:
       return state;
   }
