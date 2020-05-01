@@ -18,7 +18,9 @@ type Props = PropsFromRedux;
 class Profile extends PureComponent<Props> {
   componentDidMount = () => {
     const { ledger } = this.props;
-    const account = ledger.ledger && ledger.ledger.getAccounts()[0];
+    const account = ledger.ledger && ledger.getAccounts()[0];
+
+    console.log('account', account);
 
     if (account && !this.props.summary.address) {
       this.props.getAccountData(account);
