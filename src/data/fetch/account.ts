@@ -44,14 +44,21 @@ const getAssets = async (account: string) => {
 
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
-  const totalPendingWithdrawalGold = await lockedGoldContract.getPendingWithdrawalsTotalValue(account);
+  let pendingWithdrawals = [];
+
+  // Capture the leaked exception caused by `getPendingWithdrawals` for accounts with no locked-gold
+  try {
+    pendingWithdrawals = await lockedGoldContract.getPendingWithdrawals(account);
+  } catch (err) {
+    console.log('No pending withdrawal exists for the account');
+  }
 
   return {
     cGLD,
     cUSD,
     totalLockedGold,
     nonVotingLockedGold,
-    totalPendingWithdrawalGold
+    pendingWithdrawals
   };
 };
 
