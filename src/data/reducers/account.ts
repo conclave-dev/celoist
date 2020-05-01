@@ -44,13 +44,9 @@ const logInLedger = (state, { ledger }) => ({
 
 const logOutLedger = (state) => state;
 
-const getAccountData = (state, { name, authorizedSigners, metadataURL, wallet, dataEncryptionKey, assets }) => ({
+const getAccountData = (state, { summary, assets }) => ({
   ...state,
-  name,
-  authorizedSigners,
-  metadataURL,
-  wallet,
-  dataEncryptionKey,
+  summary,
   assets
 });
 
