@@ -9,36 +9,47 @@ const getGovernance = () => kit.contracts.getGovernance();
 const getGovernanceProposals = async () => {
   const governance = await getGovernance();
 
-  const queuedProposalsById = await Promise.reduce(
+  const queuedProposalsByStage = await Promise.reduce(
     await governance.getQueue(),
-    async (acc, { proposalID }) => ({
-      ...acc,
-      [proposalID]: await governance.getProposalRecord(proposalID)
-    }),
-    {}
-  );
-  const dequeuedProposalsById = await Promise.reduce(
-    await governance.getDequeue(),
-    async (acc, proposalID) => {
-      const proposal = await governance.getProposalRecord(proposalID);
-
-      if (!proposal.proposal.length) {
-        return acc;
-      }
+    async (acc, proposal) => {
+      const { proposalID } = proposal;
 
       return {
         ...acc,
-        [proposalID]: proposal
+        [proposalID]: await governance.getProposalRecord(proposalID)
       };
     },
     {}
   );
 
+  const dequeuedProposalsByStage = await Promise.reduce(
+    await governance.getDequeue(),
+    async (acc, proposalID) => {
+      const proposal = await governance.getProposalRecord(proposalID);
+      const cloneAcc = { ...acc };
+
+      if (!proposal.proposal.length) {
+        return cloneAcc;
+      }
+
+      if (!cloneAcc[proposal.stage]) {
+        cloneAcc[proposal.stage] = {
+          [proposalID]: proposal
+        };
+      } else {
+        cloneAcc[proposal.stage][proposalID] = proposal;
+      }
+
+      return cloneAcc;
+    },
+    {}
+  );
+
   return {
-    queuedProposalsById,
-    dequeuedProposalsById,
-    allQueuedProposalIds: Object.keys(queuedProposalsById),
-    allDequeuedProposalIds: Object.keys(dequeuedProposalsById),
+    queuedProposalsByStage,
+    dequeuedProposalsByStage,
+    allQueuedProposalStages: Object.keys(queuedProposalsByStage),
+    allDequeuedProposalStages: Object.keys(dequeuedProposalsByStage)
   };
 };
 

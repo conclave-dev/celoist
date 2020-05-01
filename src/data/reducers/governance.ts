@@ -1,35 +1,43 @@
-import { FETCH_PROPOSALS } from '../actions/actions';
+import { FETCH_PROPOSALS, FILTER_PROPOSALS_BY_STAGE } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
-import { ProposalsById, AllProposalIds } from '../types/governance';
+import { ProposalsByStage, AllProposalStages } from '../types/governance';
 
 interface Governance {
-  queuedProposalsById: ProposalsById;
-  dequeuedProposalsById: ProposalsById;
-  allQueuedProposalIds: AllProposalIds;
-  allDequeuedProposalIds: AllProposalIds;
+  queuedProposalsByStage: ProposalsByStage;
+  dequeuedProposalsByStage: ProposalsByStage;
+  allQueuedProposalStages: AllProposalStages;
+  allDequeuedProposalStages: AllProposalStages;
+  stageFilter: string;
 }
 
 const governance: Governance = {
-  queuedProposalsById: {},
-  dequeuedProposalsById: {},
-  allQueuedProposalIds: [],
-  allDequeuedProposalIds: []
+  queuedProposalsByStage: {},
+  dequeuedProposalsByStage: {},
+  allQueuedProposalStages: [],
+  allDequeuedProposalStages: [],
+  stageFilter: ''
 };
 
 const initialState = initialStateDecorator(governance);
 
 const fetchProposals = (
   state,
-  { queuedProposalsById, dequeuedProposalsById, allQueuedProposalIds, allDequeuedProposalIds }
+  { queuedProposalsByStage, dequeuedProposalsByStage, allQueuedProposalStages, allDequeuedProposalStages }
 ) => {
   return {
     ...state,
-    queuedProposalsById,
-    dequeuedProposalsById,
-    allQueuedProposalIds,
-    allDequeuedProposalIds
+    queuedProposalsByStage,
+    dequeuedProposalsByStage,
+    allQueuedProposalStages,
+    allDequeuedProposalStages,
+    stageFilter: allDequeuedProposalStages[0]
   };
 };
+
+const filterProposalsByStage = (state, { stageFilter }) => ({
+  ...state,
+  stageFilter
+});
 
 export default (state = initialState, action) => {
   const { type } = action;
@@ -37,6 +45,8 @@ export default (state = initialState, action) => {
   switch (type) {
     case FETCH_PROPOSALS:
       return evalActionPayload(state, action, fetchProposals);
+    case FILTER_PROPOSALS_BY_STAGE:
+      return evalActionPayload(state, action, filterProposalsByStage);
     default:
       return state;
   }
