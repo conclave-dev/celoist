@@ -21,7 +21,10 @@ const accountState = {
   },
   assets: {
     cGLD: new BigNumber(0),
-    cUSD: new BigNumber(0)
+    cUSD: new BigNumber(0),
+    totalLockedGold: new BigNumber(0),
+    nonVotingLockedGold: new BigNumber(0),
+    pendingWithdrawal: new BigNumber(0)
   },
   exchangeTx: {
     blockHash: '',
