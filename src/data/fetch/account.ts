@@ -1,6 +1,7 @@
 import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-wallet';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import BigNumber from 'bignumber.js';
@@ -44,11 +45,18 @@ const getAssets = async (account: string) => {
 
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
-  let pendingWithdrawals = [];
+  const pendingWithdrawals = [];
 
   // Capture the leaked exception caused by `getPendingWithdrawals` for accounts with no locked-gold
   try {
-    pendingWithdrawals = await lockedGoldContract.getPendingWithdrawals(account);
+    const pendingList = await lockedGoldContract.getPendingWithdrawals(account);
+    pendingList.forEach((withdrawal) => {
+      const { value, time } = withdrawal;
+      pendingWithdrawals.push({
+        value,
+        time: moment.unix(time.toNumber()).format('MMMM Do YYYY, h:mm:ss a')
+      });
+    });
   } catch (err) {
     console.log('No pending withdrawal exists for the account');
   }
