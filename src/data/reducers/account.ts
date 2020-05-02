@@ -23,6 +23,7 @@ const baseTxFields = {
 const accountState = {
   ledger: {},
   address: '',
+  isRegistered: false,
   summary: {
     name: '',
     authorizedSigners: {},
@@ -57,9 +58,10 @@ const logInLedger = (state, { ledger }) => ({
 
 const logOutLedger = (state) => state;
 
-const getAccountData = (state, { summary, assets }) => ({
+const getAccountData = (state, { summary, isRegistered, assets }) => ({
   ...state,
   summary,
+  isRegistered,
   assets
 });
 

@@ -36,10 +36,12 @@ const setUpLedger = async (derivationPathIndex: number) => {
 };
 
 const getAssets = async (account: string) => {
+  const accountContract = await getAccountsContract();
   const goldTokenContract = await kit.contracts.getGoldToken();
   const stableTokenContract = await kit.contracts.getStableToken();
   const lockedGoldContract = await kit.contracts.getLockedGold();
 
+  const isRegistered = await accountContract.isAccount(account);
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
 
@@ -47,8 +49,8 @@ const getAssets = async (account: string) => {
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
   const pendingWithdrawals = [];
 
-  // Capture the leaked exception caused by `getPendingWithdrawals` for accounts with no locked-gold
-  try {
+  // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
+  if (isRegistered) {
     const pendingList = await lockedGoldContract.getPendingWithdrawals(account);
     pendingList.forEach((withdrawal) => {
       const { value, time } = withdrawal;
@@ -57,8 +59,6 @@ const getAssets = async (account: string) => {
         time: moment.unix(time.toNumber()).format('MMMM Do YYYY, h:mm:ss a')
       });
     });
-  } catch (err) {
-    console.log('No pending withdrawal exists for the account');
   }
 
   return {
@@ -77,10 +77,12 @@ const getAccountSummary = async (address: string) => {
 
   const accountContract = await getAccountsContract();
   const summary = await accountContract.getAccountSummary(address);
+  const isRegistered = await accountContract.isAccount(address);
   const assets = await getAssets(address);
 
   return {
     summary,
+    isRegistered,
     assets
   };
 };

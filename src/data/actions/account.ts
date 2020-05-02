@@ -51,9 +51,8 @@ const getAccountData = (address: string) => async (dispatch) => {
   handleInit(dispatch, GET_ACCOUNT_DATA);
 
   try {
-    const { summary, assets } = await getAccountSummary(address);
-
-    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, assets });
+    const { summary, isRegistered, assets } = await getAccountSummary(address);
+    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, isRegistered, assets });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT_DATA, err);
   }
