@@ -253,6 +253,14 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
 };
 
 const lockGold = async (amount: BigNumber, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
   try {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
@@ -288,6 +296,14 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
 };
 
 const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
   try {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
@@ -322,6 +338,14 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
 };
 
 const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
   try {
     // `index` references the numeral index of the available pending withdrawals of the account
     const lockedGoldContract = await kit.contracts.getLockedGold();
