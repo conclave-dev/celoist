@@ -2,6 +2,7 @@ import {
   LOG_IN_LEDGER,
   LOG_OUT_LEDGER,
   GET_ACCOUNT_DATA,
+  REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX,
@@ -13,6 +14,7 @@ import { handleInit, handleData, handleError } from '../util/actions';
 import {
   setUpLedger,
   getAccountSummary,
+  registerAccount,
   sellGold,
   sellDollars,
   lockGold,
@@ -55,6 +57,29 @@ const getAccountData = (address: string) => async (dispatch) => {
     return handleData(dispatch, GET_ACCOUNT_DATA, { summary, isRegistered, assets });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT_DATA, err);
+  }
+};
+
+const registerUserAccount = () => async (dispatch, getState) => {
+  handleInit(dispatch, REGISTER_ACCOUNT);
+
+  try {
+    const { ledger } = getState().account;
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      isRegistered
+    } = await registerAccount(ledger);
+
+    return handleData(dispatch, REGISTER_ACCOUNT, {
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      isRegistered
+    });
+  } catch (err) {
+    return handleError(dispatch, REGISTER_ACCOUNT, err);
   }
 };
 
@@ -183,6 +208,7 @@ export {
   logInLedger,
   logOutLedger,
   getAccountData,
+  registerUserAccount,
   exchangeGoldForDollars,
   exchangeDollarsForGold,
   resetExchangeTx,

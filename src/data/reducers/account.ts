@@ -2,6 +2,7 @@ import {
   LOG_IN_LEDGER,
   LOG_OUT_LEDGER,
   GET_ACCOUNT_DATA,
+  REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX,
@@ -37,6 +38,9 @@ const accountState = {
     totalLockedGold: new BigNumber(0),
     nonVotingLockedGold: new BigNumber(0),
     pendingWithdrawals: []
+  },
+  accountTx: {
+    ...baseTxFields
   },
   lockedGoldTx: {
     ...baseTxFields
@@ -82,6 +86,21 @@ const exchangeAssets = (
   assets
 });
 
+const handleAccountTx = (
+  state,
+  { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, isRegistered }
+) => ({
+  ...state,
+  accountTx: {
+    blockHash,
+    blockNumber,
+    cumulativeGasUsed,
+    gasUsed,
+    transactionHash
+  },
+  isRegistered
+});
+
 const handleLockedGoldTx = (
   state,
   { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, assets }
@@ -112,6 +131,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, logOutLedger);
     case GET_ACCOUNT_DATA:
       return evalActionPayload(state, action, getAccountData);
+    case REGISTER_ACCOUNT:
+      return evalActionPayload(state, action, handleAccountTx);
     case EXCHANGE_GOLD_FOR_DOLLARS:
       return evalActionPayload(state, action, exchangeAssets);
     case EXCHANGE_DOLLARS_FOR_GOLD:

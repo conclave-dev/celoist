@@ -87,6 +87,48 @@ const getAccountSummary = async (address: string) => {
   };
 };
 
+const registerAccount = async (ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  if (!kit.web3.utils.isAddress(account)) {
+    throw new Error('Invalid account address');
+  }
+
+  const accountContract = await getAccountsContract();
+  const isAlreadyRegistered = await accountContract.isAccount(account);
+
+  if (isAlreadyRegistered) {
+    throw new Error('Account has been registered');
+  }
+
+  try {
+    const createAccountTx = await accountContract.createAccount();
+    const createAccountTxABI = await createAccountTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: accountContract.address,
+      data: createAccountTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const isRegistered = await accountContract.isAccount(account);
+
+    return {
+      txReceipt,
+      isRegistered
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
 const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
   const approveSellGold = async (amountUint256: string, ledger) => {
     const exchangeContract = await kit.contracts.getExchange();
@@ -314,6 +356,7 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
 export {
   setUpLedger,
   getAccountSummary,
+  registerAccount,
   getAssets,
   sellGold,
   sellDollars,
