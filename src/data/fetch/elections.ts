@@ -3,6 +3,7 @@ import { reduce, forEach } from 'lodash';
 import { rpcChain } from './api';
 import { backendFetch } from './util';
 import BigNumber from 'bignumber.js';
+import { getKitContract } from './contracts';
 
 const kit = newKit(rpcChain);
 
@@ -52,8 +53,8 @@ const populateElection = async (blockNumber?: number) => {
 };
 
 const fetchElectionConfig = async () => {
-  const validators = await kit.contracts.getValidators();
-  const election = await kit.contracts.getElection();
+  const validators = await getKitContract('validators');
+  const election = await getKitContract('election');
   const { electabilityThreshold } = await election.getConfig();
   const totalVotes = await (await kit._web3Contracts.getElection()).methods.getTotalVotes().call();
   const thresholdDecimal = electabilityThreshold.toNumber() / new BigNumber('1e24').toNumber();
@@ -94,8 +95,8 @@ const fetchElectionSummary = async (groupsById) => {
   );
 
   // Calculate average payments and votes
-  const electionWrapper = await kit.contracts.getElection();
-  const epochNumber = await (await kit.contracts.getValidators()).getEpochNumber();
+  const electionWrapper = await getKitContract('election');
+  const epochNumber = await (await getKitContract('validators')).getEpochNumber();
   const groupVoterRewards = await electionWrapper.getGroupVoterRewards(epochNumber.minus(1).toNumber());
 
   // Get cumulative rewards and votes for calculating their averages

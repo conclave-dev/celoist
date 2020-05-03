@@ -1,13 +1,8 @@
-import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
-import { rpcChain } from './api';
-
-const kit = newKit(rpcChain);
-
-const getGovernance = () => kit.contracts.getGovernance();
+import { getKitContract } from './contracts';
 
 const getGovernanceProposals = async () => {
-  const governance = await getGovernance();
+  const governance = await getKitContract('governance');
 
   const queuedProposalsByStage = await Promise.reduce(
     await governance.getQueue(),

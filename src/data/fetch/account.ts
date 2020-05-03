@@ -1,30 +1,15 @@
 import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-wallet';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
 import { getGasConfig, generateLedgerTxData } from './util';
+import { getKitContract } from './contracts';
 
 const derivationPathBase = "44'/52752'/0'";
 const kit = newKit(rpcChain);
-const contracts: {
-  accounts: any;
-  exchange: any;
-} = {
-  accounts: {},
-  exchange: {}
-};
-
-const getAccountsContract = async () => {
-  if (!isEmpty(contracts.accounts)) {
-    return contracts.accounts;
-  }
-
-  return kit.contracts.getAccounts();
-};
 
 const setUpLedger = async (derivationPathIndex: number) => {
   const transport = await TransportU2F.create();
@@ -36,14 +21,14 @@ const setUpLedger = async (derivationPathIndex: number) => {
 };
 
 const isAccount = async (account: string) => {
-  const accountContract = await getAccountsContract();
+  const accountContract = await getKitContract('accounts');
   return await accountContract.isAccount(account);
 };
 
 const getAssets = async (account: string) => {
-  const goldTokenContract = await kit.contracts.getGoldToken();
-  const stableTokenContract = await kit.contracts.getStableToken();
-  const lockedGoldContract = await kit.contracts.getLockedGold();
+  const goldTokenContract = await getKitContract('goldToken');
+  const stableTokenContract = await getKitContract('stableToken');
+  const lockedGoldContract = await getKitContract('lockedGold');
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
@@ -77,7 +62,7 @@ const getAccountSummary = async (address: string) => {
     throw new Error('Invalid account address');
   }
 
-  const accountContract = await getAccountsContract();
+  const accountContract = await getKitContract('accounts');
   const summary = await accountContract.getAccountSummary(address);
   const assets = await getAssets(address);
 
@@ -94,7 +79,7 @@ const registerAccount = async (ledger: Wallet) => {
     throw new Error('Invalid account address');
   }
 
-  const accountContract = await getAccountsContract();
+  const accountContract = await getKitContract('accounts');
   const isRegistered = await isAccount(account);
 
   if (isRegistered) {
@@ -126,7 +111,7 @@ const registerAccount = async (ledger: Wallet) => {
 const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
   const approveSellGold = async (amountUint256: string, ledger) => {
     const exchangeContract = await kit.contracts.getExchange();
-    const goldTokenContract = await kit.contracts.getGoldToken();
+    const goldTokenContract = await getKitContract('goldToken');
     const approvalTx = await goldTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
     const approvalTxABI = await approvalTx.txo.encodeABI();
 
@@ -187,7 +172,7 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
 const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
   const approveSellDollars = async (amountUint256: string, ledger) => {
     const exchangeContract = await kit.contracts.getExchange();
-    const stableTokenContract = await kit.contracts.getStableToken();
+    const stableTokenContract = await getKitContract('stableToken');
     const approvalTx = await stableTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
     const approvalTxABI = await approvalTx.txo.encodeABI();
     const chainId = await kit.web3.eth.getChainId();
@@ -258,7 +243,7 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
 
-    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const lockedGoldContract = await getKitContract('lockedGold');
     const lockGoldTx = await lockedGoldContract.lock();
 
     const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
@@ -300,7 +285,7 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
 
-    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const lockedGoldContract = await getKitContract('lockedGold');
     const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
 
     const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
@@ -339,7 +324,7 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
 
   try {
     // `index` references the numeral index of the available pending withdrawals of the account
-    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const lockedGoldContract = await getKitContract('lockedGold');
     const withdrawTx = await lockedGoldContract.withdraw(index);
 
     const withdrawTxABI = await withdrawTx.txo.encodeABI();
