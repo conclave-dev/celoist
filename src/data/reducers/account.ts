@@ -1,12 +1,13 @@
 import {
-  GET_ACCOUNT_DATA,
+  GET_ACCOUNT,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX,
   LOCK_GOLD,
   UNLOCK_GOLD,
-  WITHDRAW_PENDING_WITHDRAWAL
+  WITHDRAW_PENDING_WITHDRAWAL,
+  LOG_OUT_WITH_LEDGER
 } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
@@ -20,7 +21,6 @@ const baseTxFields = {
 };
 
 const accountState = {
-  ledger: {},
   address: '',
   summary: {
     name: '',
@@ -51,7 +51,7 @@ const accountState = {
 
 const initialState = initialStateDecorator(accountState);
 
-const getAccountData = (state, { summary, assets }) => ({
+const getAccount = (state, { summary, assets }) => ({
   ...state,
   summary,
   assets
@@ -105,12 +105,14 @@ const resetExchangeTx = (state) => ({
   exchangeTx: { ...accountState.exchangeTx }
 });
 
+const logOut = () => ({ ...accountState });
+
 export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case GET_ACCOUNT_DATA:
-      return evalActionPayload(state, action, getAccountData);
+    case GET_ACCOUNT:
+      return evalActionPayload(state, action, getAccount);
     case REGISTER_ACCOUNT:
       return evalActionPayload(state, action, handleAccountTx);
     case EXCHANGE_GOLD_FOR_DOLLARS:
@@ -123,6 +125,8 @@ export default (state = initialState, action) => {
     case UNLOCK_GOLD:
     case WITHDRAW_PENDING_WITHDRAWAL:
       return evalActionPayload(state, action, handleLockedGoldTx);
+    case LOG_OUT_WITH_LEDGER:
+      return evalActionPayload(state, action, logOut);
     default:
       return state;
   }

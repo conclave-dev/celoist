@@ -1,5 +1,5 @@
 import {
-  GET_ACCOUNT_DATA,
+  GET_ACCOUNT,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
@@ -18,14 +18,15 @@ import {
   withdrawPendingWithdrawal
 } from '../fetch/account';
 
-const getAccountData = (address: string) => async (dispatch) => {
-  handleInit(dispatch, GET_ACCOUNT_DATA);
+const getAccount = () => async (dispatch, getState) => {
+  handleInit(dispatch, GET_ACCOUNT);
 
   try {
-    const { summary, assets } = await getAccountSummary(address);
-    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, assets });
+    const { ledger } = getState().ledger;
+    const { summary, assets } = await getAccountSummary(ledger);
+    return handleData(dispatch, GET_ACCOUNT, { summary, assets });
   } catch (err) {
-    return handleError(dispatch, GET_ACCOUNT_DATA, err);
+    return handleError(dispatch, GET_ACCOUNT, err);
   }
 };
 
@@ -167,10 +168,10 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
   }
 };
 
-const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX, {});
+const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX);
 
 export {
-  getAccountData,
+  getAccount,
   registerUserAccount,
   exchangeGoldForDollars,
   exchangeDollarsForGold,

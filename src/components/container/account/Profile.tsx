@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Container, Row } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
-import { getAccountData } from '../../../data/actions/account';
+import { getAccount } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
@@ -14,7 +14,7 @@ const mapState = ({ account: { summary, assets }, ledger: { ledger } }, ownProps
   assets,
   ...ownProps
 });
-const mapDispatch = { getAccountData };
+const mapDispatch = { getAccount };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -26,7 +26,7 @@ class Profile extends PureComponent<Props> {
     const account = ledger.ledger && ledger.getAccounts()[0];
 
     if (account && !this.props.summary.address) {
-      this.props.getAccountData(account);
+      this.props.getAccount(account);
     }
   };
 
