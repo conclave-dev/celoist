@@ -3,7 +3,7 @@ import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
-import { getGasConfig, generateLedgerTxData } from './util';
+import { sendTxWithLedger } from './ledger';
 import { getKitContract } from './contracts';
 
 const kit = newKit(rpcChain);
@@ -77,19 +77,8 @@ const registerAccount = async (ledger: Wallet) => {
   try {
     const createAccountTx = await accountContract.createAccount();
     const createAccountTxABI = await createAccountTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: accountContract.address,
-      data: createAccountTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
 
-    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    return await sendTxWithLedger(ledger, accountContract.address, createAccountTxABI);
   } catch (err) {
     console.error('err', err);
     return err;
@@ -103,21 +92,7 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
     const approvalTx = await goldTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
     const approvalTxABI = await approvalTx.txo.encodeABI();
 
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: goldTokenContract.address,
-      data: approvalTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-
-    return receipt;
+    return sendTxWithLedger(ledger, goldTokenContract.address, approvalTxABI);
   };
 
   try {
@@ -132,20 +107,10 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
       0 // minUSDAmount.multipliedBy(exchangeBase).toFixed(0)
     );
     const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: exchangeContract.address,
-      data: sellGoldTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
+    const txReceipt = await sendTxWithLedger(ledger, exchangeContract.address, sellGoldTxABI);
 
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
+    const [account] = ledger.getAccounts();
+    const assets = await getAssets(account);
 
     return {
       txReceipt,
@@ -163,22 +128,8 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
     const stableTokenContract = await getKitContract('stableToken');
     const approvalTx = await stableTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
     const approvalTxABI = await approvalTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
 
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: stableTokenContract.address,
-      data: approvalTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-
-    return receipt;
+    return sendTxWithLedger(ledger, stableTokenContract.address, approvalTxABI);
   };
 
   try {
@@ -194,20 +145,9 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
     );
 
     const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: exchangeContract.address,
-      data: sellDollarsTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
+    const txReceipt = await sendTxWithLedger(ledger, exchangeContract.address, sellDollarsTxABI);
+    const [account] = ledger.getAccounts();
+    const assets = await getAssets(account);
 
     return {
       txReceipt,
@@ -235,21 +175,9 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
     const lockGoldTx = await lockedGoldContract.lock();
 
     const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: lockGoldTxABI,
-      value: amountUint256, // amount of gold to be locked must be specified as `value` param of the tx obj
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
+    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, lockGoldTxABI);
+    const [account] = ledger.getAccounts();
+    const assets = await getAssets(account);
 
     return {
       txReceipt,
@@ -277,20 +205,9 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
     const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
 
     const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: unlockGoldTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
+    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, unlockGoldTxABI);
+    const [account] = ledger.getAccounts();
+    const assets = await getAssets(account);
 
     return {
       txReceipt,
@@ -314,22 +231,10 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
     // `index` references the numeral index of the available pending withdrawals of the account
     const lockedGoldContract = await getKitContract('lockedGold');
     const withdrawTx = await lockedGoldContract.withdraw(index);
-
     const withdrawTxABI = await withdrawTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: withdrawTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
+    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, withdrawTxABI);
+    const [account] = ledger.getAccounts();
+    const assets = await getAssets(account);
 
     return {
       txReceipt,

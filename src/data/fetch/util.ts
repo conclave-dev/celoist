@@ -1,5 +1,5 @@
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
-import { backend } from './api';
+import { backend, rpcKit } from './api';
 
 const defaultOptions = {
   method: 'POST',
@@ -25,20 +25,4 @@ const backendFetch = async (endpoint: string, data: object = {}) => {
   }
 };
 
-const getGasConfig = async (kit, tx) => {
-  const txClone = { ...tx };
-  txClone.gasPrice = await kit.web3.eth.getGasPrice();
-  return txClone;
-};
-
-const generateLedgerTxData = async (kit, ledger: Wallet) => {
-  const [account] = ledger.getAccounts();
-  const nonce = await kit.web3.eth.getTransactionCount(account);
-
-  return {
-    from: account,
-    nonce
-  };
-};
-
-export { backendFetch, defaultOptions, getGasConfig, generateLedgerTxData };
+export { backendFetch, defaultOptions };
