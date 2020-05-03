@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
 import { sendTxWithLedger } from './ledger';
 import { getKitContract } from './contracts';
+import { tokenExchangeBase } from './network';
 
 const kit = newKit(rpcChain);
 
@@ -105,15 +106,14 @@ const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, 
 
 const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
   try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
+    const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed();
 
     await getAssetExchangeApproval(amountUint256, true, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellGoldTx = await exchangeContract.sellGold(
       amountUint256,
-      0 // minUSDAmount.multipliedBy(exchangeBase).toFixed(0)
+      0 // minUSDAmount.multipliedBy(tokenExchangeBase).toFixed(0)
     );
     const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
     const txReceipt = await sendTxWithLedger({
@@ -137,15 +137,14 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
 
 const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
   try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+    const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed(0);
 
     await getAssetExchangeApproval(amountUint256, false, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellDollarsTx = await exchangeContract.sellDollar(
       amountUint256,
-      0 // minGLDAmount.multipliedBy(exchangeBase).toFixed()
+      0 // minGLDAmount.multipliedBy(tokenExchangeBase).toFixed()
     );
 
     const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
@@ -176,8 +175,7 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
   }
 
   try {
-    const exchangeBase = 1000000000000000000;
-    const value = amount.multipliedBy(exchangeBase).toFixed(0);
+    const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
     const lockedGoldContract = await getKitContract('lockedGold');
     const lockGoldTx = await lockedGoldContract.lock();
     const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
@@ -209,8 +207,7 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
   }
 
   try {
-    const exchangeBase = 1000000000000000000;
-    const value = amount.multipliedBy(exchangeBase).toFixed(0);
+    const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
     const lockedGoldContract = await getKitContract('lockedGold');
     const unlockGoldTx = await lockedGoldContract.unlock(value);
     const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
