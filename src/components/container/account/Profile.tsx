@@ -8,7 +8,12 @@ import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { ledger, summary, assets } }, ownProps) => ({ ledger, summary, assets, ...ownProps });
+const mapState = ({ account: { summary, assets }, ledger: { ledger } }, ownProps) => ({
+  ledger,
+  summary,
+  assets,
+  ...ownProps
+});
 const mapDispatch = { getAccountData };
 const connector = connect(mapState, mapDispatch);
 

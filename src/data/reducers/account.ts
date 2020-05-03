@@ -1,6 +1,4 @@
 import {
-  LOG_IN_LEDGER,
-  LOG_OUT_LEDGER,
   GET_ACCOUNT_DATA,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
@@ -52,14 +50,6 @@ const accountState = {
 };
 
 const initialState = initialStateDecorator(accountState);
-
-const logInLedger = (state, { ledger }) => ({
-  ...state,
-  ledger,
-  address: ledger.getAccounts()[0]
-});
-
-const logOutLedger = (state) => state;
 
 const getAccountData = (state, { summary, assets }) => ({
   ...state,
@@ -119,10 +109,6 @@ export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case LOG_IN_LEDGER:
-      return evalActionPayload(state, action, logInLedger);
-    case LOG_OUT_LEDGER:
-      return evalActionPayload(state, action, logOutLedger);
     case GET_ACCOUNT_DATA:
       return evalActionPayload(state, action, getAccountData);
     case REGISTER_ACCOUNT:

@@ -6,7 +6,6 @@ import Header from '../../presentational/reusable/Header';
 import Submenu from '../../presentational/ecosystem/governance/Submenu';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
 import { fetchProposals } from '../../../data/actions/governance';
-import { formatVotes } from '../../../util/numbers';
 
 const mapState = ({ governance }) => ({
   ...governance

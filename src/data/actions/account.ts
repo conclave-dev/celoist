@@ -1,6 +1,4 @@
 import {
-  LOG_IN_LEDGER,
-  LOG_OUT_LEDGER,
   GET_ACCOUNT_DATA,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
@@ -12,7 +10,6 @@ import {
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import {
-  setUpLedger,
   getAccountSummary,
   registerAccount,
   sellGold,
@@ -21,33 +18,6 @@ import {
   unlockGold,
   withdrawPendingWithdrawal
 } from '../fetch/account';
-
-const logInLedger = (accountIndex = 0) => async (dispatch) => {
-  handleInit(dispatch, LOG_IN_LEDGER);
-
-  try {
-    const ledger = await setUpLedger(accountIndex);
-    return handleData(dispatch, LOG_IN_LEDGER, { ledger });
-  } catch (err) {
-    return handleError(dispatch, LOG_IN_LEDGER, err);
-  }
-};
-
-const logOutLedger = () => async (dispatch, getState) => {
-  handleInit(dispatch, LOG_OUT_LEDGER);
-
-  try {
-    const {
-      ledger: { ledger }
-    } = getState().account;
-
-    await ledger.transport.close();
-
-    return handleData(dispatch, LOG_OUT_LEDGER, { ledger: {} });
-  } catch (err) {
-    return handleError(dispatch, LOG_OUT_LEDGER, err);
-  }
-};
 
 const getAccountData = (address: string) => async (dispatch) => {
   handleInit(dispatch, GET_ACCOUNT_DATA);
@@ -64,7 +34,7 @@ const registerUserAccount = () => async (dispatch, getState) => {
   handleInit(dispatch, REGISTER_ACCOUNT);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash } = await registerAccount(ledger);
 
     return handleData(dispatch, REGISTER_ACCOUNT, {
@@ -83,7 +53,7 @@ const exchangeGoldForDollars = (amount, minUSDAmount) => async (dispatch, getSta
   handleInit(dispatch, EXCHANGE_GOLD_FOR_DOLLARS);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
@@ -108,7 +78,7 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
   handleInit(dispatch, EXCHANGE_DOLLARS_FOR_GOLD);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
@@ -133,7 +103,7 @@ const lockAvailableGold = (amount) => async (dispatch, getState) => {
   handleInit(dispatch, LOCK_GOLD);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
@@ -156,7 +126,7 @@ const unlockLockedGold = (amount) => async (dispatch, getState) => {
   handleInit(dispatch, UNLOCK_GOLD);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
@@ -179,7 +149,7 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
   handleInit(dispatch, WITHDRAW_PENDING_WITHDRAWAL);
 
   try {
-    const { ledger } = getState().account;
+    const { ledger } = getState().ledger;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
@@ -201,8 +171,6 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX, {});
 
 export {
-  logInLedger,
-  logOutLedger,
   getAccountData,
   registerUserAccount,
   exchangeGoldForDollars,

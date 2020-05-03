@@ -1,17 +1,21 @@
-import React, { memo } from 'react';
+import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { isEmpty } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { logInLedger as logInLedgerAction, logOutLedger as logOutLedgerAction } from '../../../data/actions/account';
+import {
+  logInWithLedger as logInWithLedgerAction,
+  logOutWithLedger as logOutWithLedgerAction
+} from '../../../data/actions/ledger';
 import profileLight from '../../../assets/png/profileLight.png';
 import keyLight from '../../../assets/png/keyLight.png';
 import lockLight from '../../../assets/png/lockLight.png';
 
 const SweetAlert = withReactContent(Swal);
 
-const mapState = ({ account: { address } }, ownProps) => ({ address, ...ownProps });
-const mapDispatch = { logInLedger: logInLedgerAction, logOutLedger: logOutLedgerAction };
+const mapState = ({ account: { address }, ledger: { ledger } }, ownProps) => ({ ledger, address, ...ownProps });
+const mapDispatch = { logInWithLedger: logInWithLedgerAction, logOutWithLedger: logOutWithLedgerAction };
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
@@ -66,59 +70,68 @@ const showConnectSuccess = (address: string) =>
     showConfirmButton: false
   });
 
-const SidebarAccount = ({ address, sidebarToggler, logInLedger, logOutLedger }: Props) => {
-  if (address) {
-    showConnectSuccess(address);
-  }
+class SidebarAccount extends PureComponent<Props> {
+  componentDidUpdate = async ({ ledger: { ledger: prevLedger } }) => {
+    const { ledger } = this.props;
 
-  return (
-    <>
-      <li className="menu-title">Account</li>
-      {address ? (
-        <>
-          <li>
-            <Link to="/account" className="waves-effect" onClick={sidebarToggler}>
-              <div className="iconSidebar">
-                <img src={profileLight} height={22} alt="sidebar menu icon" />
-              </div>
-              <span>Profile</span>
-            </Link>
-          </li>
+    if (isEmpty(prevLedger) && !isEmpty(ledger)) {
+      const [account] = await ledger.getAccounts();
+      showConnectSuccess(account);
+    }
+  };
+
+  render = () => {
+    const { logInWithLedger, ledger, sidebarToggler, logOutWithLedger } = this.props;
+
+    return (
+      <>
+        <li className="menu-title">Account</li>
+        {!isEmpty(ledger) ? (
+          <>
+            <li>
+              <Link to="/account" className="waves-effect" onClick={sidebarToggler}>
+                <div className="iconSidebar">
+                  <img src={profileLight} height={22} alt="sidebar menu icon" />
+                </div>
+                <span>Profile</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to=""
+                className="waves-effect"
+                onClick={() => {
+                  sidebarToggler();
+                  return logOutWithLedger();
+                }}
+              >
+                <div className="iconSidebar">
+                  <img src={lockLight} height={22} alt="sidebar menu icon" />
+                </div>
+                <span>Log Out</span>
+              </Link>
+            </li>
+          </>
+        ) : (
           <li>
             <Link
               to=""
               className="waves-effect"
               onClick={() => {
                 sidebarToggler();
-                return logOutLedger();
+                return specifyAccountIndex((accountIndex) => showConnectProgress(logInWithLedger, accountIndex));
               }}
             >
               <div className="iconSidebar">
-                <img src={lockLight} height={22} alt="sidebar menu icon" />
+                <img src={keyLight} height={22} alt="sidebar menu icon" />
               </div>
-              <span>Log Out</span>
+              <span>Log In</span>
             </Link>
           </li>
-        </>
-      ) : (
-        <li>
-          <Link
-            to=""
-            className="waves-effect"
-            onClick={() => {
-              sidebarToggler();
-              return specifyAccountIndex((accountIndex) => showConnectProgress(logInLedger, accountIndex));
-            }}
-          >
-            <div className="iconSidebar">
-              <img src={keyLight} height={22} alt="sidebar menu icon" />
-            </div>
-            <span>Log In</span>
-          </Link>
-        </li>
-      )}
-    </>
-  );
-};
+        )}
+      </>
+    );
+  };
+}
 
-export default connector(memo(SidebarAccount));
+export default connector(SidebarAccount);
