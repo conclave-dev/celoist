@@ -25,24 +25,19 @@ const specifyAccountIndex = (callback) =>
     title: 'Connect Ledger Nano S/X',
     icon: 'question',
     html: `
-        <p>Access an account by entering its index below (default: 0).</p>
-        <input id="accountIndex" class="swal2-input" value="0" />
+        <p>Access your Celo account with the default derivation path (recommended) or specify a custom path below.</p>
+        <input id="derivationPath" class="swal2-input" value="0/0" />
         <p class="font-italic">
-          <small>
-            Derivation path: 44'/52752'/0'/0/{index}
-          </small>
+          <small>NOTE: A custom path, if any, will be appended to 44'/52752'/0'/.<br />I.e. Entering 1/2/3 results in 44'/52752'/0'/1/2/3 as the derivation path.</small>
         </p>
       `,
     showCancelButton: true,
     showConfirmButton: true,
     preConfirm: () => {
       // Addresses "has no property value" ts error https://stackoverflow.com/a/43823786
-      const accountIndexElement = window.document.getElementById('accountIndex') as HTMLInputElement;
-      const accountIndex = parseInt(accountIndexElement.value);
+      const derivationPathElement = window.document.getElementById('derivationPath') as HTMLInputElement;
 
-      if (accountIndex >= 0) {
-        callback(accountIndex);
-      }
+      callback(derivationPathElement.value);
     }
   });
 

@@ -3,15 +3,28 @@ import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-w
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { rpcKit } from './api';
 
-const derivationPathBase = "44'/52752'/0'";
+const derivationPathBase = "44'/52752'/0'/";
 
-const connectLedger = async (derivationPathIndex: number) => {
+const parseDerivationPath = (derivationPath = '0') => {
+  const path = derivationPath.split('');
+  const derivationPathIndex = parseInt(path.pop());
+
+  return {
+    // The derivation path index must be 0 or higher
+    index: Number.isNaN(derivationPathIndex) ? 0 : derivationPathIndex,
+    path: path.join('')
+  };
+};
+
+const connectLedger = async (derivationPath: string) => {
   const transport = await TransportU2F.create();
+
+  const d = parseDerivationPath(derivationPath);
 
   transport.exchangeTimeout = 60000;
   transport.unresponsiveTimeout = 10000;
 
-  return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
+  return newLedgerWalletWithSetup(transport, [d.index], `${derivationPathBase}${d.path}`);
 };
 
 const disconnectLedger = (ledger) => ledger.transport.close();

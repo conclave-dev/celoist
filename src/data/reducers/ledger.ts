@@ -12,7 +12,7 @@ const logInWithLedger = (state, { ledger }) => ({
   ledger
 });
 
-const logOutWithLedger = () => ledgerState;
+const logOutWithLedger = () => ({ ...ledgerState });
 
 export default (state = initialState, action) => {
   const { type } = action;

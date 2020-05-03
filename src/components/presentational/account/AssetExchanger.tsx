@@ -217,7 +217,6 @@ class AssetExchanger extends PureComponent<Props> {
               const goldAmount = new BigNumber(amountElement.value);
 
               if (goldAmount.isZero() || goldAmount.isNaN()) {
-                console.log('what', goldAmount);
                 return this.exchangeErrorHandler('The exchange amount you entered was invalid, please try again.');
               }
 

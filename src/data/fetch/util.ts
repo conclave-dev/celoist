@@ -1,5 +1,4 @@
-import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
-import { backend, rpcKit } from './api';
+import { backend } from './api';
 
 const defaultOptions = {
   method: 'POST',
