@@ -4,7 +4,7 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
 import { sendTxWithLedger } from './ledger';
-import { getKitContract } from './contracts';
+import { getKitContract, getContractMethodCallABI } from './contracts';
 import { tokenExchangeBase } from './network';
 
 const kit = newKit(rpcChain);
@@ -76,8 +76,10 @@ const registerAccount = async (ledger: Wallet) => {
   }
 
   try {
-    const createAccountTx = await accountContract.createAccount();
-    const createAccountTxABI = await createAccountTx.txo.encodeABI();
+    const createAccountTxABI = await getContractMethodCallABI({
+      contract: accountContract,
+      contractMethod: 'createAccount'
+    });
 
     return await sendTxWithLedger({
       ledger,
@@ -91,11 +93,14 @@ const registerAccount = async (ledger: Wallet) => {
 };
 
 const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, ledger: Wallet) => {
-  const exchangeContract = await kit.contracts.getExchange();
+  const exchangeContract = await getKitContract('exchange');
   const contractName = isSellingGold ? 'goldToken' : 'stableToken';
   const contract = await getKitContract(contractName);
-  const approvalTx = await contract.increaseAllowance(exchangeContract.address, amount);
-  const approvalTxABI = await approvalTx.txo.encodeABI();
+  const approvalTxABI = await getContractMethodCallABI({
+    contract: contract,
+    contractMethod: 'increaseAllowance',
+    contractMethodArgs: [exchangeContract.address, amount]
+  });
 
   return sendTxWithLedger({
     ledger,

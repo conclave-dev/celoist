@@ -36,4 +36,16 @@ const getWeb3Contract = async (contract: string) => {
   return web3Contracts[contract];
 };
 
-export { getKitContract, getWeb3Contract };
+const getContractMethodCallABI = async ({
+  contract,
+  contractMethod,
+  contractMethodArgs
+}: {
+  contract: any;
+  contractMethod: string;
+  contractMethodArgs?: any[];
+}) => {
+  return await contract[contractMethod].apply(null, contractMethodArgs).txo.encodeABI();
+};
+
+export { getKitContract, getWeb3Contract, getContractMethodCallABI };

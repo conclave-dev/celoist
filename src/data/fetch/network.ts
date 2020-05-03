@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { getWeb3Contract } from './contracts';
 
-const tokenExchangeBase = '1e18';
+const tokenExchangeBase = new BigNumber('1e18');
 
 const fetchExchangeRates = async () => {
   try {
@@ -9,16 +9,16 @@ const fetchExchangeRates = async () => {
 
     // Amount of cUSD received for 1 cGLD
     const dollarBuyAmount = new BigNumber(
-      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase, true)).call()
+      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase.toFixed(0), true)).call()
     );
 
     // Amount of cGLD received for 1 cUSD
     const goldBuyAmount = new BigNumber(
-      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase, false)).call()
+      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase.toFixed(0), false)).call()
     );
 
-    const goldToDollars = new BigNumber(dollarBuyAmount.toNumber() / parseInt(tokenExchangeBase));
-    const dollarsToGold = new BigNumber(goldBuyAmount.toNumber() / parseInt(tokenExchangeBase));
+    const goldToDollars = new BigNumber(dollarBuyAmount.toNumber() / tokenExchangeBase.toNumber());
+    const dollarsToGold = new BigNumber(goldBuyAmount.toNumber() / tokenExchangeBase.toNumber());
 
     return { dollarsToGold, goldToDollars };
   } catch (err) {
