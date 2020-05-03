@@ -1,6 +1,7 @@
 import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-wallet';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import BigNumber from 'bignumber.js';
@@ -35,14 +36,37 @@ const setUpLedger = async (derivationPathIndex: number) => {
 };
 
 const getAssets = async (account: string) => {
+  const accountContract = await getAccountsContract();
   const goldTokenContract = await kit.contracts.getGoldToken();
   const stableTokenContract = await kit.contracts.getStableToken();
+  const lockedGoldContract = await kit.contracts.getLockedGold();
+
+  const isRegistered = await accountContract.isAccount(account);
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
 
+  const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
+  const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
+  const pendingWithdrawals = [];
+
+  // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
+  if (isRegistered) {
+    const pendingList = await lockedGoldContract.getPendingWithdrawals(account);
+    pendingList.forEach((withdrawal) => {
+      const { value, time } = withdrawal;
+      pendingWithdrawals.push({
+        value,
+        time: moment.unix(time.toNumber()).format('MMMM Do YYYY, h:mm:ss a')
+      });
+    });
+  }
+
   return {
     cGLD,
-    cUSD
+    cUSD,
+    totalLockedGold,
+    nonVotingLockedGold,
+    pendingWithdrawals
   };
 };
 
@@ -53,12 +77,56 @@ const getAccountSummary = async (address: string) => {
 
   const accountContract = await getAccountsContract();
   const summary = await accountContract.getAccountSummary(address);
+  const isRegistered = await accountContract.isAccount(address);
   const assets = await getAssets(address);
 
   return {
     summary,
+    isRegistered,
     assets
   };
+};
+
+const registerAccount = async (ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  if (!kit.web3.utils.isAddress(account)) {
+    throw new Error('Invalid account address');
+  }
+
+  const accountContract = await getAccountsContract();
+  const isAlreadyRegistered = await accountContract.isAccount(account);
+
+  if (isAlreadyRegistered) {
+    throw new Error('Account has been registered');
+  }
+
+  try {
+    const createAccountTx = await accountContract.createAccount();
+    const createAccountTxABI = await createAccountTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: accountContract.address,
+      data: createAccountTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const isRegistered = await accountContract.isAccount(account);
+
+    return {
+      txReceipt,
+      isRegistered
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
 };
 
 const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
@@ -184,4 +252,139 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
   }
 };
 
-export { setUpLedger, getAccountSummary, getAssets, sellGold, sellDollars };
+const lockGold = async (amount: BigNumber, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
+  try {
+    const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const lockGoldTx = await lockedGoldContract.lock();
+
+    const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: lockGoldTxABI,
+      value: amountUint256, // amount of gold to be locked must be specified as `value` param of the tx obj
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
+  try {
+    const exchangeBase = 1000000000000000000;
+    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
+
+    const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: unlockGoldTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getAccountsContract();
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered) {
+    throw new Error('Account must be registered first');
+  }
+
+  try {
+    // `index` references the numeral index of the available pending withdrawals of the account
+    const lockedGoldContract = await kit.contracts.getLockedGold();
+    const withdrawTx = await lockedGoldContract.withdraw(index);
+
+    const withdrawTxABI = await withdrawTx.txo.encodeABI();
+    const chainId = await kit.web3.eth.getChainId();
+    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+    const tx = await getGasConfig(kit, {
+      ...ledgerTxData,
+      to: lockedGoldContract.address,
+      data: withdrawTxABI,
+      gasPrice: 0,
+      gas: 20000000,
+      gatewayFee: `0x${(20000).toString(16)}`,
+      chainId
+    });
+
+    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+    const assets = await getAssets(ledger.getAccounts()[0]);
+
+    return {
+      txReceipt,
+      assets
+    };
+  } catch (err) {
+    console.error('err', err);
+    return err;
+  }
+};
+
+export {
+  setUpLedger,
+  getAccountSummary,
+  registerAccount,
+  getAssets,
+  sellGold,
+  sellDollars,
+  lockGold,
+  unlockGold,
+  withdrawPendingWithdrawal
+};

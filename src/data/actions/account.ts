@@ -2,12 +2,25 @@ import {
   LOG_IN_LEDGER,
   LOG_OUT_LEDGER,
   GET_ACCOUNT_DATA,
+  REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
-  RESET_EXCHANGE_TX
+  RESET_EXCHANGE_TX,
+  LOCK_GOLD,
+  UNLOCK_GOLD,
+  WITHDRAW_PENDING_WITHDRAWAL
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
-import { setUpLedger, getAccountSummary, sellGold, sellDollars } from '../fetch/account';
+import {
+  setUpLedger,
+  getAccountSummary,
+  registerAccount,
+  sellGold,
+  sellDollars,
+  lockGold,
+  unlockGold,
+  withdrawPendingWithdrawal
+} from '../fetch/account';
 
 const logInLedger = (accountIndex = 0) => async (dispatch) => {
   handleInit(dispatch, LOG_IN_LEDGER);
@@ -40,11 +53,33 @@ const getAccountData = (address: string) => async (dispatch) => {
   handleInit(dispatch, GET_ACCOUNT_DATA);
 
   try {
-    const { summary, assets } = await getAccountSummary(address);
-
-    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, assets });
+    const { summary, isRegistered, assets } = await getAccountSummary(address);
+    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, isRegistered, assets });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT_DATA, err);
+  }
+};
+
+const registerUserAccount = () => async (dispatch, getState) => {
+  handleInit(dispatch, REGISTER_ACCOUNT);
+
+  try {
+    const { ledger } = getState().account;
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      isRegistered
+    } = await registerAccount(ledger);
+
+    return handleData(dispatch, REGISTER_ACCOUNT, {
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      isRegistered
+    });
+  } catch (err) {
+    return handleError(dispatch, REGISTER_ACCOUNT, err);
   }
 };
 
@@ -98,6 +133,86 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
   }
 };
 
+const lockAvailableGold = (amount) => async (dispatch, getState) => {
+  handleInit(dispatch, LOCK_GOLD);
+
+  try {
+    const { ledger } = getState().account;
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      assets
+    } = await lockGold(amount, ledger);
+
+    return handleData(dispatch, LOCK_GOLD, {
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      assets
+    });
+  } catch (err) {
+    return handleError(dispatch, LOCK_GOLD, err);
+  }
+};
+
+const unlockLockedGold = (amount) => async (dispatch, getState) => {
+  handleInit(dispatch, UNLOCK_GOLD);
+
+  try {
+    const { ledger } = getState().account;
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      assets
+    } = await unlockGold(amount, ledger);
+
+    return handleData(dispatch, UNLOCK_GOLD, {
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      assets
+    });
+  } catch (err) {
+    return handleError(dispatch, UNLOCK_GOLD, err);
+  }
+};
+
+const withdrawPendingGold = (index) => async (dispatch, getState) => {
+  handleInit(dispatch, WITHDRAW_PENDING_WITHDRAWAL);
+
+  try {
+    const { ledger } = getState().account;
+    const {
+      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
+      assets
+    } = await withdrawPendingWithdrawal(index, ledger);
+
+    return handleData(dispatch, WITHDRAW_PENDING_WITHDRAWAL, {
+      blockHash,
+      blockNumber,
+      cumulativeGasUsed,
+      gasUsed,
+      transactionHash,
+      assets
+    });
+  } catch (err) {
+    return handleError(dispatch, WITHDRAW_PENDING_WITHDRAWAL, err);
+  }
+};
+
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX, {});
 
-export { logInLedger, logOutLedger, getAccountData, exchangeGoldForDollars, exchangeDollarsForGold, resetExchangeTx };
+export {
+  logInLedger,
+  logOutLedger,
+  getAccountData,
+  registerUserAccount,
+  exchangeGoldForDollars,
+  exchangeDollarsForGold,
+  resetExchangeTx,
+  lockAvailableGold,
+  unlockLockedGold,
+  withdrawPendingGold
+};
