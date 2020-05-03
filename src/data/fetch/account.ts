@@ -109,55 +109,30 @@ const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, 
   });
 };
 
-const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
+const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSellingGold: boolean, ledger: Wallet) => {
   try {
     const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed();
 
-    await getAssetExchangeApproval(amountUint256, true, ledger);
+    // Set the min received amount to be at least 95% of value shown to user for safety
+    // Due to exchange rate fluctuations, we cannot ensure that the minimum amount received will be 100%
+    // TODO: Communicate to user that they may receive 5% less than what is estimated
+    const minReceivedUint256 = minReceived.multipliedBy(tokenExchangeBase).multipliedBy('0.95').toFixed();
+
+    await getAssetExchangeApproval(amountUint256, isSellingGold, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
-    const sellGoldTx = await exchangeContract.sellGold(
-      amountUint256,
-      0 // minUSDAmount.multipliedBy(tokenExchangeBase).toFixed(0)
-    );
-    const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
+    const exchangeContractMethod = isSellingGold ? 'sellGold' : 'sellDollar';
+    const txABI = await getContractMethodCallABI({
+      contract: exchangeContract,
+      contractMethod: exchangeContractMethod,
+      contractMethodArgs: [amountUint256, minReceivedUint256]
+    });
     const txReceipt = await sendTxWithLedger({
       ledger,
       to: exchangeContract.address,
-      data: sellGoldTxABI
+      data: txABI
     });
 
-    const [account] = ledger.getAccounts();
-    const assets = await getAssets(account);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
-};
-
-const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
-  try {
-    const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-
-    await getAssetExchangeApproval(amountUint256, false, ledger);
-
-    const exchangeContract = await kit.contracts.getExchange();
-    const sellDollarsTx = await exchangeContract.sellDollar(
-      amountUint256,
-      0 // minGLDAmount.multipliedBy(tokenExchangeBase).toFixed()
-    );
-
-    const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger({
-      ledger,
-      to: exchangeContract.address,
-      data: sellDollarsTxABI
-    });
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
 
@@ -269,8 +244,7 @@ export {
   getAccountSummary,
   registerAccount,
   getAssets,
-  sellGold,
-  sellDollars,
+  exchangeAssets,
   lockGold,
   unlockGold,
   withdrawPendingWithdrawal

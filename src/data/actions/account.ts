@@ -12,8 +12,7 @@ import { handleInit, handleData, handleError } from '../util/actions';
 import {
   getAccountSummary,
   registerAccount,
-  sellGold,
-  sellDollars,
+  exchangeAssets,
   lockGold,
   unlockGold,
   withdrawPendingWithdrawal
@@ -57,7 +56,7 @@ const exchangeGoldForDollars = (amount, minUSDAmount) => async (dispatch, getSta
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await sellGold(amount, minUSDAmount, ledger);
+    } = await exchangeAssets(amount, minUSDAmount, true, ledger);
 
     return handleData(dispatch, EXCHANGE_GOLD_FOR_DOLLARS, {
       exchanged: amount,
@@ -74,7 +73,7 @@ const exchangeGoldForDollars = (amount, minUSDAmount) => async (dispatch, getSta
   }
 };
 
-const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getState) => {
+const exchangeDollarsForGold = (amount, minGLDAmount) => async (dispatch, getState) => {
   handleInit(dispatch, EXCHANGE_DOLLARS_FOR_GOLD);
 
   try {
@@ -82,11 +81,11 @@ const exchangeDollarsForGold = (amount, minGoldAmount) => async (dispatch, getSt
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await sellDollars(amount, minGoldAmount, ledger);
+    } = await exchangeAssets(amount, minGLDAmount, false, ledger);
 
     return handleData(dispatch, EXCHANGE_DOLLARS_FOR_GOLD, {
       exchanged: amount,
-      received: minGoldAmount,
+      received: minGLDAmount,
       blockHash,
       blockNumber,
       cumulativeGasUsed,
