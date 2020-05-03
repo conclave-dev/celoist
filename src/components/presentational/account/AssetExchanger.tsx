@@ -136,7 +136,8 @@ class AssetExchanger extends PureComponent<Props> {
         </div>
       ),
       showConfirmButton: false,
-      showCancelButton: true,
+      showCancelButton: false,
+      showCloseButton: true,
       onClose: () => this.exchangerCloseHandler()
     });
 
@@ -150,7 +151,7 @@ class AssetExchanger extends PureComponent<Props> {
         </div>
       ),
       showConfirmButton: false,
-      showCancelButton: true,
+      showCancelButton: false,
       onOpen: () =>
         sellGold
           ? this.props.exchangeGoldForDollars(exchangeAmount, receiveAmount)
@@ -171,8 +172,9 @@ class AssetExchanger extends PureComponent<Props> {
           </p>
         </div>
       ),
-      showCancelButton: true,
-      showConfirmButton: false
+      showCancelButton: false,
+      showConfirmButton: false,
+      showCloseButton: true
     });
 
   exchangerCloseHandler = () => {
