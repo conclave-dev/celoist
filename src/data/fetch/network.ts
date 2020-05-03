@@ -1,13 +1,10 @@
-import { newKit } from '@celo/contractkit';
 import BigNumber from 'bignumber.js';
-import { rpcChain } from './api';
-
-const kit = newKit(rpcChain);
+import { getWeb3Contract } from './contracts';
 
 const fetchExchangeRates = async () => {
   try {
     const exchangeBase = '1000000000000000000';
-    const exchangeContract = await kit._web3Contracts.getExchange();
+    const exchangeContract = await getWeb3Contract('exchange');
 
     // Amount of cUSD received for 1 cGLD
     const dollarBuyAmount = new BigNumber(

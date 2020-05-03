@@ -3,26 +3,9 @@ import { isEmpty } from 'lodash';
 import { rpcChain } from './api';
 
 const kit = newKit(rpcChain);
-const kitContracts: {
-  accounts: any;
-  exchange: any;
-  goldToken: any;
-  stableToken: any;
-  lockedGold: any;
-  validators: any;
-  election: any;
-  governance: any;
-} = {
-  accounts: {},
-  exchange: {},
-  goldToken: {},
-  stableToken: {},
-  lockedGold: {},
-  validators: {},
-  election: {},
-  governance: {}
-};
-const kitContractGetters = {
+const kitContracts = {};
+const web3Contracts = {};
+const contractGetters = {
   accounts: 'getAccounts',
   exchange: 'getExchange',
   goldToken: 'getGoldToken',
@@ -37,10 +20,20 @@ const getKitContract = async (contract: string) => {
   if (!isEmpty(kitContracts[contract])) {
     return kitContracts[contract];
   }
-  const contractGetterFn = kitContractGetters[contract];
+  const contractGetterFn = contractGetters[contract];
   kitContracts[contract] = await kit.contracts[contractGetterFn]();
 
   return kitContracts[contract];
 };
 
-export { getKitContract };
+const getWeb3Contract = async (contract: string) => {
+  if (!isEmpty(web3Contracts[contract])) {
+    return web3Contracts[contract];
+  }
+  const contractGetterFn = contractGetters[contract];
+  web3Contracts[contract] = await kit._web3Contracts[contractGetterFn]();
+
+  return web3Contracts[contract];
+};
+
+export { getKitContract, getWeb3Contract };

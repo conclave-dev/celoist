@@ -1,11 +1,8 @@
 import { Promise } from 'bluebird';
-import { newKit } from '@celo/contractkit';
-import { rpcChain } from './api';
 import { Blog } from '../types/home';
 import { backend } from './api';
 import { stripHTML } from '../../util/text';
-
-const kit = newKit(rpcChain);
+import { getWeb3Contract } from './contracts';
 
 const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) => {
   return Promise.reduce(
@@ -37,7 +34,7 @@ const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) => {
 };
 
 const fetchTotalSupply = async () => {
-  const goldToken = await kit._web3Contracts.getGoldToken();
+  const goldToken = await getWeb3Contract('goldToken');
   const totalSupply = await goldToken.methods.totalSupply().call();
 
   return totalSupply;

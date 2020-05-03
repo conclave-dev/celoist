@@ -3,7 +3,7 @@ import { reduce, forEach } from 'lodash';
 import { rpcChain } from './api';
 import { backendFetch } from './util';
 import BigNumber from 'bignumber.js';
-import { getKitContract } from './contracts';
+import { getKitContract, getWeb3Contract } from './contracts';
 
 const kit = newKit(rpcChain);
 
@@ -56,7 +56,7 @@ const fetchElectionConfig = async () => {
   const validators = await getKitContract('validators');
   const election = await getKitContract('election');
   const { electabilityThreshold } = await election.getConfig();
-  const totalVotes = await (await kit._web3Contracts.getElection()).methods.getTotalVotes().call();
+  const totalVotes = await (await getWeb3Contract('election')).methods.getTotalVotes().call();
   const thresholdDecimal = electabilityThreshold.toNumber() / new BigNumber('1e24').toNumber();
   const minimumRequiredVotes = new BigNumber(thresholdDecimal * parseInt(totalVotes));
 
