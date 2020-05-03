@@ -78,28 +78,37 @@ const registerAccount = async (ledger: Wallet) => {
     const createAccountTx = await accountContract.createAccount();
     const createAccountTxABI = await createAccountTx.txo.encodeABI();
 
-    return await sendTxWithLedger(ledger, accountContract.address, createAccountTxABI);
+    return await sendTxWithLedger({
+      ledger,
+      to: accountContract.address,
+      data: createAccountTxABI
+    });
   } catch (err) {
     console.error('err', err);
     return err;
   }
 };
 
+const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, ledger: Wallet) => {
+  const exchangeContract = await kit.contracts.getExchange();
+  const contractName = isSellingGold ? 'goldToken' : 'stableToken';
+  const contract = await getKitContract(contractName);
+  const approvalTx = await contract.increaseAllowance(exchangeContract.address, amount);
+  const approvalTxABI = await approvalTx.txo.encodeABI();
+
+  return sendTxWithLedger({
+    ledger,
+    to: contract.address,
+    data: approvalTxABI
+  });
+};
+
 const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
-  const approveSellGold = async (amountUint256: string, ledger) => {
-    const exchangeContract = await kit.contracts.getExchange();
-    const goldTokenContract = await getKitContract('goldToken');
-    const approvalTx = await goldTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
-    const approvalTxABI = await approvalTx.txo.encodeABI();
-
-    return sendTxWithLedger(ledger, goldTokenContract.address, approvalTxABI);
-  };
-
   try {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
 
-    await approveSellGold(amountUint256, ledger);
+    await getAssetExchangeApproval(amountUint256, true, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellGoldTx = await exchangeContract.sellGold(
@@ -107,7 +116,11 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
       0 // minUSDAmount.multipliedBy(exchangeBase).toFixed(0)
     );
     const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger(ledger, exchangeContract.address, sellGoldTxABI);
+    const txReceipt = await sendTxWithLedger({
+      ledger,
+      to: exchangeContract.address,
+      data: sellGoldTxABI
+    });
 
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
@@ -123,20 +136,11 @@ const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wall
 };
 
 const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
-  const approveSellDollars = async (amountUint256: string, ledger) => {
-    const exchangeContract = await kit.contracts.getExchange();
-    const stableTokenContract = await getKitContract('stableToken');
-    const approvalTx = await stableTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
-    const approvalTxABI = await approvalTx.txo.encodeABI();
-
-    return sendTxWithLedger(ledger, stableTokenContract.address, approvalTxABI);
-  };
-
   try {
     const exchangeBase = 1000000000000000000;
     const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
 
-    await approveSellDollars(amountUint256, ledger);
+    await getAssetExchangeApproval(amountUint256, false, ledger);
 
     const exchangeContract = await kit.contracts.getExchange();
     const sellDollarsTx = await exchangeContract.sellDollar(
@@ -145,7 +149,11 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
     );
 
     const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger(ledger, exchangeContract.address, sellDollarsTxABI);
+    const txReceipt = await sendTxWithLedger({
+      ledger,
+      to: exchangeContract.address,
+      data: sellDollarsTxABI
+    });
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
 
@@ -169,13 +177,16 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
 
   try {
     const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
-
+    const value = amount.multipliedBy(exchangeBase).toFixed(0);
     const lockedGoldContract = await getKitContract('lockedGold');
     const lockGoldTx = await lockedGoldContract.lock();
-
     const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, lockGoldTxABI);
+    const txReceipt = await sendTxWithLedger({
+      ledger,
+      to: lockedGoldContract.address,
+      data: lockGoldTxABI,
+      value
+    });
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
 
@@ -199,13 +210,15 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
 
   try {
     const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
-
+    const value = amount.multipliedBy(exchangeBase).toFixed(0);
     const lockedGoldContract = await getKitContract('lockedGold');
-    const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
-
+    const unlockGoldTx = await lockedGoldContract.unlock(value);
     const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, unlockGoldTxABI);
+    const txReceipt = await sendTxWithLedger({
+      ledger,
+      to: lockedGoldContract.address,
+      data: unlockGoldTxABI
+    });
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
 
@@ -232,7 +245,11 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
     const lockedGoldContract = await getKitContract('lockedGold');
     const withdrawTx = await lockedGoldContract.withdraw(index);
     const withdrawTxABI = await withdrawTx.txo.encodeABI();
-    const txReceipt = await sendTxWithLedger(ledger, lockedGoldContract.address, withdrawTxABI);
+    const txReceipt = await sendTxWithLedger({
+      ledger,
+      to: lockedGoldContract.address,
+      data: withdrawTxABI
+    });
     const [account] = ledger.getAccounts();
     const assets = await getAssets(account);
 

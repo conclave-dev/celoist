@@ -16,12 +16,23 @@ const connectLedger = async (derivationPathIndex: number) => {
 
 const disconnectLedger = (ledger) => ledger.transport.close();
 
-const sendTxWithLedger = async (ledger: Wallet, to: string, data: string) => {
+const sendTxWithLedger = async ({
+  ledger,
+  to = '',
+  data = '',
+  value = ''
+}: {
+  ledger: Wallet;
+  to?: string;
+  data?: string;
+  value?: string;
+}) => {
   const [account] = ledger.getAccounts();
   const tx = {
     from: account,
     to,
     data,
+    value,
     gas: 20000000,
     gatewayFee: `0x${(20000).toString(16)}`,
     nonce: await rpcKit.web3.eth.getTransactionCount(account),
