@@ -35,19 +35,21 @@ const setUpLedger = async (derivationPathIndex: number) => {
   return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
 };
 
-const getAssets = async (account: string) => {
+const isAccount = async (account: string) => {
   const accountContract = await getAccountsContract();
+  return await accountContract.isAccount(account);
+};
+
+const getAssets = async (account: string) => {
   const goldTokenContract = await kit.contracts.getGoldToken();
   const stableTokenContract = await kit.contracts.getStableToken();
   const lockedGoldContract = await kit.contracts.getLockedGold();
-
-  const isRegistered = await accountContract.isAccount(account);
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
-
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
   const pendingWithdrawals = [];
+  const isRegistered = await isAccount(account);
 
   // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
   if (isRegistered) {
@@ -77,12 +79,10 @@ const getAccountSummary = async (address: string) => {
 
   const accountContract = await getAccountsContract();
   const summary = await accountContract.getAccountSummary(address);
-  const isRegistered = await accountContract.isAccount(address);
   const assets = await getAssets(address);
 
   return {
     summary,
-    isRegistered,
     assets
   };
 };
@@ -95,9 +95,9 @@ const registerAccount = async (ledger: Wallet) => {
   }
 
   const accountContract = await getAccountsContract();
-  const isAlreadyRegistered = await accountContract.isAccount(account);
+  const isRegistered = await isAccount(account);
 
-  if (isAlreadyRegistered) {
+  if (isRegistered) {
     throw new Error('Account has been registered');
   }
 
@@ -248,8 +248,7 @@ const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: W
 
 const lockGold = async (amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
+  const isRegistered = await isAccount(account);
 
   if (!isRegistered) {
     throw new Error('Account must be registered first');
@@ -291,8 +290,7 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
 
 const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
+  const isRegistered = await isAccount(account);
 
   if (!isRegistered) {
     throw new Error('Account must be registered first');
@@ -333,8 +331,7 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
 
 const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
+  const isRegistered = await isAccount(account);
 
   if (!isRegistered) {
     throw new Error('Account must be registered first');
