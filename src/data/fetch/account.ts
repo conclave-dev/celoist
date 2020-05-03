@@ -116,13 +116,7 @@ const registerAccount = async (ledger: Wallet) => {
       chainId
     });
 
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const isRegistered = await accountContract.isAccount(account);
-
-    return {
-      txReceipt,
-      isRegistered
-    };
+    return kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
   } catch (err) {
     console.error('err', err);
     return err;

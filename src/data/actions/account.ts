@@ -53,8 +53,8 @@ const getAccountData = (address: string) => async (dispatch) => {
   handleInit(dispatch, GET_ACCOUNT_DATA);
 
   try {
-    const { summary, isRegistered, assets } = await getAccountSummary(address);
-    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, isRegistered, assets });
+    const { summary, assets } = await getAccountSummary(address);
+    return handleData(dispatch, GET_ACCOUNT_DATA, { summary, assets });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT_DATA, err);
   }
@@ -65,18 +65,14 @@ const registerUserAccount = () => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().account;
-    const {
-      txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
-      isRegistered
-    } = await registerAccount(ledger);
+    const { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash } = await registerAccount(ledger);
 
     return handleData(dispatch, REGISTER_ACCOUNT, {
       blockHash,
       blockNumber,
       cumulativeGasUsed,
       gasUsed,
-      transactionHash,
-      isRegistered
+      transactionHash
     });
   } catch (err) {
     return handleError(dispatch, REGISTER_ACCOUNT, err);

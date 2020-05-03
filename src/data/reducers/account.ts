@@ -24,7 +24,6 @@ const baseTxFields = {
 const accountState = {
   ledger: {},
   address: '',
-  isRegistered: false,
   summary: {
     name: '',
     authorizedSigners: {},
@@ -62,10 +61,9 @@ const logInLedger = (state, { ledger }) => ({
 
 const logOutLedger = (state) => state;
 
-const getAccountData = (state, { summary, isRegistered, assets }) => ({
+const getAccountData = (state, { summary, assets }) => ({
   ...state,
   summary,
-  isRegistered,
   assets
 });
 
@@ -86,10 +84,7 @@ const exchangeAssets = (
   assets
 });
 
-const handleAccountTx = (
-  state,
-  { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, isRegistered }
-) => ({
+const handleAccountTx = (state, { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash }) => ({
   ...state,
   accountTx: {
     blockHash,
@@ -97,8 +92,7 @@ const handleAccountTx = (
     cumulativeGasUsed,
     gasUsed,
     transactionHash
-  },
-  isRegistered
+  }
 });
 
 const handleLockedGoldTx = (
