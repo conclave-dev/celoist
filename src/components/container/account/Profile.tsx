@@ -8,10 +8,9 @@ import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { summary, assets }, ledger: { ledger } }, ownProps) => ({
+const mapState = ({ account: { summary }, ledger: { ledger } }, ownProps) => ({
   ledger,
   summary,
-  assets,
   ...ownProps
 });
 const mapDispatch = { getAccount };
@@ -31,7 +30,7 @@ class Profile extends PureComponent<Props> {
   };
 
   render() {
-    const { summary, assets } = this.props;
+    const { summary } = this.props;
     const { name, address, metadataURL, authorizedSigners } = summary;
 
     return (
@@ -47,7 +46,7 @@ class Profile extends PureComponent<Props> {
             />
           </ResponsiveWrapper>
           <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
-            <ProfileAssets {...assets} />
+            <ProfileAssets />
           </ResponsiveWrapper>
           <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileTransactions transactions={[]} />

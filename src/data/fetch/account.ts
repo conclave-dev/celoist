@@ -110,7 +110,7 @@ const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSelli
   // Set the min received amount to be at least 95% of value shown to user for safety
   // Due to exchange rate fluctuations, we cannot ensure that the minimum amount received will be 100%
   // TODO: Communicate to user that they may receive 5% less than what is estimated
-  const minReceivedUint256 = minReceived.multipliedBy(tokenExchangeBase).multipliedBy('0.95').toFixed(0);
+  const minReceivedUint256 = minReceived.multipliedBy(tokenExchangeBase).multipliedBy('0.99').toFixed(0);
 
   await getAssetExchangeApproval(amountUint256, isSellingGold, ledger);
 
