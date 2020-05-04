@@ -1,3 +1,12 @@
+// Commonly used fields when tracking sent transactions
+const baseTxFields = {
+  blockHash: '',
+  blockNumber: 0,
+  cumulativeGasUsed: 0,
+  gasUsed: 0,
+  transactionHash: ''
+};
+
 // Extends initial state with "boilerplate" properties
 const initialStateDecorator = (state: any) => ({
   ...state,
@@ -39,4 +48,4 @@ const evalActionPayload = (state, action, caseReducer: Function) => {
   }
 };
 
-export { initialStateDecorator, evalActionPayload };
+export { baseTxFields, initialStateDecorator, evalActionPayload };

@@ -212,6 +212,7 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
 };
 
 export {
+  getIsRegistered,
   getAccountSummary,
   registerAccount,
   getAssets,
