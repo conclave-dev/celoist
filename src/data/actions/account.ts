@@ -23,8 +23,8 @@ const getAccount = () => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
-    const { summary, assets } = await getAccountSummary(ledger);
-    return handleData(dispatch, GET_ACCOUNT, { summary, assets });
+    const { summary, assets, isRegistered } = await getAccountSummary(ledger);
+    return handleData(dispatch, GET_ACCOUNT, { summary, assets, isRegistered });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT, err);
   }

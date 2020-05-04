@@ -46,15 +46,17 @@ const accountState = {
     ...baseTxFields,
     exchanged: new BigNumber(0),
     received: new BigNumber(0)
-  }
+  },
+  isRegistered: false
 };
 
 const initialState = initialStateDecorator(accountState);
 
-const getAccount = (state, { summary, assets }) => ({
+const getAccount = (state, { summary, assets, isRegistered }) => ({
   ...state,
   summary,
-  assets
+  assets,
+  isRegistered
 });
 
 const exchangeAssets = (

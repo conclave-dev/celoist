@@ -58,10 +58,12 @@ const getAccountSummary = async (ledger: Wallet) => {
   const accountContract = await getKitContract('accounts');
   const summary = await accountContract.getAccountSummary(account);
   const assets = await getAssets(account);
+  const isRegistered = await getIsRegistered(account, false);
 
   return {
     summary,
-    assets
+    assets,
+    isRegistered
   };
 };
 

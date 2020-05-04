@@ -1,16 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Container, Row } from 'reactstrap';
+import { Container, Row, Button } from 'reactstrap';
 import { connect, ConnectedProps } from 'react-redux';
 import { getAccount } from '../../../data/actions/account';
 import ProfileDetails from '../../presentational/account/ProfileDetails';
 import ProfileTransactions from '../../presentational/account/ProfileTransactions';
 import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
+import Alert from '../../presentational/reusable/Alert';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { summary }, ledger: { ledger } }, ownProps) => ({
+const mapState = ({ account: { summary, isRegistered }, ledger: { ledger } }, ownProps) => ({
   ledger,
   summary,
+  isRegistered,
   ...ownProps
 });
 const mapDispatch = { getAccount };
@@ -30,20 +32,42 @@ class Profile extends PureComponent<Props> {
   };
 
   render() {
-    const { summary } = this.props;
-    const { name, address, metadataURL, authorizedSigners } = summary;
+    const { summary, isRegistered } = this.props;
+    const { name, address, metadataURL } = summary;
 
     return (
       <Container fluid>
-        <Header title="Profile" subtitle="A birdseye view of your Celo activity" inProgress={false} />
+        <Header
+          title="Profile"
+          subtitle="A birdseye view of your Celo activity"
+          inProgress={false}
+          rightSideComponent={
+            address && !isRegistered ? (
+              <Alert color="warning">
+                Your Celo account is not registered.{' '}
+                <Button
+                  style={{
+                    color: '#3488ec',
+                    textDecoration: 'underline',
+                    border: 'none',
+                    padding: 0,
+                    backgroundColor: 'transparent',
+                    height: 21,
+                    verticalAlign: 'top'
+                  }}
+                  onClick={() => {
+                    console.log('hello!');
+                  }}
+                >
+                  Register
+                </Button>{' '}
+              </Alert>
+            ) : null
+          }
+        />
         <Row>
           <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
-            <ProfileDetails
-              name={name}
-              address={address}
-              metadataURL={metadataURL}
-              validator={authorizedSigners.validator}
-            />
+            <ProfileDetails isRegistered={isRegistered} name={name} address={address} metadataURL={metadataURL} />
           </ResponsiveWrapper>
           <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">
             <ProfileAssets />
