@@ -1,9 +1,13 @@
 import { newKit } from '@celo/contractkit';
+import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import { reduce, forEach } from 'lodash';
 import { rpcChain } from './api';
 import { backendFetch } from './util';
 import BigNumber from 'bignumber.js';
-import { getKitContract, getWeb3Contract } from './contracts';
+import { getKitContract, getWeb3Contract, getContractMethodCallABI } from './contracts';
+import { sendTxWithLedger } from './ledger';
+import { getIsRegistered } from './account';
+import { tokenExchangeBase } from './network';
 
 const kit = newKit(rpcChain);
 
@@ -150,4 +154,73 @@ const fetchElectionSummary = async (groupsById) => {
   };
 };
 
-export { populateElection, fetchElectionConfig, fetchElectionSummary };
+const voteGroup = async (amount: BigNumber, groupAddress: string, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  await getIsRegistered(account, true);
+
+  const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
+  const electionContract = await getKitContract('election');
+  const voteTxABI = await getContractMethodCallABI({
+    contract: electionContract,
+    contractMethod: 'vote',
+    contractMethodArgs: [groupAddress, value]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: electionContract.address,
+    data: voteTxABI
+  });
+
+  return {
+    txReceipt
+  };
+};
+
+const activatePendingVote = async (ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  await getIsRegistered(account, true);
+
+  const electionContract = await getKitContract('election');
+  const activateTxABI = await getContractMethodCallABI({
+    contract: electionContract,
+    contractMethod: 'activate',
+    contractMethodArgs: [account]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: electionContract.address,
+    data: activateTxABI
+  });
+
+  return {
+    txReceipt
+  };
+};
+
+const revokeVote = async (amount: BigNumber, groupAddress: string, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  await getIsRegistered(account, true);
+
+  const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
+  const electionContract = await getKitContract('election');
+  const revokeTxABI = await getContractMethodCallABI({
+    contract: electionContract,
+    contractMethod: 'revoke',
+    contractMethodArgs: [account, groupAddress, value]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: electionContract.address,
+    data: revokeTxABI,
+    value
+  });
+
+  return {
+    txReceipt
+  };
+};
+
+export { populateElection, fetchElectionConfig, fetchElectionSummary, voteGroup, activatePendingVote, revokeVote };
