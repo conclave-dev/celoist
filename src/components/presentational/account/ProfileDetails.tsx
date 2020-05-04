@@ -13,8 +13,6 @@ const ProfileDetails = ({
   metadataURL: string;
   validator: string;
 }) => {
-  const hasValidator = validator && validator !== '0x0000000000000000000000000000000000000000';
-
   return (
     <Card>
       <CardBody>
@@ -32,9 +30,6 @@ const ProfileDetails = ({
                   </ListGroupItem>
                   <ListGroupItem style={{ border: 'none' }}>
                     <span className="text-truncate">Metadata</span>
-                  </ListGroupItem>
-                  <ListGroupItem style={{ border: 'none' }}>
-                    <span className="text-truncate">Validator</span>
                   </ListGroupItem>
                 </ListGroup>
               </Col>
@@ -71,32 +66,6 @@ const ProfileDetails = ({
                     >
                       {metadataURL ? (
                         <Anchor href={metadataURL} color="#FFF">
-                          View
-                        </Anchor>
-                      ) : (
-                        <span>View</span>
-                      )}
-                    </Button>
-                  </ListGroupItem>
-                  <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
-                    <Button
-                      className="waves-effect waves-light"
-                      disabled={!hasValidator}
-                      size="sm"
-                      style={{
-                        color: '#FFF',
-                        backgroundColor: hasValidator ? '#35D07F' : '#9ca8b3',
-                        border: 'none',
-                        height: 26,
-                        paddingTop: 0,
-                        paddingBottom: 0
-                      }}
-                    >
-                      {hasValidator ? (
-                        <Anchor
-                          href={`https://baklava-blockscout.celo-testnet.org/address/${validator}/validations`}
-                          color="#FFF"
-                        >
                           View
                         </Anchor>
                       ) : (
