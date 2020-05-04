@@ -1,26 +1,24 @@
-import { newKit } from '@celo/contractkit';
 import BigNumber from 'bignumber.js';
-import { rpcChain } from './api';
+import { getWeb3Contract } from './contracts';
 
-const kit = newKit(rpcChain);
+const tokenExchangeBase = new BigNumber('1e18');
 
 const fetchExchangeRates = async () => {
   try {
-    const exchangeBase = '1000000000000000000';
-    const exchangeContract = await kit._web3Contracts.getExchange();
+    const exchangeContract = await getWeb3Contract('exchange');
 
     // Amount of cUSD received for 1 cGLD
     const dollarBuyAmount = new BigNumber(
-      await (await exchangeContract.methods.getBuyTokenAmount(exchangeBase, true)).call()
+      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase.toFixed(0), true)).call()
     );
 
     // Amount of cGLD received for 1 cUSD
     const goldBuyAmount = new BigNumber(
-      await (await exchangeContract.methods.getBuyTokenAmount(exchangeBase, false)).call()
+      await (await exchangeContract.methods.getBuyTokenAmount(tokenExchangeBase.toFixed(0), false)).call()
     );
 
-    const goldToDollars = new BigNumber(dollarBuyAmount.toNumber() / parseInt(exchangeBase));
-    const dollarsToGold = new BigNumber(goldBuyAmount.toNumber() / parseInt(exchangeBase));
+    const goldToDollars = new BigNumber(dollarBuyAmount.toNumber() / tokenExchangeBase.toNumber());
+    const dollarsToGold = new BigNumber(goldBuyAmount.toNumber() / tokenExchangeBase.toNumber());
 
     return { dollarsToGold, goldToDollars };
   } catch (err) {
@@ -29,4 +27,4 @@ const fetchExchangeRates = async () => {
   }
 };
 
-export { fetchExchangeRates };
+export { fetchExchangeRates, tokenExchangeBase };

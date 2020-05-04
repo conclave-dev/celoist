@@ -1,14 +1,13 @@
 import {
-  LOG_IN_LEDGER,
-  LOG_OUT_LEDGER,
-  GET_ACCOUNT_DATA,
+  GET_ACCOUNT,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
   RESET_EXCHANGE_TX,
   LOCK_GOLD,
   UNLOCK_GOLD,
-  WITHDRAW_PENDING_WITHDRAWAL
+  WITHDRAW_PENDING_WITHDRAWAL,
+  LOG_OUT_WITH_LEDGER
 } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
@@ -22,9 +21,7 @@ const baseTxFields = {
 };
 
 const accountState = {
-  ledger: {},
   address: '',
-  isRegistered: false,
   summary: {
     name: '',
     authorizedSigners: {},
@@ -54,18 +51,9 @@ const accountState = {
 
 const initialState = initialStateDecorator(accountState);
 
-const logInLedger = (state, { ledger }) => ({
-  ...state,
-  ledger,
-  address: ledger.getAccounts()[0]
-});
-
-const logOutLedger = (state) => state;
-
-const getAccountData = (state, { summary, isRegistered, assets }) => ({
+const getAccount = (state, { summary, assets }) => ({
   ...state,
   summary,
-  isRegistered,
   assets
 });
 
@@ -86,10 +74,7 @@ const exchangeAssets = (
   assets
 });
 
-const handleAccountTx = (
-  state,
-  { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, isRegistered }
-) => ({
+const handleAccountTx = (state, { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash }) => ({
   ...state,
   accountTx: {
     blockHash,
@@ -97,8 +82,7 @@ const handleAccountTx = (
     cumulativeGasUsed,
     gasUsed,
     transactionHash
-  },
-  isRegistered
+  }
 });
 
 const handleLockedGoldTx = (
@@ -121,16 +105,14 @@ const resetExchangeTx = (state) => ({
   exchangeTx: { ...accountState.exchangeTx }
 });
 
+const logOut = () => ({ ...accountState });
+
 export default (state = initialState, action) => {
   const { type } = action;
 
   switch (type) {
-    case LOG_IN_LEDGER:
-      return evalActionPayload(state, action, logInLedger);
-    case LOG_OUT_LEDGER:
-      return evalActionPayload(state, action, logOutLedger);
-    case GET_ACCOUNT_DATA:
-      return evalActionPayload(state, action, getAccountData);
+    case GET_ACCOUNT:
+      return evalActionPayload(state, action, getAccount);
     case REGISTER_ACCOUNT:
       return evalActionPayload(state, action, handleAccountTx);
     case EXCHANGE_GOLD_FOR_DOLLARS:
@@ -143,6 +125,8 @@ export default (state = initialState, action) => {
     case UNLOCK_GOLD:
     case WITHDRAW_PENDING_WITHDRAWAL:
       return evalActionPayload(state, action, handleLockedGoldTx);
+    case LOG_OUT_WITH_LEDGER:
+      return evalActionPayload(state, action, logOut);
     default:
       return state;
   }

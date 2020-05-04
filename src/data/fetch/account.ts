@@ -1,56 +1,39 @@
 import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { newLedgerWalletWithSetup } from '@celo/contractkit/lib/wallets/ledger-wallet';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import BigNumber from 'bignumber.js';
 import { rpcChain } from './api';
-import { getGasConfig, generateLedgerTxData } from './util';
+import { sendTxWithLedger } from './ledger';
+import { getKitContract, getContractMethodCallABI } from './contracts';
+import { tokenExchangeBase } from './network';
 
-const derivationPathBase = "44'/52752'/0'";
 const kit = newKit(rpcChain);
-const contracts: {
-  accounts: any;
-  exchange: any;
-} = {
-  accounts: {},
-  exchange: {}
-};
 
-const getAccountsContract = async () => {
-  if (!isEmpty(contracts.accounts)) {
-    return contracts.accounts;
+const getIsRegistered = async (account: string, required: boolean) => {
+  const accountContract = await getKitContract('accounts');
+  const isRegistered = await accountContract.isAccount(account);
+
+  if (!isRegistered && required) {
+    throw new Error('Account must be registered first');
   }
 
-  return kit.contracts.getAccounts();
-};
-
-const setUpLedger = async (derivationPathIndex: number) => {
-  const transport = await TransportU2F.create();
-
-  transport.exchangeTimeout = 60000;
-  transport.unresponsiveTimeout = 10000;
-
-  return newLedgerWalletWithSetup(transport, [derivationPathIndex], derivationPathBase);
+  return isRegistered;
 };
 
 const getAssets = async (account: string) => {
-  const accountContract = await getAccountsContract();
-  const goldTokenContract = await kit.contracts.getGoldToken();
-  const stableTokenContract = await kit.contracts.getStableToken();
-  const lockedGoldContract = await kit.contracts.getLockedGold();
-
-  const isRegistered = await accountContract.isAccount(account);
+  const goldTokenContract = await getKitContract('goldToken');
+  const stableTokenContract = await getKitContract('stableToken');
+  const lockedGoldContract = await getKitContract('lockedGold');
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
-
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
   const pendingWithdrawals = [];
 
-  // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
+  const isRegistered = await getIsRegistered(account, false);
+
   if (isRegistered) {
+    // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
     const pendingList = await lockedGoldContract.getPendingWithdrawals(account);
     pendingList.forEach((withdrawal) => {
       const { value, time } = withdrawal;
@@ -70,320 +53,169 @@ const getAssets = async (account: string) => {
   };
 };
 
-const getAccountSummary = async (address: string) => {
-  if (!kit.web3.utils.isAddress(address)) {
-    throw new Error('Invalid account address');
-  }
-
-  const accountContract = await getAccountsContract();
-  const summary = await accountContract.getAccountSummary(address);
-  const isRegistered = await accountContract.isAccount(address);
-  const assets = await getAssets(address);
+const getAccountSummary = async (ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+  const accountContract = await getKitContract('accounts');
+  const summary = await accountContract.getAccountSummary(account);
+  const assets = await getAssets(account);
 
   return {
     summary,
-    isRegistered,
     assets
   };
 };
 
 const registerAccount = async (ledger: Wallet) => {
   const [account] = ledger.getAccounts();
+  const accountContract = await getKitContract('accounts');
 
-  if (!kit.web3.utils.isAddress(account)) {
-    throw new Error('Invalid account address');
-  }
+  const isRegistered = await getIsRegistered(account, false);
 
-  const accountContract = await getAccountsContract();
-  const isAlreadyRegistered = await accountContract.isAccount(account);
-
-  if (isAlreadyRegistered) {
+  if (isRegistered) {
     throw new Error('Account has been registered');
   }
 
-  try {
-    const createAccountTx = await accountContract.createAccount();
-    const createAccountTxABI = await createAccountTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: accountContract.address,
-      data: createAccountTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
+  const createAccountTxABI = await getContractMethodCallABI({
+    contract: accountContract,
+    contractMethod: 'createAccount'
+  });
 
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const isRegistered = await accountContract.isAccount(account);
-
-    return {
-      txReceipt,
-      isRegistered
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
+  return sendTxWithLedger({
+    ledger,
+    to: accountContract.address,
+    data: createAccountTxABI
+  });
 };
 
-const sellGold = async (amount: BigNumber, minUSDAmount: BigNumber, ledger: Wallet) => {
-  const approveSellGold = async (amountUint256: string, ledger) => {
-    const exchangeContract = await kit.contracts.getExchange();
-    const goldTokenContract = await kit.contracts.getGoldToken();
-    const approvalTx = await goldTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
-    const approvalTxABI = await approvalTx.txo.encodeABI();
+const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, ledger: Wallet) => {
+  const exchangeContract = await getKitContract('exchange');
+  const contractName = isSellingGold ? 'goldToken' : 'stableToken';
+  const contract = await getKitContract(contractName);
+  const approvalTxABI = await getContractMethodCallABI({
+    contract: contract,
+    contractMethod: 'increaseAllowance',
+    contractMethodArgs: [exchangeContract.address, amount]
+  });
 
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: goldTokenContract.address,
-      data: approvalTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-
-    return receipt;
-  };
-
-  try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed();
-
-    await approveSellGold(amountUint256, ledger);
-
-    const exchangeContract = await kit.contracts.getExchange();
-    const sellGoldTx = await exchangeContract.sellGold(
-      amountUint256,
-      0 // minUSDAmount.multipliedBy(exchangeBase).toFixed(0)
-    );
-    const sellGoldTxABI = await sellGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: exchangeContract.address,
-      data: sellGoldTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
+  return sendTxWithLedger({
+    ledger,
+    to: contract.address,
+    data: approvalTxABI
+  });
 };
 
-const sellDollars = async (amount: BigNumber, minGLDAmount: BigNumber, ledger: Wallet) => {
-  const approveSellDollars = async (amountUint256: string, ledger) => {
-    const exchangeContract = await kit.contracts.getExchange();
-    const stableTokenContract = await kit.contracts.getStableToken();
-    const approvalTx = await stableTokenContract.increaseAllowance(exchangeContract.address, amountUint256);
-    const approvalTxABI = await approvalTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
+const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSellingGold: boolean, ledger: Wallet) => {
+  const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed(0);
 
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: stableTokenContract.address,
-      data: approvalTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
+  // Set the min received amount to be at least 95% of value shown to user for safety
+  // Due to exchange rate fluctuations, we cannot ensure that the minimum amount received will be 100%
+  // TODO: Communicate to user that they may receive 5% less than what is estimated
+  const minReceivedUint256 = minReceived.multipliedBy(tokenExchangeBase).multipliedBy('0.99').toFixed(0);
 
-    const receipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
+  await getAssetExchangeApproval(amountUint256, isSellingGold, ledger);
 
-    return receipt;
+  const exchangeContract = await kit.contracts.getExchange();
+  const exchangeContractMethod = isSellingGold ? 'sellGold' : 'sellDollar';
+  const txABI = await getContractMethodCallABI({
+    contract: exchangeContract,
+    contractMethod: exchangeContractMethod,
+    contractMethodArgs: [amountUint256, minReceivedUint256]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: exchangeContract.address,
+    data: txABI
+  });
+
+  const [account] = ledger.getAccounts();
+  const assets = await getAssets(account);
+
+  return {
+    txReceipt,
+    assets
   };
-
-  try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
-
-    await approveSellDollars(amountUint256, ledger);
-
-    const exchangeContract = await kit.contracts.getExchange();
-    const sellDollarsTx = await exchangeContract.sellDollar(
-      amountUint256,
-      0 // minGLDAmount.multipliedBy(exchangeBase).toFixed()
-    );
-
-    const sellDollarsTxABI = await sellDollarsTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: exchangeContract.address,
-      data: sellDollarsTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
 };
 
 const lockGold = async (amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
 
-  if (!isRegistered) {
-    throw new Error('Account must be registered first');
-  }
+  await getIsRegistered(account, true);
 
-  try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+  const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
+  const lockedGoldContract = await getKitContract('lockedGold');
+  const lockGoldTxABI = await getContractMethodCallABI({
+    contract: lockedGoldContract,
+    contractMethod: 'lock'
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: lockedGoldContract.address,
+    data: lockGoldTxABI,
+    value
+  });
+  const assets = await getAssets(account);
 
-    const lockedGoldContract = await kit.contracts.getLockedGold();
-    const lockGoldTx = await lockedGoldContract.lock();
-
-    const lockGoldTxABI = await lockGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: lockGoldTxABI,
-      value: amountUint256, // amount of gold to be locked must be specified as `value` param of the tx obj
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
+  return {
+    txReceipt,
+    assets
+  };
 };
 
 const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
 
-  if (!isRegistered) {
-    throw new Error('Account must be registered first');
-  }
+  await getIsRegistered(account, true);
 
-  try {
-    const exchangeBase = 1000000000000000000;
-    const amountUint256 = amount.multipliedBy(exchangeBase).toFixed(0);
+  const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
+  const lockedGoldContract = await getKitContract('lockedGold');
+  const unlockGoldTxABI = await getContractMethodCallABI({
+    contract: lockedGoldContract,
+    contractMethod: 'unlock',
+    contractMethodArgs: [value]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: lockedGoldContract.address,
+    data: unlockGoldTxABI
+  });
+  const assets = await getAssets(account);
 
-    const lockedGoldContract = await kit.contracts.getLockedGold();
-    const unlockGoldTx = await lockedGoldContract.unlock(amountUint256);
-
-    const unlockGoldTxABI = await unlockGoldTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: unlockGoldTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
+  return {
+    txReceipt,
+    assets
+  };
 };
 
 const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getAccountsContract();
-  const isRegistered = await accountContract.isAccount(account);
 
-  if (!isRegistered) {
-    throw new Error('Account must be registered first');
-  }
+  await getIsRegistered(account, true);
 
-  try {
-    // `index` references the numeral index of the available pending withdrawals of the account
-    const lockedGoldContract = await kit.contracts.getLockedGold();
-    const withdrawTx = await lockedGoldContract.withdraw(index);
+  // `index` references the numeral index of the available pending withdrawals of the account
+  const lockedGoldContract = await getKitContract('lockedGold');
+  const withdrawTxABI = await getContractMethodCallABI({
+    contract: lockedGoldContract,
+    contractMethod: 'withdraw',
+    contractMethodArgs: [index]
+  });
+  const txReceipt = await sendTxWithLedger({
+    ledger,
+    to: lockedGoldContract.address,
+    data: withdrawTxABI
+  });
+  const assets = await getAssets(account);
 
-    const withdrawTxABI = await withdrawTx.txo.encodeABI();
-    const chainId = await kit.web3.eth.getChainId();
-    const ledgerTxData = await generateLedgerTxData(kit, ledger);
-    const tx = await getGasConfig(kit, {
-      ...ledgerTxData,
-      to: lockedGoldContract.address,
-      data: withdrawTxABI,
-      gasPrice: 0,
-      gas: 20000000,
-      gatewayFee: `0x${(20000).toString(16)}`,
-      chainId
-    });
-
-    const txReceipt = await kit.web3.eth.sendSignedTransaction((await ledger.signTransaction(tx)).raw);
-    const assets = await getAssets(ledger.getAccounts()[0]);
-
-    return {
-      txReceipt,
-      assets
-    };
-  } catch (err) {
-    console.error('err', err);
-    return err;
-  }
+  return {
+    txReceipt,
+    assets
+  };
 };
 
 export {
-  setUpLedger,
   getAccountSummary,
   registerAccount,
   getAssets,
-  sellGold,
-  sellDollars,
+  exchangeAssets,
   lockGold,
   unlockGold,
   withdrawPendingWithdrawal

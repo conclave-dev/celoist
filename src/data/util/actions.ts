@@ -5,7 +5,7 @@ const handleInit = (dispatch, type) =>
     message: 'Init'
   });
 
-const handleData = (dispatch, type, data) =>
+const handleData = (dispatch, type, data = {}) =>
   dispatch({
     type,
     status: 200,

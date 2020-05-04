@@ -13,14 +13,6 @@ const getExchangeRates = () => async (dispatch) => {
   }
 };
 
-const removeExchangeRates = () => async (dispatch) => {
-  handleInit(dispatch, REMOVE_EXCHANGE_RATES);
-
-  try {
-    return handleData(dispatch, REMOVE_EXCHANGE_RATES, {});
-  } catch (err) {
-    return handleError(dispatch, REMOVE_EXCHANGE_RATES, err);
-  }
-};
+const removeExchangeRates = () => async (dispatch) => handleData(dispatch, REMOVE_EXCHANGE_RATES);
 
 export { getExchangeRates, removeExchangeRates };

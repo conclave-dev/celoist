@@ -1,42 +1,50 @@
-import { newKit } from '@celo/contractkit';
 import { Promise } from 'bluebird';
-import { rpcChain } from './api';
-
-const kit = newKit(rpcChain);
-
-const getGovernance = () => kit.contracts.getGovernance();
+import { getKitContract } from './contracts';
 
 const getGovernanceProposals = async () => {
-  const governance = await getGovernance();
+  const governance = await getKitContract('governance');
 
-  const queuedProposals = await Promise.reduce(
+  const queuedProposalsByStage = await Promise.reduce(
     await governance.getQueue(),
-    async (acc, { proposalID }) => ({
-      ...acc,
-      [proposalID]: await governance.getProposalRecord(proposalID)
-    }),
-    {}
-  );
-  const dequeuedProposals = await Promise.reduce(
-    await governance.getDequeue(),
-    async (acc, proposalID) => {
-      const proposal = await governance.getProposalRecord(proposalID);
-
-      if (!proposal.proposal.length) {
-        return acc;
-      }
+    async (acc, proposal) => {
+      const { proposalID } = proposal;
 
       return {
         ...acc,
-        [proposalID]: proposal
+        [proposalID]: await governance.getProposalRecord(proposalID)
       };
     },
     {}
   );
 
+  const dequeuedProposalsByStage = await Promise.reduce(
+    await governance.getDequeue(),
+    async (acc, proposalID) => {
+      const proposal = await governance.getProposalRecord(proposalID);
+      const cloneAcc = { ...acc };
+
+      if (!proposal.proposal.length) {
+        return cloneAcc;
+      }
+
+      if (!cloneAcc[proposal.stage]) {
+        cloneAcc[proposal.stage] = {
+          [proposalID]: proposal
+        };
+      } else {
+        cloneAcc[proposal.stage][proposalID] = proposal;
+      }
+
+      return cloneAcc;
+    },
+    {}
+  );
+
   return {
-    ...queuedProposals,
-    ...dequeuedProposals
+    queuedProposalsByStage,
+    dequeuedProposalsByStage,
+    allQueuedProposalStages: Object.keys(queuedProposalsByStage).sort(),
+    allDequeuedProposalStages: Object.keys(dequeuedProposalsByStage).sort()
   };
 };
 
