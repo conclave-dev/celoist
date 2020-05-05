@@ -160,12 +160,13 @@ const voteGroup = async (amount: BigNumber, groupAddress: string, ledger: Wallet
   await getIsRegistered(account, true);
 
   const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-  const electionContract = await getKitContract('election');
-  const voteTxABI = await getContractMethodCallABI({
-    contract: electionContract,
-    contractMethod: 'vote',
-    contractMethodArgs: [groupAddress, value]
-  });
+  const electionContract = await getWeb3Contract('election');
+
+  const { lesser, greater } = await (await getKitContract('election')).findLesserAndGreaterAfterVote(
+    groupAddress,
+    value
+  );
+  const voteTxABI = await electionContract.methods.vote(groupAddress, value, lesser, greater).encodeABI();
   const txReceipt = await sendTxWithLedger({
     ledger,
     to: electionContract.address,
