@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import Chart from 'react-apexcharts';
 import BigNumber from 'bignumber.js';
 
-const makeOptions = ({ cGLDLabel, cUSDLabel }) => ({
+const chartOptions = {
   chart: {
     type: 'column',
     toolbar: {
@@ -12,41 +12,45 @@ const makeOptions = ({ cGLDLabel, cUSDLabel }) => ({
     parentHeightOffset: 0
   },
   dataLabels: {
-    enabled: false
+    show: true,
+    enabled: true,
+    distributed: true,
+    background: {
+      enabled: true,
+      foreColor: '#333'
+    },
+    formatter: (val) => val.toFixed(4)
+  },
+  legend: {
+    itemMargin: {
+      horizontal: 10,
+      vertical: 10
+    }
   },
   colors: ['#fbcc5c', '#35D07F'],
   plotOptions: {
     bar: {
       distributed: true,
-      columnWidth: '100%'
+      columnWidth: '75%'
     }
   },
   grid: {
     show: false
   },
   yaxis: {
-    show: false,
-    axisTicks: {
-      show: false
-    },
-    axisBorder: {
-      show: false
-    }
+    show: false
   },
   xaxis: {
-    labels: {
-      show: true
-    },
     axisTicks: {
       show: false
     },
     axisBorder: {
       show: false
     },
-    categories: [
-      ['cGLD', cGLDLabel],
-      ['cUSD', cUSDLabel]
-    ]
+    labels: {
+      show: false
+    },
+    categories: [['cGLD'], ['cUSD']]
   },
   tooltip: {
     x: {
@@ -55,11 +59,8 @@ const makeOptions = ({ cGLDLabel, cUSDLabel }) => ({
     y: {
       show: false
     }
-  },
-  legend: {
-    show: false
   }
-});
+};
 
 const ProfileAssetsChart = ({
   cGLD = new BigNumber(0),
@@ -70,12 +71,10 @@ const ProfileAssetsChart = ({
 }) => {
   const cGLDData = cGLD.toNumber() / 1000000000000000000;
   const cUSDData = cUSD.toNumber() / 1000000000000000000;
-  const cGLDLabel = `~${new BigNumber(cGLDData).toFixed(8)}`;
-  const cUSDLabel = `~${new BigNumber(cUSDData).toFixed(8)}`;
 
   return (
     <Chart
-      options={makeOptions({ cGLDLabel, cUSDLabel })}
+      options={chartOptions}
       series={[
         {
           name: 'Balance',

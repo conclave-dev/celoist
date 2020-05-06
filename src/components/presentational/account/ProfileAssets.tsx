@@ -165,7 +165,7 @@ class ProfileAssets extends PureComponent<Props, { assetSymbol: string }> {
 
     return (
       <Card>
-        <CardBody>
+        <CardBody style={{ paddingBottom: 0 }}>
           <ResponsiveWrapper mobileClasses="d-flex justify-content-center">
             <Row
               noGutters
@@ -227,12 +227,10 @@ class ProfileAssets extends PureComponent<Props, { assetSymbol: string }> {
               </Col>
             </Row>
           </ResponsiveWrapper>
+        </CardBody>
+        <CardBody style={{ paddingTop: 0, paddingRight: 0, paddingLeft: 0 }}>
           <Row style={{ minHeight: 300 }}>
-            <Col
-              xs={12}
-              className="d-flex justify-content-center align-items-center p-0"
-              style={{ marginLeft: hasBalance ? -12.5 : 0 }}
-            >
+            <Col xs={12} className="d-flex justify-content-center align-items-center p-0">
               {hasBalance ? (
                 <ProfileAssetsChart cGLD={cGLD} cUSD={cUSD} />
               ) : (
