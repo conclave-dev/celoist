@@ -9,16 +9,8 @@ import {
   WITHDRAW_PENDING_WITHDRAWAL,
   LOG_OUT_WITH_LEDGER
 } from '../actions/actions';
-import { initialStateDecorator, evalActionPayload } from '../util/reducers';
+import { baseTxFields, initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
-
-const baseTxFields = {
-  blockHash: '',
-  blockNumber: 0,
-  cumulativeGasUsed: 0,
-  gasUsed: 0,
-  transactionHash: ''
-};
 
 const accountState = {
   address: '',
