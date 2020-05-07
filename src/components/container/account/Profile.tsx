@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { getAccount } from '../../../data/actions/account';
 import { logInWithLedger } from '../../../data/actions/ledger';
-import Details from '../../presentational/account/profile/Details';
 import Balance from '../../presentational/account/profile/Balance';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
@@ -48,7 +47,7 @@ class Profile extends PureComponent<Props, { activeTab: number }> {
           title="Profile"
           subtitle={subtitle}
           inProgress={false}
-          rightSideComponent={<RegistrationAlert isLoggedIn={isEmpty(ledger)} isRegistered={isRegistered} />}
+          rightSideComponent={<RegistrationAlert isLoggedIn={!isEmpty(ledger)} isRegistered={isRegistered} />}
         />
         <Row>
           <Col lg={5} xs={12}>
