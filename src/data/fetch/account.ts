@@ -53,8 +53,7 @@ const getAssets = async (account: string) => {
   };
 };
 
-const getAccountSummary = async (ledger: Wallet) => {
-  const [account] = ledger.getAccounts();
+const getAccountSummary = async (account: string) => {
   const accountContract = await getKitContract('accounts');
   const summary = await accountContract.getAccountSummary(account);
   const assets = await getAssets(account);

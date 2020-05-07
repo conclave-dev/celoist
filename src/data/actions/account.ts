@@ -20,12 +20,11 @@ import {
   withdrawPendingWithdrawal
 } from '../fetch/account';
 
-const getAccount = () => async (dispatch, getState) => {
+const getAccount = (account: string) => async (dispatch, getState) => {
   handleInit(dispatch, GET_ACCOUNT);
 
   try {
-    const { ledger } = getState().ledger;
-    const { summary, assets, isRegistered } = await getAccountSummary(ledger);
+    const { summary, assets, isRegistered } = await getAccountSummary(account);
     return handleData(dispatch, GET_ACCOUNT, { summary, assets, isRegistered });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT, err);
