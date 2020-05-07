@@ -22,9 +22,9 @@ const baseTxFields = {
 };
 
 const accountState = {
-  address: '',
   summary: {
     name: '',
+    address: '',
     authorizedSigners: {},
     metadataURL: '',
     wallet: '',

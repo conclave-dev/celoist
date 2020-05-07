@@ -35,7 +35,9 @@ const getAccountAssets = () => async (dispatch, getState) => {
   handleInit(dispatch, GET_ACCOUNT_ASSETS);
 
   try {
-    const { address } = getState().account;
+    const {
+      summary: { address }
+    } = getState().account;
     const { cGLD, cUSD, totalLockedGold, nonVotingLockedGold, pendingWithdrawals } = await getAssets(address);
     return handleData(dispatch, GET_ACCOUNT_ASSETS, {
       cGLD,
