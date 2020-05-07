@@ -1,5 +1,6 @@
 import {
   GET_ACCOUNT,
+  GET_ACCOUNT_ASSETS,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
@@ -12,6 +13,7 @@ import { handleInit, handleData, handleError } from '../util/actions';
 import {
   getAccountSummary,
   registerAccount,
+  getAssets,
   exchangeAssets,
   lockGold,
   unlockGold,
@@ -27,6 +29,24 @@ const getAccount = () => async (dispatch, getState) => {
     return handleData(dispatch, GET_ACCOUNT, { summary, assets, isRegistered });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT, err);
+  }
+};
+
+const getAccountAssets = () => async (dispatch, getState) => {
+  handleInit(dispatch, GET_ACCOUNT_ASSETS);
+
+  try {
+    const { address } = getState().account;
+    const { cGLD, cUSD, totalLockedGold, nonVotingLockedGold, pendingWithdrawals } = await getAssets(address);
+    return handleData(dispatch, GET_ACCOUNT_ASSETS, {
+      cGLD,
+      cUSD,
+      totalLockedGold,
+      nonVotingLockedGold,
+      pendingWithdrawals
+    });
+  } catch (err) {
+    return handleError(dispatch, GET_ACCOUNT_ASSETS, err);
   }
 };
 
@@ -173,6 +193,7 @@ const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXC
 export {
   getAccount,
   registerUserAccount,
+  getAccountAssets,
   exchangeGoldForDollars,
   exchangeDollarsForGold,
   resetExchangeTx,

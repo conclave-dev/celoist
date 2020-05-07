@@ -1,5 +1,6 @@
 import {
   GET_ACCOUNT,
+  GET_ACCOUNT_ASSETS,
   REGISTER_ACCOUNT,
   EXCHANGE_GOLD_FOR_DOLLARS,
   EXCHANGE_DOLLARS_FOR_GOLD,
@@ -59,6 +60,17 @@ const getAccount = (state, { summary, assets, isRegistered }) => ({
   isRegistered
 });
 
+const getAccountAssets = (state, { cGLD, cUSD, totalLockedGold, nonVotingLockedGold, pendingWithdrawals }) => ({
+  ...state,
+  assets: {
+    cGLD,
+    cUSD,
+    totalLockedGold,
+    nonVotingLockedGold,
+    pendingWithdrawals
+  }
+});
+
 const exchangeAssets = (
   state,
   { exchanged, received, blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash, assets }
@@ -115,6 +127,8 @@ export default (state = initialState, action) => {
   switch (type) {
     case GET_ACCOUNT:
       return evalActionPayload(state, action, getAccount);
+    case GET_ACCOUNT_ASSETS:
+      return evalActionPayload(state, action, getAccountAssets);
     case REGISTER_ACCOUNT:
       return evalActionPayload(state, action, handleAccountTx);
     case EXCHANGE_GOLD_FOR_DOLLARS:
