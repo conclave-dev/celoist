@@ -1,8 +1,9 @@
 import { newKit } from '@celo/contractkit';
 import { reduce, forEach } from 'lodash';
+import BigNumber from 'bignumber.js';
+import { Promise } from 'bluebird';
 import { rpcChain } from './api';
 import { backendFetch } from './util';
-import BigNumber from 'bignumber.js';
 import { getKitContract, getWeb3Contract } from './contracts';
 
 const kit = newKit(rpcChain);
@@ -150,4 +151,34 @@ const fetchElectionSummary = async (groupsById) => {
   };
 };
 
-export { populateElection, fetchElectionConfig, fetchElectionSummary };
+const fetchElectionEarningsForAccount = async (account: string, blockNumber?: number) => {
+  const electionContract = await kit.contracts.getElection();
+  const groups = await electionContract.getGroupsVotedForByAccount('0xec6c3f86bf005c1305b118e744b8aad7059d449b');
+  const epochNumber = blockNumber
+    ? await (await getWeb3Contract('epochRewards')).methods.getEpochNumberOfBlock(blockNumber).call()
+    : await (await getKitContract('validators')).getEpochNumber();
+  const groupVoterPayments = (await electionContract.getGroupVoterRewards(epochNumber.minus(1).toNumber())).reduce(
+    (acc, { group, groupVoterPayment }) => ({
+      ...acc,
+      [group.address]: groupVoterPayment
+    }),
+    {}
+  );
+
+  const groupPaymentsForAccount = await Promise.reduce(
+    groups,
+    async (acc, groupAddress) => [
+      ...acc,
+      {
+        ...(await electionContract.getVotesForGroupByAccount(account, groupAddress)),
+        groupTotalActiveVotes: await electionContract.getActiveVotesForGroup(groupAddress),
+        groupTotalVoterPayment: groupVoterPayments[groupAddress]
+      }
+    ],
+    []
+  );
+
+  return groupPaymentsForAccount;
+};
+
+export { populateElection, fetchElectionConfig, fetchElectionSummary, fetchElectionEarningsForAccount };

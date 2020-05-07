@@ -13,7 +13,8 @@ const contractGetters = {
   lockedGold: 'getLockedGold',
   validators: 'getValidators',
   election: 'getElection',
-  governance: 'getGovernance'
+  governance: 'getGovernance',
+  epochRewards: 'getEpochRewards'
 };
 
 const getKitContract = async (contract: string) => {
