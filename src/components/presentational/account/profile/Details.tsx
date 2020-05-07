@@ -1,28 +1,9 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, CardBody, Button, ListGroup, ListGroupItem } from 'reactstrap';
-import Anchor from '../reusable/Anchor';
+import Anchor from '../../reusable/Anchor';
+import RegistrationStatus from './RegistrationStatus';
 
-const ProfileStatus = ({ isRegistered }: { isRegistered: boolean }) => {
-  return (
-    <Button
-      disabled
-      className="btn btn-outline waves-effect waves-light"
-      size="sm"
-      style={{
-        color: '#FFF',
-        backgroundColor: isRegistered ? '#35D07F' : '#fb7c6d',
-        border: 'none',
-        height: 26,
-        paddingTop: 0,
-        paddingBottom: 0
-      }}
-    >
-      {isRegistered ? 'Registered' : 'Not Registered'}
-    </Button>
-  );
-};
-
-const ProfileDetails = ({
+const Details = ({
   isRegistered,
   name,
   address,
@@ -36,8 +17,8 @@ const ProfileDetails = ({
   return (
     <Card>
       <CardBody>
-        <h4 className="card-title">Account</h4>
-        <Row style={{ flexWrap: 'nowrap', minHeight: 300 }}>
+        <h4 className="card-title">Details</h4>
+        <Row style={{ flexWrap: 'nowrap', minHeight: 200 }}>
           {address ? (
             <>
               <Col xs={4}>
@@ -59,7 +40,7 @@ const ProfileDetails = ({
               <Col xs={8}>
                 <ListGroup>
                   <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
-                    <ProfileStatus isRegistered={isRegistered} />
+                    <RegistrationStatus isRegistered={isRegistered} />
                   </ListGroupItem>
                   <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
                     {name || 'No name set'}
@@ -115,4 +96,4 @@ const ProfileDetails = ({
   );
 };
 
-export default memo(ProfileDetails);
+export default memo(Details);
