@@ -18,7 +18,7 @@ const GroupsHeader = () => (
           Commission
         </Col>
         <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
-          Voter Payment
+          Recent Voter Earnings
         </Col>
         <Col lg={2} className="text-truncate text-center" style={{ fontWeight: 400, fontSize: 14 }}>
           Score
