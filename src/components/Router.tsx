@@ -3,7 +3,7 @@ import { Switch, Redirect, Route } from 'react-router-dom';
 import Home from './container/ecosystem/Home';
 import Elections from './container/ecosystem/Elections';
 import Governance from './container/ecosystem/Governance';
-import Profile from './container/account/Profile';
+import AccountRouter from './router/Account';
 
 const Router = () => (
   <Switch>
@@ -17,9 +17,7 @@ const Router = () => (
     <Route exact path="/ecosystem/governance">
       <Governance />
     </Route>
-    <Route exact path="/account">
-      <Profile />
-    </Route>
+    <Route path="/account" component={AccountRouter} />
   </Switch>
 );
 
