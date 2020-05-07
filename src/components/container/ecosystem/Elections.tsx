@@ -68,7 +68,9 @@ class Elections extends PureComponent<Props> {
       <Container fluid>
         <Header
           title={`Elections ${epochNumber ? '(#' + epochNumber + ')' : ''}`}
-          subtitle="Details about the groups participating in elections and making payments to their members and voters"
+          subtitle={[
+            'Details about the groups participating in elections and making payments to their members and voters'
+          ]}
           inProgress={inProgress}
         />
         <Summary

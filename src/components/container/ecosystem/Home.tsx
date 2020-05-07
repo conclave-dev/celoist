@@ -72,7 +72,7 @@ class Home extends PureComponent<Props> {
 
     return (
       <Container fluid>
-        <Header title="Home" subtitle="The Celo ecosystem in a nutshell" inProgress={inProgress} />
+        <Header title="Home" subtitle={['The Celo ecosystem in a nutshell']} inProgress={inProgress} />
         <Summary summaryItems={summaryItems} />
         <Row>
           <Col lg={6} xs={12} className="mb-4">
