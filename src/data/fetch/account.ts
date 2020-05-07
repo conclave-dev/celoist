@@ -6,6 +6,7 @@ import { rpcChain } from './api';
 import { sendTxWithLedger } from './ledger';
 import { getKitContract, getContractMethodCallABI } from './contracts';
 import { tokenExchangeBase } from './network';
+import { getTokenAmountFromUint256 } from '../../util/numbers';
 
 const kit = newKit(rpcChain);
 
@@ -24,10 +25,12 @@ const getAssets = async (account: string) => {
   const goldTokenContract = await getKitContract('goldToken');
   const stableTokenContract = await getKitContract('stableToken');
   const lockedGoldContract = await getKitContract('lockedGold');
-  const cGLD = await goldTokenContract.balanceOf(account);
-  const cUSD = await stableTokenContract.balanceOf(account);
-  const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
-  const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
+  const cGLD = getTokenAmountFromUint256(await goldTokenContract.balanceOf(account));
+  const cUSD = getTokenAmountFromUint256(await stableTokenContract.balanceOf(account));
+  const totalLockedGold = getTokenAmountFromUint256(await lockedGoldContract.getAccountTotalLockedGold(account));
+  const nonVotingLockedGold = getTokenAmountFromUint256(
+    await lockedGoldContract.getAccountNonvotingLockedGold(account)
+  );
   const pendingWithdrawals = [];
 
   const isRegistered = await getIsRegistered(account, false);
@@ -38,7 +41,7 @@ const getAssets = async (account: string) => {
     pendingList.forEach((withdrawal) => {
       const { value, time } = withdrawal;
       pendingWithdrawals.push({
-        value,
+        value: getTokenAmountFromUint256(value),
         time: moment.unix(time.toNumber()).format('MMMM Do YYYY, h:mm:ss a')
       });
     });
