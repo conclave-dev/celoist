@@ -18,7 +18,7 @@ const Details = ({
     <Card>
       <CardBody>
         <h4 className="card-title">Details</h4>
-        <Row style={{ flexWrap: 'nowrap', minHeight: 200 }}>
+        <Row style={{ flexWrap: 'nowrap' }}>
           {address ? (
             <>
               <Col xs={4}>
@@ -31,9 +31,6 @@ const Details = ({
                   </ListGroupItem>
                   <ListGroupItem style={{ border: 'none' }}>
                     <span className="text-truncate">Address</span>
-                  </ListGroupItem>
-                  <ListGroupItem style={{ border: 'none' }}>
-                    <span className="text-truncate">Metadata</span>
                   </ListGroupItem>
                 </ListGroup>
               </Col>
@@ -56,29 +53,6 @@ const Details = ({
                     ) : (
                       <span>N/A</span>
                     )}
-                  </ListGroupItem>
-                  <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
-                    <Button
-                      className="waves-effect waves-light"
-                      disabled={!metadataURL}
-                      size="sm"
-                      style={{
-                        color: '#FFF',
-                        backgroundColor: metadataURL ? '#3488ec' : '#9ca8b3',
-                        border: 'none',
-                        height: 26,
-                        paddingTop: 0,
-                        paddingBottom: 0
-                      }}
-                    >
-                      {metadataURL ? (
-                        <Anchor href={metadataURL} color="#FFF">
-                          View
-                        </Anchor>
-                      ) : (
-                        <span>View</span>
-                      )}
-                    </Button>
                   </ListGroupItem>
                 </ListGroup>
               </Col>

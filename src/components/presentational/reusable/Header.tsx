@@ -8,20 +8,24 @@ const Header = ({
   rightSideComponent
 }: {
   title: string;
-  subtitle: string;
+  subtitle: string[];
   inProgress?: boolean;
   rightSideComponent?: any;
 }) => (
   <Row className="align-items-center">
-    <Col lg={6} xs={12}>
+    <Col lg={7} xs={12}>
       <div className="page-title-box">
         <h4 className="font-size-18">{title}</h4>
         <ol className="breadcrumb mb-0">
-          <li className="breadcrumb-item active">{subtitle}</li>
+          {subtitle.map((text, index) => (
+            <li key={`${text}-${index}`} className="breadcrumb-item">
+              {text}
+            </li>
+          ))}
         </ol>
       </div>
     </Col>
-    <Col lg={6} xs={12}>
+    <Col lg={5} xs={12}>
       <div className="float-right mr-2">
         {inProgress ? <Spinner size="large" type="grow" color="warning" /> : rightSideComponent}
       </div>

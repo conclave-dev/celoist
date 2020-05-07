@@ -1,11 +1,11 @@
-import React, { memo, ReactChild } from 'react';
+import React, { memo } from 'react';
 
 const ResponsiveWrapper = ({
   children,
   mobileClasses = '',
   desktopClasses = ''
 }: {
-  children: ReactChild;
+  children: any;
   mobileClasses?: string;
   desktopClasses?: string;
 }) => (
