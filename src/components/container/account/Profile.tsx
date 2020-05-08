@@ -11,11 +11,12 @@ import RegistrationAlert from '../../presentational/account/profile/Registration
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { summary, assets, isRegistered }, ledger: { ledger } }, ownProps) => ({
+const mapState = ({ account: { summary, assets, isRegistered, inProgress }, ledger: { ledger } }, ownProps) => ({
   ledger,
   summary,
   assets,
   isRegistered,
+  inProgress,
   ...ownProps
 });
 const mapDispatch = { getAccount, logInWithLedger };
@@ -37,15 +38,15 @@ class Profile extends PureComponent<Props, { activeTab: number }> {
   setActiveTab = ({ currentTarget: { id } }) => this.setState({ activeTab: parseInt(id) });
 
   render() {
-    const { summary, assets, isRegistered, ledger } = this.props;
+    const { summary, assets, isRegistered, ledger, inProgress } = this.props;
     const { name, address } = summary;
 
     return (
       <Container fluid>
         <Header
           title="Profile"
-          subtitle={['Your Celo footprint in one convenient location']}
-          inProgress={false}
+          subtitle={['Your Celo footprint']}
+          inProgress={inProgress}
           rightSideComponent={<RegistrationAlert isLoggedIn={!isEmpty(ledger)} isRegistered={isRegistered} />}
         />
         <Row>
