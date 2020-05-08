@@ -4,8 +4,10 @@ import { Row, Col, Card, CardBody, Button } from 'reactstrap';
 import { getAccountAssets } from '../../../../data/actions/account';
 import { getExchangeRates } from '../../../../data/actions/network';
 import BalanceChart from './BalanceChart';
-import coinsLight from '../../../../assets/png/coinsLight.png';
 import fiatLight from '../../../../assets/png/fiatLight.png';
+import coinsLight from '../../../../assets/png/coinsLight.png';
+import goldCoin from '../../../../assets/png/goldCoin.png';
+import greenCoin from '../../../../assets/png/greenCoin.png';
 
 const mapState = (
   {
@@ -47,17 +49,43 @@ class Balance extends PureComponent<Props, { type: string }> {
   generateDollarSeriesData = () => {
     const { assets, goldToDollars } = this.props;
     const goldDollars = assets.cGLD.multipliedBy(goldToDollars);
-    const cumulativeDollars = assets.cUSD.plus(goldDollars).toNumber();
+    const cumulativeDollars = assets.cUSD.plus(goldDollars).toFormat(2);
 
     return {
-      value: cumulativeDollars,
+      dollarValue: cumulativeDollars,
+      amountCGLD: null,
+      amountCUSD: null,
       chartSeries: [
         {
-          name: 'Total Value ($)',
+          name: 'Dollar Value ($)',
           // TO DO: Fetch balances for previous X elections instead of using placeholders
           data: [cumulativeDollars, cumulativeDollars, cumulativeDollars, cumulativeDollars, cumulativeDollars]
         }
-      ]
+      ],
+      chartSeriesColors: ['#3488ec']
+    };
+  };
+
+  generateTokenSeriesData = () => {
+    const { cGLD, cUSD } = this.props.assets;
+
+    return {
+      dollarValue: null,
+      amountCGLD: cGLD,
+      amountCUSD: cUSD,
+      chartSeries: [
+        {
+          name: 'Amount (cGLD)',
+          // TO DO: Fetch balances for previous X elections instead of using placeholders
+          data: [cGLD, cGLD, cGLD, cGLD, cGLD]
+        },
+        {
+          name: 'Amount (cUSD)',
+          // TO DO: Fetch balances for previous X elections instead of using placeholders
+          data: [cUSD, cUSD, cUSD, cUSD, cUSD]
+        }
+      ],
+      chartSeriesColors: ['#fbcc5c', '#35D07F']
     };
   };
 
@@ -67,10 +95,23 @@ class Balance extends PureComponent<Props, { type: string }> {
       assets: { cGLD, cUSD }
     } = this.props;
     const hasAssets = (cGLD && cUSD && !cGLD.isZero()) || !cUSD.isZero();
-    const data = type === 'fiat' ? this.generateDollarSeriesData() : this.generateDollarSeriesData();
+    const data = type === 'fiat' ? this.generateDollarSeriesData() : this.generateTokenSeriesData();
+    const chartHeader =
+      type === 'fiat' ? (
+        <h2 style={{ color: '#3488ec' }}>${data.dollarValue}</h2>
+      ) : (
+        <h4>
+          <div style={{ color: '#fbcc5c', marginBottom: 4 }}>
+            <img src={goldCoin} height={18} /> {data.amountCGLD.toFixed(4)}
+          </div>
+          <div style={{ color: '#35D07F' }}>
+            <img src={greenCoin} height={18} /> {data.amountCUSD.toFixed(4)}
+          </div>
+        </h4>
+      );
 
     return (
-      <Card>
+      <Card style={{ height: 360, width: '100%' }}>
         <CardBody style={{ paddingBottom: 0 }}>
           <Row
             noGutters
@@ -88,13 +129,13 @@ class Balance extends PureComponent<Props, { type: string }> {
                 className="waves-effect mr-1"
                 style={{
                   ...buttonProps,
-                  backgroundColor: type === 'fiat' ? '#DDDDDD' : '#fff',
+                  backgroundColor: type === 'fiat' ? '#F9F8F9' : '#fff',
                   color: '#3488ec'
                 }}
                 onClick={this.setType}
               >
                 <div className="d-flex justify-content-center align-items-center">
-                  <i className="mdi mdi-cash-usd" style={{ fontSize: 20 }} />
+                  <img src={fiatLight} height={24} alt="fiat" />
                 </div>
               </Button>
               <Button
@@ -104,7 +145,7 @@ class Balance extends PureComponent<Props, { type: string }> {
                 className="waves-effect ml-1"
                 style={{
                   ...buttonProps,
-                  backgroundColor: type === 'coins' ? '#DDDDDD' : '#fff'
+                  backgroundColor: type === 'coins' ? '#F9F8F9' : '#fff'
                 }}
                 onClick={this.setType}
               >
@@ -115,12 +156,14 @@ class Balance extends PureComponent<Props, { type: string }> {
             </Col>
           </Row>
           <Row>
-            <Col xs={12}>
-              <h1>{`$${data.value.toFixed(2)}`}</h1>
-            </Col>
+            <Col xs={12}>{chartHeader}</Col>
           </Row>
         </CardBody>
-        <CardBody style={{ padding: 0 }}>{hasAssets ? <BalanceChart series={data.chartSeries} /> : <></>}</CardBody>
+        <CardBody className="d-flex justify-content-center align-items-center" style={{ padding: 0 }}>
+          <div style={{ width: '100%' }}>
+            {hasAssets ? <BalanceChart series={data.chartSeries} seriesColors={data.chartSeriesColors} /> : <></>}
+          </div>
+        </CardBody>
       </Card>
     );
   };

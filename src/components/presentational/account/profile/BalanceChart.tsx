@@ -2,21 +2,24 @@ import React, { memo } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const ApexSpline = ({
-  series
+  series,
+  seriesColors
 }: {
   series: {
     name: string;
     data: number[];
   }[];
+  seriesColors: string[];
 }) => {
   const apexBarChartOpt = {
     chart: {
       toolbar: {
         show: false
       },
-      height: 'auto',
       width: '100%',
-      type: 'area'
+      type: 'area',
+      parentHeightOffset: 0,
+      redrawOnParentResize: false
     },
     dataLabels: {
       show: false,
@@ -26,7 +29,7 @@ const ApexSpline = ({
       curve: 'smooth',
       width: 3
     },
-    colors: ['#3488ec', '#fbcc5c', '#35D07F'],
+    colors: seriesColors,
     grid: {
       show: false
     },
@@ -40,16 +43,13 @@ const ApexSpline = ({
       },
       tooltip: {
         enabled: false
+      },
+      axisBorder: {
+        show: false
       }
     },
     legend: {
-      show: true,
-      showForSingleSeries: true,
-      itemMargin: {
-        horizontal: 10,
-        vertical: 10
-      },
-      position: 'bottom'
+      show: false
     },
     tooltip: {
       x: {
