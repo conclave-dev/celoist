@@ -6,7 +6,7 @@ import { Promise } from 'bluebird';
 import { rpcChain } from './api';
 import { sendTxWithLedger } from './ledger';
 import { getKitContract, getWeb3Contract, getContractMethodCallABI } from './contracts';
-import { tokenExchangeBase } from './network';
+import { tokenExchangeBase, getEpochs } from './network';
 import { getTokenAmountFromUint256 } from '../../util/numbers';
 
 const kit = newKit(rpcChain);
@@ -216,30 +216,56 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
   };
 };
 
+const getEpochNumber = async (blockNumber?: number) => {
+  const validatorsContract = await getKitContract('validators');
+  const epochRewardsContract = await getWeb3Contract('epochRewards');
+
+  if (!blockNumber) {
+    return (await validatorsContract.getEpochNumber()).minus(1);
+  }
+
+  return (await epochRewardsContract.methods.getEpochNumberOfBlock(blockNumber).call()) - 1;
+};
+
 const fetchAccountEarnings = async (account: string, blockNumber?: number) => {
   const electionContract = await kit.contracts.getElection();
-  const groups = await electionContract.getGroupsVotedForByAccount('0xec6c3f86bf005c1305b118e744b8aad7059d449b');
-  const epochNumber = blockNumber
-    ? await (await getWeb3Contract('epochRewards')).methods.getEpochNumberOfBlock(blockNumber).call()
-    : await (await getKitContract('validators')).getEpochNumber();
-  const groupVoterPayments = (await electionContract.getGroupVoterRewards(epochNumber.minus(1).toNumber())).reduce(
-    (acc, { group, groupVoterPayment }) => ({
-      ...acc,
-      [group.address]: groupVoterPayment
-    }),
+  const groups = await electionContract.getGroupsVotedForByAccount(account);
+  const epochNumber = await getEpochNumber(blockNumber);
+
+  const groupVoterPayments = (await electionContract.getGroupVoterRewards(epochNumber)).reduce(
+    (acc, { group: { address, name }, groupVoterPayment }) => {
+      return {
+        ...acc,
+        [address]: {
+          name,
+          totalPayments: groupVoterPayment
+        }
+      };
+    },
     {}
   );
 
   const earningsByGroup = await Promise.reduce(
     groups,
-    async (acc, groupAddress) => ({
-      ...acc,
-      [groupAddress]: {
-        ...(await electionContract.getVotesForGroupByAccount(account, groupAddress)),
-        groupTotalActiveVotes: await electionContract.getActiveVotesForGroup(groupAddress),
-        groupTotalVoterPayment: groupVoterPayments[groupAddress]
-      }
-    }),
+    async (acc, groupAddress) => {
+      const { active, pending } = await electionContract.getVotesForGroupByAccount(account, groupAddress);
+      const totalActive = await electionContract.getActiveVotesForGroup(groupAddress);
+      const { name, totalPayments } = groupVoterPayments[groupAddress];
+
+      return {
+        ...acc,
+        [groupAddress]: {
+          details: {
+            active,
+            pending,
+            totalActive,
+            totalPayments
+          },
+          name,
+          earnings: active.dividedBy(totalActive).multipliedBy(totalPayments)
+        }
+      };
+    },
     {}
   );
 
@@ -247,6 +273,28 @@ const fetchAccountEarnings = async (account: string, blockNumber?: number) => {
     byGroupId: earningsByGroup,
     allGroupIds: Object.keys(earningsByGroup)
   };
+};
+
+const fetchAccountEarningsForEpochs = async (account: string, numberOfEpochs: number) => {
+  const epochs = await getEpochs(numberOfEpochs);
+  const epochEarnings = await Promise.reduce(
+    epochs,
+    async (acc, { epochNumber, firstBlockNumber }) => ({
+      byEpoch: {
+        ...acc.byEpoch,
+        [epochNumber]: {
+          ...(await fetchAccountEarnings(account, firstBlockNumber))
+        }
+      },
+      allEpochs: [...acc.allEpochs, epochNumber]
+    }),
+    {
+      byEpoch: {},
+      allEpochs: []
+    }
+  );
+
+  return epochEarnings;
 };
 
 export {
@@ -257,5 +305,6 @@ export {
   lockGold,
   unlockGold,
   withdrawPendingWithdrawal,
-  fetchAccountEarnings
+  fetchAccountEarnings,
+  fetchAccountEarningsForEpochs
 };

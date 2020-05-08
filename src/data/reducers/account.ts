@@ -52,7 +52,9 @@ const accountState = {
   isRegistered: false,
   earnings: {
     byGroupId: {},
-    allGroupIds: []
+    allGroupIds: [],
+    byEpoch: {},
+    allEpochs: []
   }
 };
 
@@ -126,11 +128,11 @@ const resetExchangeTx = (state) => ({
 
 const logOut = () => ({ ...accountState });
 
-const getAccountEarnings = (state, { byGroupId, allGroupIds }) => ({
+const getAccountEarnings = (state, { earnings }) => ({
   ...state,
   earnings: {
-    byGroupId,
-    allGroupIds
+    ...state.earnings,
+    ...earnings
   }
 });
 

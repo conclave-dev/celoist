@@ -19,7 +19,8 @@ import {
   lockGold,
   unlockGold,
   withdrawPendingWithdrawal,
-  fetchAccountEarnings
+  fetchAccountEarnings,
+  fetchAccountEarningsForEpochs
 } from '../fetch/account';
 
 const getAccount = (account: string) => async (dispatch, getState) => {
@@ -193,13 +194,19 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
 
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX);
 
-const getAccountEarnings = (account: string) => async (dispatch) => {
+const getAccountEarnings = (account: string, numberOfEpochs?: number) => async (dispatch) => {
   handleInit(dispatch, GET_ACCOUNT_EARNINGS);
 
   try {
-    const { byGroupId, allGroupIds } = await fetchAccountEarnings(account);
+    let earnings;
 
-    return handleData(dispatch, GET_ACCOUNT_EARNINGS, { byGroupId, allGroupIds });
+    if (numberOfEpochs) {
+      earnings = await fetchAccountEarningsForEpochs(account, numberOfEpochs);
+    } else {
+      earnings = await fetchAccountEarnings(account);
+    }
+
+    return handleData(dispatch, GET_ACCOUNT_EARNINGS, { earnings });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT_EARNINGS, err);
   }

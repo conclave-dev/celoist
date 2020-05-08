@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { getWeb3Contract } from './contracts';
+import { getKitContract, getWeb3Contract } from './contracts';
 
 const tokenExchangeBase = new BigNumber('1e18');
 
@@ -27,4 +27,21 @@ const fetchExchangeRates = async () => {
   }
 };
 
-export { fetchExchangeRates, tokenExchangeBase };
+const getEpochs = async (numberOfEpochs: number) => {
+  const validatorsContract = await getKitContract('validators');
+  const epochSize = (await validatorsContract.getEpochSize()).toNumber();
+  const currentEpochNumber = (await validatorsContract.getEpochNumber()).minus(1).toNumber();
+  const epochs = [];
+
+  for (let i = currentEpochNumber; i > currentEpochNumber - numberOfEpochs; i -= 1) {
+    epochs.push({
+      epochNumber: i,
+      firstBlockNumber: i * epochSize,
+      lastBlockNumber: (i + 1) * epochSize - 1
+    });
+  }
+
+  return epochs;
+};
+
+export { fetchExchangeRates, tokenExchangeBase, getEpochs };
