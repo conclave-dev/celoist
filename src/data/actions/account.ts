@@ -7,7 +7,8 @@ import {
   RESET_EXCHANGE_TX,
   LOCK_GOLD,
   UNLOCK_GOLD,
-  WITHDRAW_PENDING_WITHDRAWAL
+  WITHDRAW_PENDING_WITHDRAWAL,
+  GET_ACCOUNT_EARNINGS
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import {
@@ -17,7 +18,8 @@ import {
   exchangeAssets,
   lockGold,
   unlockGold,
-  withdrawPendingWithdrawal
+  withdrawPendingWithdrawal,
+  fetchAccountEarnings
 } from '../fetch/account';
 
 const getAccount = (account: string) => async (dispatch, getState) => {
@@ -191,6 +193,18 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
 
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX);
 
+const getAccountEarnings = (account: string) => async (dispatch) => {
+  handleInit(dispatch, GET_ACCOUNT_EARNINGS);
+
+  try {
+    const { byGroupId, allGroupIds } = await fetchAccountEarnings(account);
+
+    return handleData(dispatch, GET_ACCOUNT_EARNINGS, { byGroupId, allGroupIds });
+  } catch (err) {
+    return handleError(dispatch, GET_ACCOUNT_EARNINGS, err);
+  }
+};
+
 export {
   getAccount,
   registerUserAccount,
@@ -200,5 +214,6 @@ export {
   resetExchangeTx,
   lockAvailableGold,
   unlockLockedGold,
-  withdrawPendingGold
+  withdrawPendingGold,
+  getAccountEarnings
 };

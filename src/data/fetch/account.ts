@@ -2,9 +2,10 @@ import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
+import { Promise } from 'bluebird';
 import { rpcChain } from './api';
 import { sendTxWithLedger } from './ledger';
-import { getKitContract, getContractMethodCallABI } from './contracts';
+import { getKitContract, getWeb3Contract, getContractMethodCallABI } from './contracts';
 import { tokenExchangeBase } from './network';
 import { getTokenAmountFromUint256 } from '../../util/numbers';
 
@@ -215,6 +216,39 @@ const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
   };
 };
 
+const fetchAccountEarnings = async (account: string, blockNumber?: number) => {
+  const electionContract = await kit.contracts.getElection();
+  const groups = await electionContract.getGroupsVotedForByAccount('0xec6c3f86bf005c1305b118e744b8aad7059d449b');
+  const epochNumber = blockNumber
+    ? await (await getWeb3Contract('epochRewards')).methods.getEpochNumberOfBlock(blockNumber).call()
+    : await (await getKitContract('validators')).getEpochNumber();
+  const groupVoterPayments = (await electionContract.getGroupVoterRewards(epochNumber.minus(1).toNumber())).reduce(
+    (acc, { group, groupVoterPayment }) => ({
+      ...acc,
+      [group.address]: groupVoterPayment
+    }),
+    {}
+  );
+
+  const earningsByGroup = await Promise.reduce(
+    groups,
+    async (acc, groupAddress) => ({
+      ...acc,
+      [groupAddress]: {
+        ...(await electionContract.getVotesForGroupByAccount(account, groupAddress)),
+        groupTotalActiveVotes: await electionContract.getActiveVotesForGroup(groupAddress),
+        groupTotalVoterPayment: groupVoterPayments[groupAddress]
+      }
+    }),
+    {}
+  );
+
+  return {
+    byGroupId: earningsByGroup,
+    allGroupIds: Object.keys(earningsByGroup)
+  };
+};
+
 export {
   getAccountSummary,
   registerAccount,
@@ -222,5 +256,6 @@ export {
   exchangeAssets,
   lockGold,
   unlockGold,
-  withdrawPendingWithdrawal
+  withdrawPendingWithdrawal,
+  fetchAccountEarnings
 };

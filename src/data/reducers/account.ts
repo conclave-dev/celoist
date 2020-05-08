@@ -8,7 +8,8 @@ import {
   LOCK_GOLD,
   UNLOCK_GOLD,
   WITHDRAW_PENDING_WITHDRAWAL,
-  LOG_OUT_WITH_LEDGER
+  LOG_OUT_WITH_LEDGER,
+  GET_ACCOUNT_EARNINGS
 } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
@@ -48,7 +49,11 @@ const accountState = {
     exchanged: new BigNumber(0),
     received: new BigNumber(0)
   },
-  isRegistered: false
+  isRegistered: false,
+  earnings: {
+    byGroupId: {},
+    allGroupIds: []
+  }
 };
 
 const initialState = initialStateDecorator(accountState);
@@ -121,6 +126,14 @@ const resetExchangeTx = (state) => ({
 
 const logOut = () => ({ ...accountState });
 
+const getAccountEarnings = (state, { byGroupId, allGroupIds }) => ({
+  ...state,
+  earnings: {
+    byGroupId,
+    allGroupIds
+  }
+});
+
 export default (state = initialState, action) => {
   const { type } = action;
 
@@ -143,6 +156,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, handleLockedGoldTx);
     case LOG_OUT_WITH_LEDGER:
       return evalActionPayload(state, action, logOut);
+    case GET_ACCOUNT_EARNINGS:
+      return evalActionPayload(state, action, getAccountEarnings);
     default:
       return state;
   }
