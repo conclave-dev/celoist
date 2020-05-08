@@ -77,7 +77,7 @@ const registerAccount = async (ledger: Wallet) => {
   const isRegistered = await getIsRegistered(account, false);
 
   if (isRegistered) {
-    throw new Error('Account has been registered');
+    throw new Error('Account is already registered');
   }
 
   const createAccountTxABI = await getContractMethodCallABI({
