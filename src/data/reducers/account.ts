@@ -52,9 +52,7 @@ const accountState = {
   isRegistered: false,
   earnings: {
     byGroupId: {},
-    allGroupIds: [],
-    byEpoch: {},
-    allEpochs: []
+    allGroupIds: []
   }
 };
 

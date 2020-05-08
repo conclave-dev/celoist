@@ -279,18 +279,35 @@ const fetchAccountEarningsForEpochs = async (account: string, numberOfEpochs: nu
   const epochs = await getEpochs(numberOfEpochs);
   const epochEarnings = await Promise.reduce(
     epochs,
-    async (acc, { epochNumber, firstBlockNumber }) => ({
-      byEpoch: {
-        ...acc.byEpoch,
-        [epochNumber]: {
-          ...(await fetchAccountEarnings(account, firstBlockNumber))
+    async (acc, { epochNumber, firstBlockNumber }) => {
+      const accClone = { ...acc };
+      const { byGroupId, allGroupIds } = await fetchAccountEarnings(account, firstBlockNumber);
+
+      allGroupIds.forEach((groupId) => {
+        if (accClone.allGroupIds.includes(groupId)) {
+          accClone.byGroupId[groupId].earnings.push({
+            epochNumber,
+            earnings: byGroupId[groupId].earnings
+          });
+        } else {
+          accClone.byGroupId[groupId] = {
+            ...byGroupId[groupId],
+            earnings: [
+              {
+                epochNumber,
+                earnings: byGroupId[groupId].earnings
+              }
+            ]
+          };
+          accClone.allGroupIds.push(groupId);
         }
-      },
-      allEpochs: [...acc.allEpochs, epochNumber]
-    }),
+      });
+
+      return accClone;
+    },
     {
-      byEpoch: {},
-      allEpochs: []
+      byGroupId: {},
+      allGroupIds: []
     }
   );
 
