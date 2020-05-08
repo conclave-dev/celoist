@@ -4,12 +4,13 @@ import { Button } from 'reactstrap';
 const RegistrationStatus = ({ isRegistered }: { isRegistered: boolean }) => {
   return (
     <Button
-      className="btn btn-outline waves-effect waves-light"
+      className="btn btn-outline waves-effect waves-light text-truncate"
       size="sm"
       style={{
         color: '#FFF',
         backgroundColor: isRegistered ? '#35D07F' : '#fb7c6d',
         border: 'none',
+        boxShadow: 'none',
         height: 26,
         paddingTop: 0,
         paddingBottom: 0

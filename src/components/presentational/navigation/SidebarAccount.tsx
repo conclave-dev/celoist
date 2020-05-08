@@ -14,7 +14,7 @@ import lockLight from '../../../assets/png/lockLight.png';
 
 const SweetAlert = withReactContent(Swal);
 
-const mapState = ({ account: { address }, ledger: { ledger } }, ownProps) => ({ ledger, address, ...ownProps });
+const mapState = ({ ledger: { ledger } }, ownProps) => ({ ledger, ...ownProps });
 const mapDispatch = { logInWithLedger: logInWithLedgerAction, logOutWithLedger: logOutWithLedgerAction };
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -77,6 +77,7 @@ class SidebarAccount extends PureComponent<Props> {
 
   render = () => {
     const { logInWithLedger, ledger, sidebarToggler, logOutWithLedger } = this.props;
+    const address = isEmpty(ledger) ? '' : ledger.getAccounts()[0];
 
     return (
       <>
@@ -84,7 +85,7 @@ class SidebarAccount extends PureComponent<Props> {
         {!isEmpty(ledger) ? (
           <>
             <li>
-              <Link to="/account" className="waves-effect" onClick={sidebarToggler}>
+              <Link to={`/account/profile/${address}`} className="waves-effect" onClick={sidebarToggler}>
                 <div className="iconSidebar">
                   <img src={profileLight} height={22} alt="sidebar menu icon" />
                 </div>
