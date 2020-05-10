@@ -26,14 +26,16 @@ class Profile extends PureComponent<Props> {
     const account = ledger.ledger && ledger.getAccounts()[0];
 
     if (account && !this.props.summary.address) {
-      this.props.getAccount(ledger);
+      this.props.getAccount(account);
     }
   };
 
   componentDidUpdate = (prevProps) => {
     // Reload data on network change
-    if (prevProps.networkID !== this.props.networkID) {
-      this.props.getAccount(this.props.ledger);
+    const { ledger, networkID } = this.props;
+    if (prevProps.networkID !== networkID) {
+      const account = ledger.ledger && ledger.getAccounts()[0];
+      this.props.getAccount(account);
     }
   };
 
