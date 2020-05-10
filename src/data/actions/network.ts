@@ -1,4 +1,4 @@
-import { GET_EXCHANGE_RATES, REMOVE_EXCHANGE_RATES } from './actions';
+import { GET_EXCHANGE_RATES, REMOVE_EXCHANGE_RATES, SWITCH_NETWORK } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { fetchExchangeRates } from '../fetch/network';
 
@@ -15,4 +15,6 @@ const getExchangeRates = () => async (dispatch) => {
 
 const removeExchangeRates = () => async (dispatch) => handleData(dispatch, REMOVE_EXCHANGE_RATES);
 
-export { getExchangeRates, removeExchangeRates };
+const switchNetwork = (networkID) => async (dispatch) => handleData(dispatch, SWITCH_NETWORK, { networkID });
+
+export { getExchangeRates, removeExchangeRates, switchNetwork };
