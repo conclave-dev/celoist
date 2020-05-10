@@ -2,10 +2,11 @@ import { FETCH_ELECTION } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { populateElection, fetchElectionConfig, fetchElectionSummary } from '../fetch/elections';
 
-const fetchElection = (networkID: string, blockNumber?: number) => async (dispatch) => {
+const fetchElection = (blockNumber?: number) => async (dispatch, getState) => {
   handleInit(dispatch, FETCH_ELECTION);
 
   try {
+    const { networkID } = getState().network;
     const { groupsById, allGroupIds } = await populateElection(networkID, blockNumber);
 
     // Fetch election summary data and merge groupsById with voter rewards data

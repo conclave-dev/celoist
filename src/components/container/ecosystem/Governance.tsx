@@ -7,7 +7,8 @@ import Submenu from '../../presentational/ecosystem/governance/Submenu';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
 import { fetchProposals } from '../../../data/actions/governance';
 
-const mapState = ({ governance }) => ({
+const mapState = ({ governance, network: { networkID } }) => ({
+  networkID,
   ...governance
 });
 const mapDispatch = { fetchProposals };
@@ -24,6 +25,13 @@ export class Governance extends PureComponent<Props> {
       props.fetchProposals();
     }
   }
+
+  componentDidUpdate = (prevProps) => {
+    // Reload data on network change
+    if (prevProps.networkID !== this.props.networkID) {
+      this.props.fetchProposals();
+    }
+  };
 
   render() {
     const {

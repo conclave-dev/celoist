@@ -10,10 +10,11 @@ import goldCoin from '../../../assets/png/goldCoin.png';
 import validators from '../../../assets/png/validators.png';
 import { formatVotes, formatTokens, formatScore } from '../../../util/numbers';
 
-const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress, summary } }) => ({
+const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress, summary }, network: { networkID } }) => ({
   groupsById,
   allGroupIds,
   config,
+  networkID,
   inProgress,
   summary
 });
@@ -31,6 +32,13 @@ class Elections extends PureComponent<Props> {
       props.fetchElection();
     }
   }
+
+  componentDidUpdate = (prevProps) => {
+    // Reload data on network change
+    if (prevProps.networkID !== this.props.networkID) {
+      this.props.fetchElection();
+    }
+  };
 
   generateSummaryItems = (averageScore, cumulativeRewards, minimumRequiredVotes) => {
     return [

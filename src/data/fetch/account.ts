@@ -51,8 +51,7 @@ const getAssets = async (networkID: string, account: string) => {
 };
 
 const getAccountSummary = async (networkID: string, ledger: Wallet) => {
-  // const [account] = ledger.getAccounts();
-  const account = '0xB950E83464D7BB84e7420e460DEEc2A7ced656aA';
+  const [account] = ledger.getAccounts();
   const accountContract = await getKitContract(networkID, 'accounts');
   const summary = await accountContract.getAccountSummary(account);
   const assets = await getAssets(networkID, account);
