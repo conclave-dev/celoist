@@ -2,16 +2,17 @@ import { FETCH_PROPOSALS, FILTER_PROPOSALS_BY_STAGE } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { getGovernanceProposals } from '../fetch/governance';
 
-const fetchProposals = () => async (dispatch) => {
+const fetchProposals = () => async (dispatch, getState) => {
   handleInit(dispatch, FETCH_PROPOSALS);
 
   try {
+    const { networkID } = getState().network;
     const {
       queuedProposalsByStage,
       dequeuedProposalsByStage,
       allQueuedProposalStages,
       allDequeuedProposalStages
-    } = await getGovernanceProposals();
+    } = await getGovernanceProposals(networkID);
 
     return handleData(dispatch, FETCH_PROPOSALS, {
       queuedProposalsByStage,

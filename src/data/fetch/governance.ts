@@ -1,8 +1,8 @@
 import { Promise } from 'bluebird';
 import { getKitContract } from './contracts';
 
-const getGovernanceProposals = async () => {
-  const governance = await getKitContract('governance');
+const getGovernanceProposals = async (networkID) => {
+  const governance = await getKitContract(networkID, 'governance');
 
   const queuedProposalsByStage = await Promise.reduce(
     await governance.getQueue(),

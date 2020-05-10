@@ -23,7 +23,8 @@ const getAccount = () => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
-    const { summary, assets } = await getAccountSummary(ledger);
+    const { networkID } = getState().network;
+    const { summary, assets } = await getAccountSummary(networkID, ledger);
     return handleData(dispatch, GET_ACCOUNT, { summary, assets });
   } catch (err) {
     return handleError(dispatch, GET_ACCOUNT, err);
@@ -35,7 +36,11 @@ const registerUserAccount = () => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
-    const { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash } = await registerAccount(ledger);
+    const { networkID } = getState().network;
+    const { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash } = await registerAccount(
+      networkID,
+      ledger
+    );
 
     return handleData(dispatch, REGISTER_ACCOUNT, {
       blockHash,
@@ -54,10 +59,11 @@ const exchangeGoldForDollars = (amount, minUSDAmount) => async (dispatch, getSta
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await exchangeAssets(amount, minUSDAmount, true, ledger);
+    } = await exchangeAssets(networkID, amount, minUSDAmount, true, ledger);
 
     return handleData(dispatch, EXCHANGE_GOLD_FOR_DOLLARS, {
       exchanged: amount,
@@ -79,10 +85,11 @@ const exchangeDollarsForGold = (amount, minGLDAmount) => async (dispatch, getSta
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await exchangeAssets(amount, minGLDAmount, false, ledger);
+    } = await exchangeAssets(networkID, amount, minGLDAmount, false, ledger);
 
     return handleData(dispatch, EXCHANGE_DOLLARS_FOR_GOLD, {
       exchanged: amount,
@@ -104,10 +111,11 @@ const lockAvailableGold = (amount) => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await lockGold(amount, ledger);
+    } = await lockGold(networkID, amount, ledger);
 
     return handleData(dispatch, LOCK_GOLD, {
       blockHash,
@@ -127,10 +135,11 @@ const unlockLockedGold = (amount) => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await unlockGold(amount, ledger);
+    } = await unlockGold(networkID, amount, ledger);
 
     return handleData(dispatch, UNLOCK_GOLD, {
       blockHash,
@@ -150,10 +159,11 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash },
       assets
-    } = await withdrawPendingWithdrawal(index, ledger);
+    } = await withdrawPendingWithdrawal(networkID, index, ledger);
 
     return handleData(dispatch, WITHDRAW_PENDING_WITHDRAWAL, {
       blockHash,

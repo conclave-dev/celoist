@@ -1,8 +1,6 @@
-import { newKit } from '@celo/contractkit';
 import { isEmpty } from 'lodash';
-import { rpcChain } from './api';
+import { getRpcKit } from './api';
 
-const kit = newKit(rpcChain);
 const kitContracts = {};
 const web3Contracts = {};
 const contractGetters = {
@@ -16,20 +14,22 @@ const contractGetters = {
   governance: 'getGovernance'
 };
 
-const getKitContract = async (contract: string) => {
+const getKitContract = async (networkID: string, contract: string) => {
   if (!isEmpty(kitContracts[contract])) {
     return kitContracts[contract];
   }
+  const kit = getRpcKit(networkID);
   const contractGetterFn = contractGetters[contract];
   kitContracts[contract] = await kit.contracts[contractGetterFn]();
 
   return kitContracts[contract];
 };
 
-const getWeb3Contract = async (contract: string) => {
+const getWeb3Contract = async (networkID: string, contract: string) => {
   if (!isEmpty(web3Contracts[contract])) {
     return web3Contracts[contract];
   }
+  const kit = getRpcKit(networkID);
   const contractGetterFn = contractGetters[contract];
   web3Contracts[contract] = await kit._web3Contracts[contractGetterFn]();
 

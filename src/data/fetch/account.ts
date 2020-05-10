@@ -1,16 +1,13 @@
-import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import moment from 'moment';
 import BigNumber from 'bignumber.js';
-import { rpcChain } from './api';
+import { getRpcKit } from './api';
 import { sendTxWithLedger } from './ledger';
 import { getKitContract, getContractMethodCallABI } from './contracts';
 import { tokenExchangeBase } from './network';
 
-const kit = newKit(rpcChain);
-
-const getIsRegistered = async (account: string, required: boolean) => {
-  const accountContract = await getKitContract('accounts');
+const getIsRegistered = async (networkID: string, account: string, required: boolean) => {
+  const accountContract = await getKitContract(networkID, 'accounts');
   const isRegistered = await accountContract.isAccount(account);
 
   if (!isRegistered && required) {
@@ -20,17 +17,17 @@ const getIsRegistered = async (account: string, required: boolean) => {
   return isRegistered;
 };
 
-const getAssets = async (account: string) => {
-  const goldTokenContract = await getKitContract('goldToken');
-  const stableTokenContract = await getKitContract('stableToken');
-  const lockedGoldContract = await getKitContract('lockedGold');
+const getAssets = async (networkID: string, account: string) => {
+  const goldTokenContract = await getKitContract(networkID, 'goldToken');
+  const stableTokenContract = await getKitContract(networkID, 'stableToken');
+  const lockedGoldContract = await getKitContract(networkID, 'lockedGold');
   const cGLD = await goldTokenContract.balanceOf(account);
   const cUSD = await stableTokenContract.balanceOf(account);
   const totalLockedGold = await lockedGoldContract.getAccountTotalLockedGold(account);
   const nonVotingLockedGold = await lockedGoldContract.getAccountNonvotingLockedGold(account);
   const pendingWithdrawals = [];
 
-  const isRegistered = await getIsRegistered(account, false);
+  const isRegistered = await getIsRegistered(networkID, account, false);
 
   if (isRegistered) {
     // Fetch pending withdrawals only for registered account, otherwise an exception would be thrown
@@ -53,11 +50,12 @@ const getAssets = async (account: string) => {
   };
 };
 
-const getAccountSummary = async (ledger: Wallet) => {
-  const [account] = ledger.getAccounts();
-  const accountContract = await getKitContract('accounts');
+const getAccountSummary = async (networkID: string, ledger: Wallet) => {
+  // const [account] = ledger.getAccounts();
+  const account = '0xB950E83464D7BB84e7420e460DEEc2A7ced656aA';
+  const accountContract = await getKitContract(networkID, 'accounts');
   const summary = await accountContract.getAccountSummary(account);
-  const assets = await getAssets(account);
+  const assets = await getAssets(networkID, account);
 
   return {
     summary,
@@ -65,11 +63,11 @@ const getAccountSummary = async (ledger: Wallet) => {
   };
 };
 
-const registerAccount = async (ledger: Wallet) => {
+const registerAccount = async (networkID: string, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
-  const accountContract = await getKitContract('accounts');
+  const accountContract = await getKitContract(networkID, 'accounts');
 
-  const isRegistered = await getIsRegistered(account, false);
+  const isRegistered = await getIsRegistered(networkID, account, false);
 
   if (isRegistered) {
     throw new Error('Account has been registered');
@@ -81,16 +79,17 @@ const registerAccount = async (ledger: Wallet) => {
   });
 
   return sendTxWithLedger({
+    networkID,
     ledger,
     to: accountContract.address,
     data: createAccountTxABI
   });
 };
 
-const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, ledger: Wallet) => {
-  const exchangeContract = await getKitContract('exchange');
+const getAssetExchangeApproval = async (networkID: string, amount: string, isSellingGold: boolean, ledger: Wallet) => {
+  const exchangeContract = await getKitContract(networkID, 'exchange');
   const contractName = isSellingGold ? 'goldToken' : 'stableToken';
-  const contract = await getKitContract(contractName);
+  const contract = await getKitContract(networkID, contractName);
   const approvalTxABI = await getContractMethodCallABI({
     contract: contract,
     contractMethod: 'increaseAllowance',
@@ -98,13 +97,21 @@ const getAssetExchangeApproval = async (amount: string, isSellingGold: boolean, 
   });
 
   return sendTxWithLedger({
+    networkID,
     ledger,
     to: contract.address,
     data: approvalTxABI
   });
 };
 
-const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSellingGold: boolean, ledger: Wallet) => {
+const exchangeAssets = async (
+  networkID: string,
+  amount: BigNumber,
+  minReceived: BigNumber,
+  isSellingGold: boolean,
+  ledger: Wallet
+) => {
+  const kit = getRpcKit(networkID);
   const amountUint256 = amount.multipliedBy(tokenExchangeBase).toFixed(0);
 
   // Set the min received amount to be at least 95% of value shown to user for safety
@@ -112,7 +119,7 @@ const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSelli
   // TODO: Communicate to user that they may receive 5% less than what is estimated
   const minReceivedUint256 = minReceived.multipliedBy(tokenExchangeBase).multipliedBy('0.99').toFixed(0);
 
-  await getAssetExchangeApproval(amountUint256, isSellingGold, ledger);
+  await getAssetExchangeApproval(networkID, amountUint256, isSellingGold, ledger);
 
   const exchangeContract = await kit.contracts.getExchange();
   const exchangeContractMethod = isSellingGold ? 'sellGold' : 'sellDollar';
@@ -122,13 +129,14 @@ const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSelli
     contractMethodArgs: [amountUint256, minReceivedUint256]
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: exchangeContract.address,
     data: txABI
   });
 
   const [account] = ledger.getAccounts();
-  const assets = await getAssets(account);
+  const assets = await getAssets(networkID, account);
 
   return {
     txReceipt,
@@ -136,24 +144,25 @@ const exchangeAssets = async (amount: BigNumber, minReceived: BigNumber, isSelli
   };
 };
 
-const lockGold = async (amount: BigNumber, ledger: Wallet) => {
+const lockGold = async (networkID: string, amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
   const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-  const lockedGoldContract = await getKitContract('lockedGold');
+  const lockedGoldContract = await getKitContract(networkID, 'lockedGold');
   const lockGoldTxABI = await getContractMethodCallABI({
     contract: lockedGoldContract,
     contractMethod: 'lock'
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: lockedGoldContract.address,
     data: lockGoldTxABI,
     value
   });
-  const assets = await getAssets(account);
+  const assets = await getAssets(networkID, account);
 
   return {
     txReceipt,
@@ -161,24 +170,25 @@ const lockGold = async (amount: BigNumber, ledger: Wallet) => {
   };
 };
 
-const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
+const unlockGold = async (networkID: string, amount: BigNumber, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
   const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-  const lockedGoldContract = await getKitContract('lockedGold');
+  const lockedGoldContract = await getKitContract(networkID, 'lockedGold');
   const unlockGoldTxABI = await getContractMethodCallABI({
     contract: lockedGoldContract,
     contractMethod: 'unlock',
     contractMethodArgs: [value]
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: lockedGoldContract.address,
     data: unlockGoldTxABI
   });
-  const assets = await getAssets(account);
+  const assets = await getAssets(networkID, account);
 
   return {
     txReceipt,
@@ -186,24 +196,25 @@ const unlockGold = async (amount: BigNumber, ledger: Wallet) => {
   };
 };
 
-const withdrawPendingWithdrawal = async (index: number, ledger: Wallet) => {
+const withdrawPendingWithdrawal = async (networkID: string, index: number, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
   // `index` references the numeral index of the available pending withdrawals of the account
-  const lockedGoldContract = await getKitContract('lockedGold');
+  const lockedGoldContract = await getKitContract(networkID, 'lockedGold');
   const withdrawTxABI = await getContractMethodCallABI({
     contract: lockedGoldContract,
     contractMethod: 'withdraw',
     contractMethodArgs: [index]
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: lockedGoldContract.address,
     data: withdrawTxABI
   });
-  const assets = await getAssets(account);
+  const assets = await getAssets(networkID, account);
 
   return {
     txReceipt,
