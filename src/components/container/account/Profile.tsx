@@ -26,7 +26,7 @@ class Profile extends PureComponent<Props> {
     const account = ledger.ledger && ledger.getAccounts()[0];
 
     if (account && !this.props.summary.address) {
-      this.props.getAccount(account);
+      this.props.getAccount();
     }
   };
 
@@ -36,7 +36,7 @@ class Profile extends PureComponent<Props> {
     if (prevProps.networkID !== networkID) {
       const account = ledger.ledger && ledger.getAccounts()[0];
       if (account) {
-        this.props.getAccount(account);
+        this.props.getAccount();
       }
     }
   };
