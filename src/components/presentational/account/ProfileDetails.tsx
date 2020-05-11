@@ -40,10 +40,7 @@ const ProfileDetails = ({
                   </ListGroupItem>
                   <ListGroupItem className="text-truncate" style={{ border: 'none' }}>
                     {address ? (
-                      <Anchor
-                        href={`https://baklava-blockscout.celo-testnet.org/address/${address}/celo`}
-                        color="#3488ec"
-                      >
+                      <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}`} color="#3488ec">
                         {address}
                       </Anchor>
                     ) : (
