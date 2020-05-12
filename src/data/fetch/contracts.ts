@@ -1,8 +1,6 @@
-import { newKit } from '@celo/contractkit';
 import { isEmpty } from 'lodash';
-import { rpcChain } from './api';
+import { getRpcKit } from './api';
 
-const kit = newKit(rpcChain);
 const kitContracts = {};
 const web3Contracts = {};
 const contractGetters = {
@@ -16,24 +14,30 @@ const contractGetters = {
   governance: 'getGovernance'
 };
 
-const getKitContract = async (contract: string) => {
-  if (!isEmpty(kitContracts[contract])) {
-    return kitContracts[contract];
-  }
-  const contractGetterFn = contractGetters[contract];
-  kitContracts[contract] = await kit.contracts[contractGetterFn]();
+const getCacheKey = (networkID: string, contract: string) => `${networkID}-${contract}`;
 
-  return kitContracts[contract];
+const getKitContract = async (networkID: string, contract: string) => {
+  const key = getCacheKey(networkID, contract);
+  if (!isEmpty(kitContracts[key])) {
+    return kitContracts[key];
+  }
+  const kit = getRpcKit(networkID);
+  const contractGetterFn = contractGetters[contract];
+  kitContracts[key] = await kit.contracts[contractGetterFn]();
+
+  return kitContracts[key];
 };
 
-const getWeb3Contract = async (contract: string) => {
-  if (!isEmpty(web3Contracts[contract])) {
-    return web3Contracts[contract];
+const getWeb3Contract = async (networkID: string, contract: string) => {
+  const key = getCacheKey(networkID, contract);
+  if (!isEmpty(web3Contracts[key])) {
+    return web3Contracts[key];
   }
+  const kit = getRpcKit(networkID);
   const contractGetterFn = contractGetters[contract];
-  web3Contracts[contract] = await kit._web3Contracts[contractGetterFn]();
+  web3Contracts[key] = await kit._web3Contracts[contractGetterFn]();
 
-  return web3Contracts[contract];
+  return web3Contracts[key];
 };
 
 const getContractMethodCallABI = async ({

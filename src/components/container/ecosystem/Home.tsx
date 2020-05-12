@@ -15,12 +15,14 @@ import BigNumber from 'bignumber.js';
 
 const mapState = ({
   home: { blogsById, allBlogIds, totalSupply, inProgress: homeInProgress },
-  governance: { dequeuedProposalsByStage, inProgress: govInProgress }
+  governance: { dequeuedProposalsByStage, inProgress: govInProgress },
+  network: { networkID }
 }) => ({
   blogsById,
   allBlogIds,
   totalSupply,
   dequeuedProposalsByStage,
+  networkID,
   inProgress: govInProgress || homeInProgress
 });
 const mapDispatch = { getHomeData, fetchProposals };
@@ -41,6 +43,14 @@ class Home extends PureComponent<Props> {
       this.props.fetchProposals();
     }
   }
+
+  componentDidUpdate = (prevProps) => {
+    // Reload data on network change
+    if (prevProps.networkID !== this.props.networkID) {
+      this.props.getHomeData();
+      this.props.fetchProposals();
+    }
+  };
 
   render = () => {
     const { blogsById, allBlogIds, dequeuedProposalsByStage, totalSupply, inProgress } = this.props;

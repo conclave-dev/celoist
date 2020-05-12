@@ -7,8 +7,10 @@ const getHomeData = () => async (dispatch, getState) => {
 
   try {
     const { allBlogIds } = getState().home;
+    const { networkID } = getState().network;
     const blogsById = await fetchMediumBlogs(allBlogIds);
-    const totalSupply = await fetchTotalSupply();
+    const totalSupply = await fetchTotalSupply(networkID);
+    console.log(networkID + ' : ' + totalSupply);
     return handleData(dispatch, GET_HOME_DATA, { blogsById, totalSupply });
   } catch (err) {
     return handleError(dispatch, GET_HOME_DATA, err);

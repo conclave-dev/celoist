@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import SidebarAccount from './SidebarAccount';
+import SidebarNetworkSwitcher from './SidebarNetworkSwitcher';
 import overviewLight from '../../../assets/png/overviewLight.png';
 import voteLight from '../../../assets/png/voteLight.png';
 import lightBulbLight from '../../../assets/png/lightBulbLight.png';
@@ -50,6 +51,7 @@ const MemoizedSidebarContentEcosystem = memo(SidebarContentEcosystem);
 const SidebarContent = () => (
   <div id="sidebar-menu">
     <ul className="metismenu list-unstyled" id="side-menu">
+      <SidebarNetworkSwitcher />
       <MemoizedSidebarContentEcosystem />
       <SidebarAccount sidebarToggler={sidebarToggler} />
     </ul>

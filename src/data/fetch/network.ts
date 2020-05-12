@@ -3,9 +3,9 @@ import { getWeb3Contract } from './contracts';
 
 const tokenExchangeBase = new BigNumber('1e18');
 
-const fetchExchangeRates = async () => {
+const fetchExchangeRates = async (networkID) => {
   try {
-    const exchangeContract = await getWeb3Contract('exchange');
+    const exchangeContract = await getWeb3Contract(networkID, 'exchange');
 
     // Amount of cUSD received for 1 cGLD
     const dollarBuyAmount = new BigNumber(
