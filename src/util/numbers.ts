@@ -24,5 +24,15 @@ const formatVotes = (n = new BigNumber(0)) => n.dividedBy(voteBase).toFormat(0);
 const formatScore = (n = new BigNumber(0)) => n.dividedBy(scoreBase).toFormat(2);
 const formatTokens = (n = new BigNumber(0)) => n.dividedBy(tokenBase).toFormat(2);
 
+const getTokenAmountFromUint256 = (n = new BigNumber(0)) => n.dividedBy('1e18');
+
 // Abbreviates long numbers into a more readable format
-export { formatN, formatSlashingMultiplier, formatCommission, formatVotes, formatScore, formatTokens };
+export {
+  formatN,
+  formatSlashingMultiplier,
+  formatCommission,
+  formatVotes,
+  formatScore,
+  formatTokens,
+  getTokenAmountFromUint256
+};
