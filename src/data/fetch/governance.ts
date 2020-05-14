@@ -8,11 +8,22 @@ const getGovernanceProposals = async (networkID) => {
     await governance.getQueue(),
     async (acc, proposal) => {
       const { proposalID } = proposal;
+      const fullProposal = await governance.getProposalRecord(proposalID);
+      const cloneAcc = { ...acc };
 
-      return {
-        ...acc,
-        [proposalID]: await governance.getProposalRecord(proposalID)
-      };
+      if (!fullProposal.proposal.length) {
+        return cloneAcc;
+      }
+
+      if (!cloneAcc[fullProposal.stage]) {
+        cloneAcc[fullProposal.stage] = {
+          [proposalID]: fullProposal
+        };
+      } else {
+        cloneAcc[fullProposal.stage][proposalID] = fullProposal;
+      }
+
+      return cloneAcc;
     },
     {}
   );

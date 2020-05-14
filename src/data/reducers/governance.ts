@@ -30,7 +30,7 @@ const fetchProposals = (
     dequeuedProposalsByStage,
     allQueuedProposalStages,
     allDequeuedProposalStages,
-    stageFilter: allDequeuedProposalStages[0]
+    stageFilter: allDequeuedProposalStages[0] || allQueuedProposalStages[0]
   };
 };
 
