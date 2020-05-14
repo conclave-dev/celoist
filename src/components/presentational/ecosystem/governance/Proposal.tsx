@@ -3,7 +3,7 @@ import { Card, CardBody, Alert, Button, Badge } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import { Proposal as ProposalType } from '../../../../data/types/governance';
 import Anchor from '../../reusable/Anchor';
-import { formatTokens } from '../../../../util/numbers';
+import { formatTokens, getTokenAmountFromUint256 } from '../../../../util/numbers';
 
 const buttonProps = {
   className: 'mt-2',
@@ -18,7 +18,7 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}
     >
       <i className="mdi mdi-thumb-up mr-2" />
-      {votes.Yes.toFixed(0)}
+      {getTokenAmountFromUint256(votes.Yes).toFormat(0)}
     </Button>
     <Button
       {...buttonProps}
@@ -26,7 +26,7 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#fb7c6d' }}
     >
       <i className="mdi mdi-thumb-down mr-2" />
-      {votes.No.toFixed(0)}
+      {getTokenAmountFromUint256(votes.No).toFormat(0)}
     </Button>
     <Button
       {...buttonProps}
@@ -34,15 +34,15 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#9ca8b3' }}
     >
       <i className="mdi mdi-hand-left mr-2" />
-      {votes.Abstain.toFixed(0)}
+      {getTokenAmountFromUint256(votes.Abstain).toFormat(0)}
     </Button>
   </>
 );
 
 const QueuedProposalButtons = ({ upvotes }: { upvotes: ProposalType['upvotes'] }) => (
-  <Button {...buttonProps} style={{ borderColor: '#35D07F', color: '#35D07F' }}>
+  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}>
     <i className="mdi mdi-thumb-up mr-2" />
-    {upvotes.toFixed(0)}
+    {getTokenAmountFromUint256(upvotes).toFormat(0)}
   </Button>
 );
 
