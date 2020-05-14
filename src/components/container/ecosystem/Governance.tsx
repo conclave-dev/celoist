@@ -5,13 +5,15 @@ import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
 import Submenu from '../../presentational/ecosystem/governance/Submenu';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
+import { upvote } from '../../../data/actions/account';
 import { fetchProposals } from '../../../data/actions/governance';
 
-const mapState = ({ governance, network: { networkID } }) => ({
+const mapState = ({ governance, network: { networkID, networkURL } }) => ({
   networkID,
+  networkURL,
   ...governance
 });
-const mapDispatch = { fetchProposals };
+const mapDispatch = { upvote, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -40,7 +42,8 @@ export class Governance extends PureComponent<Props> {
       queuedProposalsByStage,
       allQueuedProposalStages,
       stageFilter,
-      inProgress
+      inProgress,
+      networkURL
     } = this.props;
     const filteredProposals = dequeuedProposalsByStage[stageFilter] || queuedProposalsByStage[stageFilter];
 
@@ -87,6 +90,8 @@ export class Governance extends PureComponent<Props> {
                       transactions={transactions}
                       votes={votes}
                       upvotes={upvotes}
+                      upvote={this.props.upvote}
+                      networkURL={networkURL}
                     />
                   );
                 })

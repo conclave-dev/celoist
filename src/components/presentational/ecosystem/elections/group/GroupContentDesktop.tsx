@@ -17,13 +17,15 @@ interface GroupContentProps {
 }
 
 const GroupContentDesktop = ({
-  groupContentData: { name, address, commission, votes, memberCount, score, scoreColor, groupVoterPayment }
+  groupContentData: { name, address, commission, votes, memberCount, score, scoreColor, groupVoterPayment },
+  networkURL
 }: {
   groupContentData: GroupContentProps;
+  networkURL: string;
 }) => (
   <Row noGutters className="align-items-center" style={{ flexWrap: 'nowrap' }}>
     <Col lg={2} className="text-truncate">
-      <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${address}`} color="#3488ec">
+      <Anchor href={`${networkURL}/address/${address}`} color="#3488ec">
         {name || address}
       </Anchor>
     </Col>

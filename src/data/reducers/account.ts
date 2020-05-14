@@ -7,7 +7,8 @@ import {
   LOCK_GOLD,
   UNLOCK_GOLD,
   WITHDRAW_PENDING_WITHDRAWAL,
-  LOG_OUT_WITH_LEDGER
+  LOG_OUT_WITH_LEDGER,
+  UPVOTE_QUEUED_PROPOSAL
 } from '../actions/actions';
 import { initialStateDecorator, evalActionPayload } from '../util/reducers';
 import BigNumber from 'bignumber.js';
@@ -46,6 +47,9 @@ const accountState = {
     ...baseTxFields,
     exchanged: new BigNumber(0),
     received: new BigNumber(0)
+  },
+  governanceTx: {
+    ...baseTxFields
   }
 };
 
@@ -107,6 +111,11 @@ const resetExchangeTx = (state) => ({
 
 const logOut = () => ({ ...accountState });
 
+const upvote = (state, { txReceipt }) => ({
+  ...state,
+  governanceTx: { ...txReceipt }
+});
+
 export default (state = initialState, action) => {
   const { type } = action;
 
@@ -127,6 +136,8 @@ export default (state = initialState, action) => {
       return evalActionPayload(state, action, handleLockedGoldTx);
     case LOG_OUT_WITH_LEDGER:
       return evalActionPayload(state, action, logOut);
+    case UPVOTE_QUEUED_PROPOSAL:
+      return evalActionPayload(state, action, upvote);
     default:
       return state;
   }

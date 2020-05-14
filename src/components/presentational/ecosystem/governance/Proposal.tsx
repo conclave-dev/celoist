@@ -39,8 +39,8 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
   </>
 );
 
-const QueuedProposalButtons = ({ upvotes }: { upvotes: ProposalType['upvotes'] }) => (
-  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}>
+const QueuedProposalButtons = ({ upvotes, upvote }: { upvotes: ProposalType['upvotes']; upvote: any }) => (
+  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }} onClick={upvote}>
     <i className="mdi mdi-thumb-up mr-2" />
     {getTokenAmountFromUint256(upvotes).toFormat(0)}
   </Button>
@@ -51,13 +51,17 @@ const Proposal = ({
   metadata,
   transactions,
   votes,
-  upvotes
+  upvotes,
+  upvote,
+  networkURL
 }: {
   proposalID: number;
   metadata: any;
   transactions: ProposalType['proposal'];
   votes: ProposalType['votes'];
   upvotes: ProposalType['upvotes'];
+  upvote: any;
+  networkURL: string;
 }) => {
   const { proposer, deposit, descriptionURL } = metadata;
 
@@ -70,7 +74,7 @@ const Proposal = ({
             <p>
               <small className="text-muted">
                 Submitted by{' '}
-                <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${proposer}`}>{proposer}</Anchor>{' '}
+                <Anchor href={`${networkURL}/address/${proposer}`}>{proposer}</Anchor>{' '}
                 with a
               </small>{' '}
               <Badge style={{ backgroundColor: '#fbcc5c', borderRadius: 2, padding: 3 }}>
@@ -96,7 +100,7 @@ const Proposal = ({
           ))}
         </div>
         {!new BigNumber(upvotes).isZero() ? (
-          <QueuedProposalButtons upvotes={upvotes} />
+          <QueuedProposalButtons upvotes={upvotes} upvote={() => upvote(proposalID)} />
         ) : (
           <DequeuedProposalButtons votes={votes} />
         )}

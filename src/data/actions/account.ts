@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import {
   GET_ACCOUNT,
   REGISTER_ACCOUNT,
@@ -6,7 +7,8 @@ import {
   RESET_EXCHANGE_TX,
   LOCK_GOLD,
   UNLOCK_GOLD,
-  WITHDRAW_PENDING_WITHDRAWAL
+  WITHDRAW_PENDING_WITHDRAWAL,
+  UPVOTE_QUEUED_PROPOSAL
 } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import {
@@ -15,7 +17,8 @@ import {
   exchangeAssets,
   lockGold,
   unlockGold,
-  withdrawPendingWithdrawal
+  withdrawPendingWithdrawal,
+  upvoteQueuedProposal
 } from '../fetch/account';
 
 const getAccount = () => async (dispatch, getState) => {
@@ -180,6 +183,20 @@ const withdrawPendingGold = (index) => async (dispatch, getState) => {
 
 const resetExchangeTx = () => async (dispatch) => handleData(dispatch, RESET_EXCHANGE_TX);
 
+const upvote = (proposalID: BigNumber.Value) => async (dispatch, getState) => {
+  handleInit(dispatch, UPVOTE_QUEUED_PROPOSAL);
+
+  try {
+    const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
+    const { txReceipt } = await upvoteQueuedProposal(networkID, proposalID, ledger);
+
+    return handleData(dispatch, UPVOTE_QUEUED_PROPOSAL, txReceipt);
+  } catch (err) {
+    return handleError(dispatch, UPVOTE_QUEUED_PROPOSAL, err);
+  }
+};
+
 export {
   getAccount,
   registerUserAccount,
@@ -188,5 +205,6 @@ export {
   resetExchangeTx,
   lockAvailableGold,
   unlockLockedGold,
-  withdrawPendingGold
+  withdrawPendingGold,
+  upvote
 };

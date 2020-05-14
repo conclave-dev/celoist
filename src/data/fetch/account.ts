@@ -221,6 +221,31 @@ const withdrawPendingWithdrawal = async (networkID: string, index: number, ledge
   };
 };
 
+const upvoteQueuedProposal = async (networkID: string, proposalID: BigNumber.Value, ledger: Wallet) => {
+  const [account] = ledger.getAccounts();
+
+  await getIsRegistered(networkID, account, true);
+
+  // `index` references the numeral index of the available pending withdrawals of the account
+  const governanceContract = await getKitContract(networkID, 'governance');
+
+  const upvoteTxABI = await getContractMethodCallABI({
+    contract: governanceContract,
+    contractMethod: 'upvote',
+    contractMethodArgs: [proposalID, account]
+  });
+  const txReceipt = await sendTxWithLedger({
+    networkID,
+    ledger,
+    to: governanceContract.address,
+    data: upvoteTxABI
+  });
+
+  return {
+    txReceipt
+  };
+};
+
 export {
   getAccountSummary,
   registerAccount,
@@ -228,5 +253,6 @@ export {
   exchangeAssets,
   lockGold,
   unlockGold,
-  withdrawPendingWithdrawal
+  withdrawPendingWithdrawal,
+  upvoteQueuedProposal
 };
