@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Card, CardBody, Alert, Button, Badge } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import { Proposal as ProposalType } from '../../../../data/types/governance';
@@ -39,31 +39,55 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
   </>
 );
 
-const QueuedProposalButtons = ({ upvotes, upvote }: { upvotes: ProposalType['upvotes']; upvote: any }) => (
-  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }} onClick={upvote}>
+const QueuedProposalButtons = ({ upvotes }: { upvotes: ProposalType['upvotes'] }) => (
+  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}>
     <i className="mdi mdi-thumb-up mr-2" />
     {getTokenAmountFromUint256(upvotes).toFormat(0)}
   </Button>
 );
 
+const parsedProposalFormatter = (parsedProposalItem, showParsed) => {
+  if (showParsed) {
+    return `${parsedProposalItem.contract}.${parsedProposalItem.function}(${parsedProposalItem.argList.reduce(
+      (argString, arg, argIndex) => {
+        argString += arg;
+
+        if (parsedProposalItem.argList[argIndex + 1]) {
+          argString += ', ';
+        }
+
+        return argString;
+      },
+      ''
+    )})`;
+  }
+
+  return JSON.stringify(parsedProposalItem);
+};
+
 const Proposal = ({
+  proposal,
   proposalID,
-  metadata,
-  transactions,
-  votes,
-  upvotes,
-  upvote,
   networkURL
 }: {
+  proposal: {
+    proposalID: number;
+    metadata: any;
+    parsedProposal: ProposalType['proposal'];
+    transactions: ProposalType['proposal'];
+    votes: ProposalType['votes'];
+    upvotes: ProposalType['upvotes'];
+  };
   proposalID: number;
-  metadata: any;
-  transactions: ProposalType['proposal'];
-  votes: ProposalType['votes'];
-  upvotes: ProposalType['upvotes'];
-  upvote: any;
   networkURL: string;
 }) => {
+  const [showParsed, setShowParsed] = useState(true);
+  const { parsedProposal, metadata, upvotes, votes } = proposal;
   const { proposer, deposit, descriptionURL } = metadata;
+  const parsedProposalTextStyle = {
+    color: '#3488ec',
+    fontWeight: 700
+  };
 
   return (
     <Card key={proposalID} className="mb-4">
@@ -84,21 +108,40 @@ const Proposal = ({
         </div>
         <div>
           <p className="mt-0 text-truncate">
-            Description Link:
+            Details:
             <br />
             <Anchor href={descriptionURL} color="">
               {descriptionURL}
             </Anchor>
           </p>
-          <p className="mt-0">Proposed Transactions:</p>
-          {transactions.map((tx, txIndex) => (
-            <Alert key={`${proposalID}-${txIndex}`} color="secondary">
-              {JSON.stringify(tx)}
+          <p className="mt-0">Transactions:</p>
+          {parsedProposal.map((p, pIndex) => (
+            <Alert key={`proposal-tx-${pIndex}`} color="secondary">
+              {parsedProposalFormatter(p[showParsed ? 'callDetails' : 'tx'], showParsed)}
             </Alert>
           ))}
+          <p className="text-right mb-2 pr-2" style={{ marginTop: -8 }}>
+            <small
+              onClick={() => setShowParsed(true)}
+              style={{
+                ...(showParsed ? parsedProposalTextStyle : {})
+              }}
+            >
+              Parsed
+            </small>
+            <small> | </small>
+            <small
+              onClick={() => setShowParsed(false)}
+              style={{
+                ...(!showParsed ? parsedProposalTextStyle : {})
+              }}
+            >
+              Raw
+            </small>
+          </p>
         </div>
         {!new BigNumber(upvotes).isZero() ? (
-          <QueuedProposalButtons upvotes={upvotes} upvote={() => upvote(proposalID)} />
+          <QueuedProposalButtons upvotes={upvotes} />
         ) : (
           <DequeuedProposalButtons votes={votes} />
         )}

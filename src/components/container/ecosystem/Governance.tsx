@@ -80,21 +80,14 @@ export class Governance extends PureComponent<Props> {
           {!inProgress && (
             <Col lg={9} xs={12}>
               {filteredProposals && !isEmpty(filteredProposals) ? (
-                map(filteredProposals, (proposal, proposalID) => {
-                  const { proposal: transactions, metadata, votes, upvotes } = proposal;
-                  return (
-                    <Proposal
-                      key={proposalID}
-                      proposalID={proposalID}
-                      metadata={metadata}
-                      transactions={transactions}
-                      votes={votes}
-                      upvotes={upvotes}
-                      upvote={this.props.upvote}
-                      networkURL={networkURL}
-                    />
-                  );
-                })
+                map(filteredProposals, (proposal, proposalID) => (
+                  <Proposal
+                    key={`proposal-${proposalID}`}
+                    proposal={proposal}
+                    proposalID={proposalID}
+                    networkURL={networkURL}
+                  />
+                ))
               ) : (
                 <Card className="pt-4 pb-4">
                   <CardBody>
