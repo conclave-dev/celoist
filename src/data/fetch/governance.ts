@@ -7,6 +7,10 @@ const getProposals = async (networkID) => {
 
   const proposalReducer = (acc, proposal, proposalID) => {
     const cloneAcc = { ...acc };
+    const reducedProposal = {
+      ...proposal,
+      parsedProposal: proposal.proposal.map((p) => blockExplorer.tryParseTx(p))
+    };
 
     if (!proposal.proposal.length) {
       return cloneAcc;
@@ -14,13 +18,10 @@ const getProposals = async (networkID) => {
 
     if (!cloneAcc[proposal.stage]) {
       cloneAcc[proposal.stage] = {
-        [proposalID]: {
-          ...proposal,
-          parsedProposal: proposal.proposal.map((p) => blockExplorer.tryParseTx(p))
-        }
+        [proposalID]: reducedProposal
       };
     } else {
-      cloneAcc[proposal.stage][proposalID] = proposal;
+      cloneAcc[proposal.stage][proposalID] = reducedProposal;
     }
 
     return cloneAcc;

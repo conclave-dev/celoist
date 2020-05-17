@@ -5,6 +5,7 @@ export type AllProposalStages = string[];
 
 export interface Proposal {
   proposal: ProposalTxs[];
+  parsedProposal: ParsedProposalTxs[];
   metadata: ProposalMetadata;
   stage: string;
   upvotes: BigNumber;
@@ -15,6 +16,11 @@ export interface ProposalTxs {
   value: string;
   to: string;
   input: string;
+}
+
+export interface ParsedProposalTxs {
+  tx: any;
+  callDetails: any;
 }
 
 export interface ProposalMetadata {
