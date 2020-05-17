@@ -50,7 +50,7 @@ const parsedProposalFormatter = (parsedProposalItem, showParsed) => {
   if (showParsed) {
     return `${parsedProposalItem.contract}.${parsedProposalItem.function}(${parsedProposalItem.argList.reduce(
       (argString, arg, argIndex) => {
-        argString += arg;
+        argString += arg.includes('0x') ? `"${arg}"` : arg;
 
         if (parsedProposalItem.argList[argIndex + 1]) {
           argString += ', ';
