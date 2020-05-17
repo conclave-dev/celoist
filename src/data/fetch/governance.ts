@@ -1,5 +1,5 @@
 import { Promise } from 'bluebird';
-import { getKitContract } from './contracts';
+import { getKitContract, getBlockExplorer } from './contracts';
 
 const getGovernanceProposals = async (networkID) => {
   const governance = await getKitContract(networkID, 'governance');
@@ -59,4 +59,9 @@ const getGovernanceProposals = async (networkID) => {
   };
 };
 
-export { getGovernanceProposals };
+const parseProposalTx = async (networkID, proposalTx) => {
+  const blockExplorer = await getBlockExplorer(networkID);
+  return blockExplorer.tryParseTx(proposalTx);
+};
+
+export { getGovernanceProposals, parseProposalTx };
