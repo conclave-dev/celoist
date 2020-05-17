@@ -73,9 +73,7 @@ const Proposal = ({
             <h5 className="m-0">Proposal #{proposalID}</h5>
             <p>
               <small className="text-muted">
-                Submitted by{' '}
-                <Anchor href={`${networkURL}/address/${proposer}`}>{proposer}</Anchor>{' '}
-                with a
+                Submitted by <Anchor href={`${networkURL}/address/${proposer}`}>{proposer}</Anchor> with a
               </small>{' '}
               <Badge style={{ backgroundColor: '#fbcc5c', borderRadius: 2, padding: 3 }}>
                 {formatTokens(deposit)} cGLD
