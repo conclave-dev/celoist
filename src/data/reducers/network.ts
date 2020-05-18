@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 
 const networkState = {
   networkID: defaultNetworkID,
-  networkURL: 'https://baklava-blockscout.celo-testnet.org',
+  networkURL: defaultNetworkID === 'rc1' ? 'https://explorer.celo.org' : 'https://baklava-blockscout.celo-testnet.org',
   exchangeRates: {
     goldToDollars: new BigNumber(0),
     dollarsToGold: new BigNumber(0)
