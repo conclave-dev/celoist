@@ -1,12 +1,13 @@
-import { GET_EXCHANGE_RATES, REMOVE_EXCHANGE_RATES } from './actions';
+import { GET_EXCHANGE_RATES, REMOVE_EXCHANGE_RATES, SWITCH_NETWORK } from './actions';
 import { handleInit, handleData, handleError } from '../util/actions';
 import { fetchExchangeRates } from '../fetch/network';
 
-const getExchangeRates = () => async (dispatch) => {
+const getExchangeRates = () => async (dispatch, getState) => {
   handleInit(dispatch, GET_EXCHANGE_RATES);
 
   try {
-    const { dollarsToGold, goldToDollars } = await fetchExchangeRates();
+    const { networkID } = getState().network;
+    const { dollarsToGold, goldToDollars } = await fetchExchangeRates(networkID);
     return handleData(dispatch, GET_EXCHANGE_RATES, { dollarsToGold, goldToDollars });
   } catch (err) {
     return handleError(dispatch, GET_EXCHANGE_RATES, err);
@@ -15,4 +16,6 @@ const getExchangeRates = () => async (dispatch) => {
 
 const removeExchangeRates = () => async (dispatch) => handleData(dispatch, REMOVE_EXCHANGE_RATES);
 
-export { getExchangeRates, removeExchangeRates };
+const switchNetwork = (networkID) => async (dispatch) => handleData(dispatch, SWITCH_NETWORK, { networkID });
+
+export { getExchangeRates, removeExchangeRates, switchNetwork };

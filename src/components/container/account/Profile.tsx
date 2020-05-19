@@ -8,9 +8,10 @@ import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { summary }, ledger: { ledger } }, ownProps) => ({
+const mapState = ({ account: { summary }, ledger: { ledger }, network: { networkID } }, ownProps) => ({
   ledger,
   summary,
+  networkID,
   ...ownProps
 });
 const mapDispatch = { getAccount };
@@ -25,7 +26,18 @@ class Profile extends PureComponent<Props> {
     const account = ledger.ledger && ledger.getAccounts()[0];
 
     if (account && !this.props.summary.address) {
-      this.props.getAccount(account);
+      this.props.getAccount();
+    }
+  };
+
+  componentDidUpdate = (prevProps) => {
+    // Reload data on network change
+    const { ledger, networkID } = this.props;
+    if (prevProps.networkID !== networkID) {
+      const account = ledger.ledger && ledger.getAccounts()[0];
+      if (account) {
+        this.props.getAccount();
+      }
     }
   };
 

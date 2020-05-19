@@ -9,19 +9,20 @@ import {
   activatePendingVote
 } from '../fetch/elections';
 
-const fetchElection = (blockNumber?: number) => async (dispatch) => {
+const fetchElection = (blockNumber?: number) => async (dispatch, getState) => {
   handleInit(dispatch, FETCH_ELECTION);
 
   try {
-    const { groupsById, allGroupIds } = await populateElection(blockNumber);
+    const { networkID } = getState().network;
+    const { groupsById, allGroupIds } = await populateElection(networkID, blockNumber);
 
     // Fetch election summary data and merge groupsById with voter rewards data
-    const { summary, groupsByIdWithRewards } = await fetchElectionSummary(groupsById);
+    const { summary, groupsByIdWithRewards } = await fetchElectionSummary(networkID, groupsById);
 
     return handleData(dispatch, FETCH_ELECTION, {
       groupsById: groupsByIdWithRewards,
       allGroupIds,
-      config: await fetchElectionConfig(),
+      config: await fetchElectionConfig(networkID),
       summary
     });
   } catch (err) {

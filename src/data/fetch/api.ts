@@ -1,9 +1,19 @@
 import { newKit } from '@celo/contractkit';
+import { networkConfigurations } from '../../util/constants';
 
-const backend = 'https://backend.celoist.com';
-const rpcChain = 'https://geth.celoist.com';
+// const backend = 'https://backend.celoist.com';
+const backend = 'http://localhost:3001';
 const wsChain = 'wss://geth-ws.celoist.com';
+const defaultNetworkID = 'baklava';
 
-const rpcKit = newKit(rpcChain);
+const kits = {};
 
-export { backend, rpcChain, wsChain, rpcKit };
+const getRpcKit = (networkID) => {
+  if (!kits[networkID]) {
+    kits[networkID] = newKit(networkConfigurations[networkID].rpc);
+  }
+
+  return kits[networkID];
+};
+
+export { backend, wsChain, defaultNetworkID, getRpcKit };

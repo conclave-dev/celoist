@@ -33,13 +33,11 @@ const fetchMediumBlogs: Promise<Blog> = (blogIds: string[]) => {
   );
 };
 
-const fetchTotalSupply = async () => {
-  const goldToken = await getWeb3Contract('goldToken');
+const fetchTotalSupply = async (networkID: string) => {
+  const goldToken = await getWeb3Contract(networkID, 'goldToken');
   const totalSupply = await goldToken.methods.totalSupply().call();
 
   return totalSupply;
 };
-
-fetchTotalSupply();
 
 export { fetchMediumBlogs, fetchTotalSupply };

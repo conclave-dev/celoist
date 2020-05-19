@@ -1,7 +1,6 @@
-import { newKit } from '@celo/contractkit';
 import { Wallet } from '@celo/contractkit/lib/wallets/wallet';
 import { reduce, forEach } from 'lodash';
-import { rpcChain } from './api';
+import { getRpcKit } from './api';
 import { backendFetch } from './util';
 import BigNumber from 'bignumber.js';
 import { getKitContract, getWeb3Contract, getContractMethodCallABI } from './contracts';
@@ -9,11 +8,10 @@ import { sendTxWithLedger } from './ledger';
 import { getIsRegistered } from './account';
 import { tokenExchangeBase } from './network';
 
-const kit = newKit(rpcChain);
-
-const populateElection = async (blockNumber?: number) => {
-  const { groups, groupAddresses, groupVotes } = await backendFetch('/celo/election', {
-    opts: { blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber()) }
+const populateElection = async (networkID: string, blockNumber?: number) => {
+  const kit = getRpcKit(networkID);
+  const { groups, groupAddresses, groupVotes } = await backendFetch(`/celo/${networkID}/election`, {
+    blockNumber: blockNumber || (await kit.web3.eth.getBlockNumber())
   });
 
   return groupAddresses.reduce(
@@ -56,11 +54,11 @@ const populateElection = async (blockNumber?: number) => {
   );
 };
 
-const fetchElectionConfig = async () => {
-  const validators = await getKitContract('validators');
-  const election = await getKitContract('election');
+const fetchElectionConfig = async (networkID: string) => {
+  const validators = await getKitContract(networkID, 'validators');
+  const election = await getKitContract(networkID, 'election');
   const { electabilityThreshold } = await election.getConfig();
-  const totalVotes = await (await getWeb3Contract('election')).methods.getTotalVotes().call();
+  const totalVotes = await (await getWeb3Contract(networkID, 'election')).methods.getTotalVotes().call();
   const thresholdDecimal = electabilityThreshold.toNumber() / new BigNumber('1e24').toNumber();
   const minimumRequiredVotes = new BigNumber(thresholdDecimal * parseInt(totalVotes));
 
@@ -70,7 +68,7 @@ const fetchElectionConfig = async () => {
   };
 };
 
-const fetchElectionSummary = async (groupsById) => {
+const fetchElectionSummary = async (networkID: string, groupsById) => {
   // Get cumulative score and member count for calculating average score
   const { cumulativeScore, memberCount } = reduce(
     groupsById,
@@ -99,8 +97,8 @@ const fetchElectionSummary = async (groupsById) => {
   );
 
   // Calculate average payments and votes
-  const electionWrapper = await getKitContract('election');
-  const epochNumber = await (await getKitContract('validators')).getEpochNumber();
+  const electionWrapper = await getKitContract(networkID, 'election');
+  const epochNumber = await (await getKitContract(networkID, 'validators')).getEpochNumber();
   const groupVoterRewards = await electionWrapper.getGroupVoterRewards(epochNumber.minus(1).toNumber());
 
   // Get cumulative rewards and votes for calculating their averages
@@ -154,18 +152,19 @@ const fetchElectionSummary = async (groupsById) => {
   };
 };
 
-const voteGroup = async (amount: BigNumber, groupAddress: string, ledger: Wallet) => {
+const voteGroup = async (networkID: string, amount: BigNumber, groupAddress: string, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
   const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-  const electionContract = await getWeb3Contract('election');
-  const electionWrapper = await getKitContract('election');
+  const electionContract = await getWeb3Contract(networkID, 'election');
+  const electionWrapper = await getKitContract(networkID, 'election');
 
   const { lesser, greater } = await electionWrapper.findLesserAndGreaterAfterVote(groupAddress, value);
   const voteTxABI = await electionContract.methods.vote(groupAddress, value, lesser, greater).encodeABI();
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: electionWrapper.address,
     data: voteTxABI
@@ -176,18 +175,19 @@ const voteGroup = async (amount: BigNumber, groupAddress: string, ledger: Wallet
   };
 };
 
-const activatePendingVote = async (ledger: Wallet) => {
+const activatePendingVote = async (networkID: string, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
-  const electionContract = await getKitContract('election');
+  const electionContract = await getKitContract(networkID, 'election');
   const activateTxABI = await getContractMethodCallABI({
     contract: electionContract,
     contractMethod: 'activate',
     contractMethodArgs: [account]
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: electionContract.address,
     data: activateTxABI
@@ -198,19 +198,20 @@ const activatePendingVote = async (ledger: Wallet) => {
   };
 };
 
-const revokeVote = async (amount: BigNumber, groupAddress: string, ledger: Wallet) => {
+const revokeVote = async (networkID: string, amount: BigNumber, groupAddress: string, ledger: Wallet) => {
   const [account] = ledger.getAccounts();
 
-  await getIsRegistered(account, true);
+  await getIsRegistered(networkID, account, true);
 
   const value = amount.multipliedBy(tokenExchangeBase).toFixed(0);
-  const electionContract = await getKitContract('election');
+  const electionContract = await getKitContract(networkID, 'election');
   const revokeTxABI = await getContractMethodCallABI({
     contract: electionContract,
     contractMethod: 'revoke',
     contractMethodArgs: [account, groupAddress, value]
   });
   const txReceipt = await sendTxWithLedger({
+    networkID,
     ledger,
     to: electionContract.address,
     data: revokeTxABI,
