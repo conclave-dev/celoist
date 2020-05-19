@@ -35,9 +35,10 @@ const voteValidatorGroup = (amount, groupAddress) => async (dispatch, getState) 
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash }
-    } = await voteGroup(amount, groupAddress, ledger);
+    } = await voteGroup(networkID, amount, groupAddress, ledger);
 
     return handleData(dispatch, VOTE_GROUP, {
       blockHash,
@@ -56,9 +57,10 @@ const activatePendingGroupVote = () => async (dispatch, getState) => {
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash }
-    } = await activatePendingVote(ledger);
+    } = await activatePendingVote(networkID, ledger);
 
     return handleData(dispatch, ACTIVATE_PENDING_VOTE, {
       blockHash,
@@ -77,9 +79,10 @@ const revokeGroupVote = (amount, groupAddress) => async (dispatch, getState) => 
 
   try {
     const { ledger } = getState().ledger;
+    const { networkID } = getState().network;
     const {
       txReceipt: { blockHash, blockNumber, cumulativeGasUsed, gasUsed, transactionHash }
-    } = await revokeVote(amount, groupAddress, ledger);
+    } = await revokeVote(networkID, amount, groupAddress, ledger);
 
     return handleData(dispatch, REVOKE_VOTE, {
       blockHash,
