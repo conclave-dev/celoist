@@ -1,9 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Card, CardBody, Alert, Button, Badge } from 'reactstrap';
 import BigNumber from 'bignumber.js';
 import { Proposal as ProposalType } from '../../../../data/types/governance';
 import Anchor from '../../reusable/Anchor';
-import { formatTokens } from '../../../../util/numbers';
+import { formatTokens, getTokenAmountFromUint256 } from '../../../../util/numbers';
 
 const buttonProps = {
   className: 'mt-2',
@@ -18,7 +18,7 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}
     >
       <i className="mdi mdi-thumb-up mr-2" />
-      {votes.Yes.toFixed(0)}
+      {getTokenAmountFromUint256(votes.Yes).toFormat(0)}
     </Button>
     <Button
       {...buttonProps}
@@ -26,7 +26,7 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#fb7c6d' }}
     >
       <i className="mdi mdi-thumb-down mr-2" />
-      {votes.No.toFixed(0)}
+      {getTokenAmountFromUint256(votes.No).toFormat(0)}
     </Button>
     <Button
       {...buttonProps}
@@ -34,32 +34,60 @@ const DequeuedProposalButtons = ({ votes }: { votes: ProposalType['votes'] }) =>
       style={{ border: 'none', color: '#fff', backgroundColor: '#9ca8b3' }}
     >
       <i className="mdi mdi-hand-left mr-2" />
-      {votes.Abstain.toFixed(0)}
+      {getTokenAmountFromUint256(votes.Abstain).toFormat(0)}
     </Button>
   </>
 );
 
 const QueuedProposalButtons = ({ upvotes }: { upvotes: ProposalType['upvotes'] }) => (
-  <Button {...buttonProps} style={{ borderColor: '#35D07F', color: '#35D07F' }}>
+  <Button {...buttonProps} style={{ border: 'none', color: '#fff', backgroundColor: '#35D07F' }}>
     <i className="mdi mdi-thumb-up mr-2" />
-    {upvotes.toFixed(0)}
+    {getTokenAmountFromUint256(upvotes).toFormat(0)}
   </Button>
 );
 
+const parsedProposalFormatter = (parsedProposalItem, showParsed) => {
+  if (showParsed) {
+    return `${parsedProposalItem.contract}.${parsedProposalItem.function}(${parsedProposalItem.argList.reduce(
+      (argString, arg, argIndex) => {
+        argString += arg.includes('0x') ? `"${arg}"` : arg;
+
+        if (parsedProposalItem.argList[argIndex + 1]) {
+          argString += ', ';
+        }
+
+        return argString;
+      },
+      ''
+    )})`;
+  }
+
+  return JSON.stringify(parsedProposalItem);
+};
+
 const Proposal = ({
+  proposal,
   proposalID,
-  metadata,
-  transactions,
-  votes,
-  upvotes
+  networkURL
 }: {
+  proposal: {
+    proposalID: number;
+    metadata: any;
+    parsedProposal: ProposalType['proposal'];
+    transactions: ProposalType['proposal'];
+    votes: ProposalType['votes'];
+    upvotes: ProposalType['upvotes'];
+  };
   proposalID: number;
-  metadata: any;
-  transactions: ProposalType['proposal'];
-  votes: ProposalType['votes'];
-  upvotes: ProposalType['upvotes'];
+  networkURL: string;
 }) => {
+  const [showParsed, setShowParsed] = useState(true);
+  const { parsedProposal, metadata, upvotes, votes } = proposal;
   const { proposer, deposit, descriptionURL } = metadata;
+  const parsedProposalTextStyle = {
+    color: '#3488ec',
+    fontWeight: 700
+  };
 
   return (
     <Card key={proposalID} className="mb-4">
@@ -69,9 +97,7 @@ const Proposal = ({
             <h5 className="m-0">Proposal #{proposalID}</h5>
             <p>
               <small className="text-muted">
-                Submitted by{' '}
-                <Anchor href={`https://baklava-blockscout.celo-testnet.org/address/${proposer}`}>{proposer}</Anchor>{' '}
-                with a
+                Submitted by <Anchor href={`${networkURL}/address/${proposer}`}>{proposer}</Anchor> with a
               </small>{' '}
               <Badge style={{ backgroundColor: '#fbcc5c', borderRadius: 2, padding: 3 }}>
                 {formatTokens(deposit)} cGLD
@@ -82,18 +108,37 @@ const Proposal = ({
         </div>
         <div>
           <p className="mt-0 text-truncate">
-            Description Link:
+            Details:
             <br />
             <Anchor href={descriptionURL} color="">
               {descriptionURL}
             </Anchor>
           </p>
-          <p className="mt-0">Proposed Transactions:</p>
-          {transactions.map((tx, txIndex) => (
-            <Alert key={`${proposalID}-${txIndex}`} color="secondary">
-              {JSON.stringify(tx)}
+          <p className="mt-0">Transactions:</p>
+          {parsedProposal.map((p, pIndex) => (
+            <Alert key={`proposal-tx-${pIndex}`} color="secondary">
+              {parsedProposalFormatter(p[showParsed ? 'callDetails' : 'tx'], showParsed)}
             </Alert>
           ))}
+          <p className="text-right mb-2 pr-2" style={{ marginTop: -8 }}>
+            <small
+              onClick={() => setShowParsed(true)}
+              style={{
+                ...(showParsed ? parsedProposalTextStyle : {})
+              }}
+            >
+              Parsed
+            </small>
+            <small> | </small>
+            <small
+              onClick={() => setShowParsed(false)}
+              style={{
+                ...(!showParsed ? parsedProposalTextStyle : {})
+              }}
+            >
+              Raw
+            </small>
+          </p>
         </div>
         {!new BigNumber(upvotes).isZero() ? (
           <QueuedProposalButtons upvotes={upvotes} />

@@ -17,8 +17,13 @@ import { exchangeDollarsForGold, exchangeGoldForDollars } from '../../../data/ac
 
 const SweetAlert = withReactContent(Swal);
 
-const mapState = ({ network: { exchangeRates }, account: { assets, exchangeTx, errorMessage } }, ownProps) => ({
+const mapState = (
+  { network: { exchangeRates, networkID, networkURL }, account: { assets, exchangeTx, errorMessage } },
+  ownProps
+) => ({
   exchangeRates,
+  networkID,
+  networkURL,
   assets,
   exchangeTx,
   errorMessage,
@@ -100,10 +105,7 @@ class ProfileAssets extends PureComponent<Props, { assetSymbol: string }> {
         <div className="pt-4 pb-4">
           <p className="text-center" style={{ marginBottom: 0 }}>
             Congratulations! Your exchange was successful. You can view the details{' '}
-            <Anchor
-              href={`https://baklava-blockscout.celo-testnet.org/tx/${this.props.exchangeTx.transactionHash}`}
-              color="3488ec"
-            >
+            <Anchor href={`${this.props.networkURL}/tx/${this.props.exchangeTx.transactionHash}`} color="3488ec">
               here
             </Anchor>
             .

@@ -1,18 +1,37 @@
 import { Promise } from 'bluebird';
-import { getKitContract } from './contracts';
+import { getKitContract, getBlockExplorer } from './contracts';
 
-const getGovernanceProposals = async (networkID) => {
+const getProposals = async (networkID) => {
   const governance = await getKitContract(networkID, 'governance');
+  const blockExplorer = await getBlockExplorer(networkID);
+
+  const proposalReducer = (acc, proposal, proposalID) => {
+    const cloneAcc = { ...acc };
+    const reducedProposal = {
+      ...proposal,
+      parsedProposal: proposal.proposal.map((p) => blockExplorer.tryParseTx(p))
+    };
+
+    if (!proposal.proposal.length) {
+      return cloneAcc;
+    }
+
+    if (!cloneAcc[proposal.stage]) {
+      cloneAcc[proposal.stage] = {
+        [proposalID]: reducedProposal
+      };
+    } else {
+      cloneAcc[proposal.stage][proposalID] = reducedProposal;
+    }
+
+    return cloneAcc;
+  };
 
   const queuedProposalsByStage = await Promise.reduce(
     await governance.getQueue(),
-    async (acc, proposal) => {
-      const { proposalID } = proposal;
-
-      return {
-        ...acc,
-        [proposalID]: await governance.getProposalRecord(proposalID)
-      };
+    async (acc, { proposalID }) => {
+      const proposal = await governance.getProposalRecord(proposalID);
+      return proposalReducer(acc, proposal, proposalID);
     },
     {}
   );
@@ -21,21 +40,7 @@ const getGovernanceProposals = async (networkID) => {
     await governance.getDequeue(),
     async (acc, proposalID) => {
       const proposal = await governance.getProposalRecord(proposalID);
-      const cloneAcc = { ...acc };
-
-      if (!proposal.proposal.length) {
-        return cloneAcc;
-      }
-
-      if (!cloneAcc[proposal.stage]) {
-        cloneAcc[proposal.stage] = {
-          [proposalID]: proposal
-        };
-      } else {
-        cloneAcc[proposal.stage][proposalID] = proposal;
-      }
-
-      return cloneAcc;
+      return proposalReducer(acc, proposal, proposalID);
     },
     {}
   );
@@ -48,4 +53,4 @@ const getGovernanceProposals = async (networkID) => {
   };
 };
 
-export { getGovernanceProposals };
+export { getProposals };

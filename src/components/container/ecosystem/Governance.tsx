@@ -5,13 +5,15 @@ import { connect, ConnectedProps } from 'react-redux';
 import Header from '../../presentational/reusable/Header';
 import Submenu from '../../presentational/ecosystem/governance/Submenu';
 import Proposal from '../../presentational/ecosystem/governance/Proposal';
+import { upvote } from '../../../data/actions/account';
 import { fetchProposals } from '../../../data/actions/governance';
 
-const mapState = ({ governance, network: { networkID } }) => ({
+const mapState = ({ governance, network: { networkID, networkURL } }) => ({
   networkID,
+  networkURL,
   ...governance
 });
-const mapDispatch = { fetchProposals };
+const mapDispatch = { upvote, fetchProposals };
 const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -40,7 +42,8 @@ export class Governance extends PureComponent<Props> {
       queuedProposalsByStage,
       allQueuedProposalStages,
       stageFilter,
-      inProgress
+      inProgress,
+      networkURL
     } = this.props;
     const filteredProposals = dequeuedProposalsByStage[stageFilter] || queuedProposalsByStage[stageFilter];
 
@@ -77,19 +80,14 @@ export class Governance extends PureComponent<Props> {
           {!inProgress && (
             <Col lg={9} xs={12}>
               {filteredProposals && !isEmpty(filteredProposals) ? (
-                map(filteredProposals, (proposal, proposalID) => {
-                  const { proposal: transactions, metadata, votes, upvotes } = proposal;
-                  return (
-                    <Proposal
-                      key={proposalID}
-                      proposalID={proposalID}
-                      metadata={metadata}
-                      transactions={transactions}
-                      votes={votes}
-                      upvotes={upvotes}
-                    />
-                  );
-                })
+                map(filteredProposals, (proposal, proposalID) => (
+                  <Proposal
+                    key={`proposal-${proposalID}`}
+                    proposal={proposal}
+                    proposalID={proposalID}
+                    networkURL={networkURL}
+                  />
+                ))
               ) : (
                 <Card className="pt-4 pb-4">
                   <CardBody>

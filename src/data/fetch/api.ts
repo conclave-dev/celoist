@@ -1,10 +1,10 @@
 import { newKit } from '@celo/contractkit';
 import { networkConfigurations } from '../../util/constants';
 
-// const backend = 'https://backend.celoist.com';
-const backend = 'http://localhost:3001';
+// const backend = 'http://localhost:3001';
+const backend = 'https://backend.celoist.com';
 const wsChain = 'wss://geth-ws.celoist.com';
-const defaultNetworkID = 'baklava';
+const defaultNetworkID = 'rc1';
 
 const kits = {};
 

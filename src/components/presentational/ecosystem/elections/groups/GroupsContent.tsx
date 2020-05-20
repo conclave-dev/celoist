@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
 import Group from '../Group';
-import { GroupProps } from '../types';
 
-const GroupsContent = ({ groupsById, allGroupIds, config }: GroupProps) => (
+const GroupsContent = ({ groupsById, allGroupIds, config, networkURL }: any) => (
   <>
     {allGroupIds.map((groupId) => (
-      <Group key={groupId} group={groupsById[groupId]} maxGroupSize={config.maxGroupSize} />
+      <Group key={groupId} group={groupsById[groupId]} maxGroupSize={config.maxGroupSize} networkURL={networkURL} />
     ))}
   </>
 );

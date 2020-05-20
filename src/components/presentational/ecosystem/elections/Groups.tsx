@@ -3,9 +3,8 @@ import { Col, ListGroup } from 'reactstrap';
 import Spinner from '../../reusable/Spinner';
 import GroupsDesktopHeader from './groups/GroupsDesktopHeader';
 import GroupsContent from './groups/GroupsContent';
-import { GroupProps } from './types';
 
-const Groups = (props: GroupProps) => (
+const Groups = (props: any) => (
   <Col>
     <ListGroup>
       <GroupsDesktopHeader />

@@ -17,7 +17,15 @@ const determineScoreColor = (score) => {
   }
 };
 
-const Group = ({ group, maxGroupSize }: { group: GroupType; maxGroupSize: Config['maxGroupSize'] }) => {
+const Group = ({
+  group,
+  maxGroupSize,
+  networkURL
+}: {
+  group: GroupType;
+  maxGroupSize: Config['maxGroupSize'];
+  networkURL: string;
+}) => {
   const { name, address, commission, groupVoterPayment, score, capacity, votes, memberAddresses } = group;
 
   const groupContentData = {
@@ -37,10 +45,10 @@ const Group = ({ group, maxGroupSize }: { group: GroupType; maxGroupSize: Config
   return (
     <>
       <ListGroupItem className="d-none d-lg-block">
-        <GroupContentDesktop groupContentData={groupContentData} />
+        <GroupContentDesktop groupContentData={groupContentData} networkURL={networkURL} />
       </ListGroupItem>
       <ListGroupItem className="d-block d-lg-none">
-        <GroupContentMobile groupContentData={groupContentData} />
+        <GroupContentMobile groupContentData={groupContentData} networkURL={networkURL} />
       </ListGroupItem>
     </>
   );

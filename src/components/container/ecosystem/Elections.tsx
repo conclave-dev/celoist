@@ -10,11 +10,15 @@ import goldCoin from '../../../assets/png/goldCoin.png';
 import validators from '../../../assets/png/validators.png';
 import { formatVotes, formatTokens, formatScore } from '../../../util/numbers';
 
-const mapState = ({ elections: { groupsById, allGroupIds, config, inProgress, summary }, network: { networkID } }) => ({
+const mapState = ({
+  elections: { groupsById, allGroupIds, config, inProgress, summary },
+  network: { networkID, networkURL }
+}) => ({
   groupsById,
   allGroupIds,
   config,
   networkID,
+  networkURL,
   inProgress,
   summary
 });
@@ -69,6 +73,7 @@ class Elections extends PureComponent<Props> {
       allGroupIds,
       config,
       inProgress,
+      networkURL,
       summary: { averageScore, cumulativeRewards, epochNumber }
     } = this.props;
 
@@ -84,7 +89,11 @@ class Elections extends PureComponent<Props> {
             averageScore ? this.generateSummaryItems(averageScore, cumulativeRewards, config.minimumRequiredVotes) : []
           }
         />
-        <Row>{!inProgress && <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} />}</Row>
+        <Row>
+          {!inProgress && (
+            <Groups groupsById={groupsById} allGroupIds={allGroupIds} config={config} networkURL={networkURL} />
+          )}
+        </Row>
       </Container>
     );
   };

@@ -8,10 +8,11 @@ import ProfileAssets from '../../presentational/account/ProfileAssets';
 import Header from '../../presentational/reusable/Header';
 import ResponsiveWrapper from '../../presentational/reusable/ResponsiveWrapper';
 
-const mapState = ({ account: { summary }, ledger: { ledger }, network: { networkID } }, ownProps) => ({
+const mapState = ({ account: { summary }, ledger: { ledger }, network: { networkID, networkURL } }, ownProps) => ({
   ledger,
   summary,
   networkID,
+  networkURL,
   ...ownProps
 });
 const mapDispatch = { getAccount };
@@ -42,7 +43,7 @@ class Profile extends PureComponent<Props> {
   };
 
   render() {
-    const { summary } = this.props;
+    const { summary, networkURL } = this.props;
     const { name, address, metadataURL, authorizedSigners } = summary;
 
     return (
@@ -55,6 +56,7 @@ class Profile extends PureComponent<Props> {
               address={address}
               metadataURL={metadataURL}
               validator={authorizedSigners.validator}
+              networkURL={networkURL}
             />
           </ResponsiveWrapper>
           <ResponsiveWrapper mobileClasses="col-12 mb-4" desktopClasses="col-lg-4">

@@ -1,5 +1,7 @@
 import { isEmpty } from 'lodash';
+import { obtainKitContractDetails } from '@celo/contractkit/lib/explorer/base';
 import { getRpcKit } from './api';
+import { BlockExplorer } from '@celo/contractkit/lib/explorer/block-explorer';
 
 const kitContracts = {};
 const web3Contracts = {};
@@ -13,6 +15,8 @@ const contractGetters = {
   election: 'getElection',
   governance: 'getGovernance'
 };
+const contractDetails = {};
+const blockExplorers = {};
 
 const getCacheKey = (networkID: string, contract: string) => `${networkID}-${contract}`;
 
@@ -52,4 +56,31 @@ const getContractMethodCallABI = async ({
   return await contract[contractMethod].apply(null, contractMethodArgs).txo.encodeABI();
 };
 
-export { getKitContract, getWeb3Contract, getContractMethodCallABI };
+const setContractDetails = async (networkID: string) => {
+  const kit = getRpcKit(networkID);
+  return obtainKitContractDetails(kit);
+};
+
+const getContractDetails = async (networkID: string) => {
+  if (isEmpty(contractDetails[networkID])) {
+    contractDetails[networkID] = await setContractDetails(networkID);
+  }
+
+  return contractDetails[networkID];
+};
+
+const setBlockExplorer = async (networkID: string) => {
+  const kit = getRpcKit(networkID);
+  const contractDetails = await getContractDetails(networkID);
+  return new BlockExplorer(kit, contractDetails);
+};
+
+const getBlockExplorer = async (networkID: string) => {
+  if (isEmpty(blockExplorers[networkID])) {
+    blockExplorers[networkID] = await setBlockExplorer(networkID);
+  }
+
+  return blockExplorers[networkID];
+};
+
+export { getKitContract, getWeb3Contract, getContractMethodCallABI, getContractDetails, getBlockExplorer };
